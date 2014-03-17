@@ -6,7 +6,7 @@
 	<link href="${ctx}/UM/themes/default/css/umeditor.min.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="${ctx}/UM/umeditor.config.js"></script>
 	<script type="text/javascript" src="${ctx}/UM/umeditor.min.js"></script>
-<title>欢迎访问bugsfly</title>
+	<title>欢迎访问bugsfly</title>
 </head>
 <body>
 	<div class="container">

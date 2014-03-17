@@ -4,6 +4,7 @@
 	<link rel="shortcut icon" type="image/x-icon" href="${ctx}/favicon.ico"/>
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/bootstrap/css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/bootstrap/css/bootstrap-theme.min.css" />
+	<link rel="stylesheet" type="text/css" href="${ctx}/lib/Font-Awesome-3.2.1/css/font-awesome.min.css" />
 	<link rel="stylesheet" type="text/css" href="${ctx}/css/public.css" />
 	
 	<script type="text/javascript" src="${ctx}/lib/jquery/jquery-2.1.0.min.js"></script>
