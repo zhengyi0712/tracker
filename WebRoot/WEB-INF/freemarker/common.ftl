@@ -1,6 +1,8 @@
 <#--html页面head标签内的引用部分，包含整个项目共用的js和css-->
 <#macro headerReference >
 	<meta http-equiv="charset" content="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 	<link rel="shortcut icon" type="image/x-icon" href="${ctx}/favicon.ico"/>
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/bootstrap/css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/bootstrap/css/bootstrap-theme.min.css" />
