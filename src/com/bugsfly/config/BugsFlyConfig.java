@@ -1,6 +1,7 @@
 package com.bugsfly.config;
 
 import java.io.File;
+import java.util.Properties;
 
 import com.bugsfly.IndexController;
 import com.bugsfly.login.LoginController;
@@ -13,6 +14,9 @@ import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.core.JFinal;
 import com.jfinal.kit.PathKit;
+import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
+import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
+import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.jfinal.render.FreeMarkerRender;
 
 import freemarker.template.Configuration;
@@ -59,12 +63,13 @@ public class BugsFlyConfig extends JFinalConfig {
 	public void configPlugin(Plugins plugins) {
 		// 加载数据库和连接池相关的配置文件
 		// 使用c3p0插件
-		// C3p0Plugin c3p0Plugin = new C3p0Plugin(loadPropertyFile("config"
-		// + File.separator + "c3p0.properties"));
-		// plugins.add(c3p0Plugin);
-		// ActiveRecordPlugin aPlugin = new ActiveRecordPlugin(c3p0Plugin);
-		// aPlugin.setDialect(new MysqlDialect());
-		// plugins.add(aPlugin);
+		Properties properties = loadPropertyFile("config"
+				+ File.separator + "c3p0.properties");
+		C3p0Plugin c3p0Plugin = new C3p0Plugin(properties);
+		plugins.add(c3p0Plugin);
+		ActiveRecordPlugin aPlugin = new ActiveRecordPlugin(c3p0Plugin);
+		aPlugin.setDialect(new MysqlDialect());
+		plugins.add(aPlugin);
 	}
 
 	@Override
