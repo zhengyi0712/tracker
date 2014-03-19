@@ -20,6 +20,12 @@
 	<script type="text/javascript" src="${ctx}/lib/jquery/plugin/validate_message_zh.js"></script>
 	<script type="text/javascript" src="${ctx}/js/custom-validate.js"></script>
 </#macro>
+<#--um编辑器脚本引用 -->
+<#macro umJs>
+	<link href="${ctx}/UM/themes/default/css/umeditor.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="${ctx}/UM/umeditor.config.js"></script>
+	<script type="text/javascript" src="${ctx}/UM/umeditor.min.js"></script>
+</#macro>
 <#--页面的顶部导航条，包含网站的logo和各个菜单-->
 <#macro topNavbar >
 <div class="navbar navbar-default" role="navigation">
