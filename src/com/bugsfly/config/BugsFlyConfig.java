@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import com.bugsfly.IndexController;
 import com.bugsfly.login.LoginController;
+import com.bugsfly.login.LoginInterceptor;
 import com.bugsfly.um.UMController;
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
@@ -56,15 +57,15 @@ public class BugsFlyConfig extends JFinalConfig {
 
 	@Override
 	public void configInterceptor(Interceptors interceptors) {
-
+		interceptors.add(new LoginInterceptor());
 	}
 
 	@Override
 	public void configPlugin(Plugins plugins) {
 		// 加载数据库和连接池相关的配置文件
 		// 使用c3p0插件
-		Properties properties = loadPropertyFile("config"
-				+ File.separator + "c3p0.properties");
+		Properties properties = loadPropertyFile("config" + File.separator
+				+ "c3p0.properties");
 		C3p0Plugin c3p0Plugin = new C3p0Plugin(properties);
 		plugins.add(c3p0Plugin);
 		ActiveRecordPlugin aPlugin = new ActiveRecordPlugin(c3p0Plugin);

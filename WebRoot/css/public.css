@@ -1,1 +1,6 @@
 @CHARSET "UTF-8";
+@media (max-width:768px){
+	.container,.container-fluid{
+		width:auto !important;	
+	}
+}
