@@ -1,7 +1,6 @@
 <#--html页面head标签内的引用部分，包含整个项目共用的js和css-->
 <#macro headerReference >
 	<meta http-equiv="charset" content="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 	<link rel="shortcut icon" type="image/x-icon" href="${ctx}/favicon.ico"/>
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/bootstrap/css/bootstrap.min.css" />
@@ -25,6 +24,12 @@
 	<link href="${ctx}/UM/themes/default/css/umeditor.min.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="${ctx}/UM/umeditor.config.js"></script>
 	<script type="text/javascript" src="${ctx}/UM/umeditor.min.js"></script>
+</#macro>
+<#--阻止低版本IE访问-->
+<#macro preventIE>
+<!--[if lt IE 8]>
+    <script type="text/javascript">alert("抱歉，系统检测到您还在使用低版本IE浏览器，请升级到最新版本或者使用其它浏览器访问。");window.close(); </script>
+<![endif]-->
 </#macro>
 <#--页面的顶部导航条，包含网站的logo和各个菜单-->
 <#macro topNavbar >
