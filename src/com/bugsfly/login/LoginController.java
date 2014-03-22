@@ -44,4 +44,10 @@ public class LoginController extends Controller {
 		}
 		redirect("/");
 	}
+	
+	@ClearInterceptor(ClearLayer.ALL)
+	public void logout(){
+		getSession().invalidate();
+		index();
+	}
 }

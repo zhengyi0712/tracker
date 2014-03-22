@@ -18,6 +18,7 @@ import com.jfinal.config.JFinalConfig;
 import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.core.JFinal;
+import com.jfinal.ext.interceptor.SessionInViewInterceptor;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
@@ -61,6 +62,7 @@ public class BugsFlyConfig extends JFinalConfig {
 
 	@Override
 	public void configInterceptor(Interceptors interceptors) {
+		interceptors.add(new SessionInViewInterceptor(true));
 		interceptors.add(new LoginInterceptor());
 	}
 
