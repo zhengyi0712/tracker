@@ -4,9 +4,13 @@ import java.io.File;
 import java.util.Properties;
 
 import com.bugsfly.IndexController;
+import com.bugsfly.bug.BugController;
+import com.bugsfly.company.CompanyController;
 import com.bugsfly.login.LoginController;
 import com.bugsfly.login.LoginInterceptor;
+import com.bugsfly.project.ProjectController;
 import com.bugsfly.um.UMController;
+import com.bugsfly.user.UserController;
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;
@@ -78,6 +82,10 @@ public class BugsFlyConfig extends JFinalConfig {
 		routes.add("/", IndexController.class);
 		routes.add("/um", UMController.class);
 		routes.add("/login", LoginController.class, "/login");
+		routes.add("/user", UserController.class, "/user");
+		routes.add("/company", CompanyController.class, "/company");
+		routes.add("/project", ProjectController.class, "/project");
+		routes.add("/bug", BugController.class, "/bug");
 
 	}
 
