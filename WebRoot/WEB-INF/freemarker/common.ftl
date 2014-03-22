@@ -45,8 +45,9 @@
       <a class="navbar-brand" href="${ctx}">Bugs Fly</a>
     </div>
     <nav class="collapse navbar-collapse" id="top-navbar" role="navigation">
-      <ul class="nav navbar-nav">
-        <li class="dropdown active">
+      <ul class="nav navbar-nav navbar-right">
+      	<li><p class="navbar-text text-primary"><strong>${session.user.ch_name}</strong></p></li>
+      	 <li class="dropdown active">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Bug列表 <b class="caret"></b></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="#">项目一</a></li>
@@ -55,22 +56,37 @@
               </ul>
         </li>
         <li>
-          <a href="#">个人信息</a>
+          <a href="../javascript">个人中心</a>
         </li>
         <li>
-          <a href="#">修改密码</a>
+        	<a data-toggle="modal" data-target="#div-adout-system" href="#">关于系统</a>
         </li>
         <li>
-          <a href="../javascript">管理</a>
+        	<a href="javascript:showConfirm({title:'退出Bugs Fly',content:'确定要退出系统吗？',ensure:function(){location='${ctx}/login/logout'}});">退出</a>
         </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="">退出</a></li>
-        <li><a href="">关于系统</a></li>
       </ul>
     </nav>
     </div>
  </div>
+<#--关于系统模态框-->
+<div class="modal fade" id="div-adout-system" tabindex="-1" role="dialog" aria-labelledby="about-system-title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title" id="about-system-title">关于系统</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+        	<img src="${ctx}/images/logo.jpg" width="50px" height="40px"/>
+        	<strong>Bugs Fly是一个简洁易用的bug跟踪系统，并且支持移动设备，在移动设备上可以完成所有操作，方便快捷。</strong>
+        </p>
+        <p><strong>源代码：</strong><a target="_blank" href="http://git.oschina.net/tai/bugs-fly">http://git.oschina.net/tai/bugs-fly</a></p>
+        <p><strong>建议反馈：</strong><a href="mailto:taijunfeng_it@sina.com">taijunfeng_it@sina.com</a></p>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </#macro>
 <#--页面的脚部，网站的声明信息和友情链接等-->
 <#macro footer>
