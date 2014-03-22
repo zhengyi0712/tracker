@@ -32,7 +32,7 @@
 <![endif]-->
 </#macro>
 <#--页面的顶部导航条，包含网站的logo和各个菜单-->
-<#macro topNavbar >
+<#macro topNavbar menu='none'>
 <div class="navbar navbar-default" role="navigation">
 	<div class="container">
     <div class="navbar-header">
@@ -46,24 +46,32 @@
     </div>
     <nav class="collapse navbar-collapse" id="top-navbar" role="navigation">
       <ul class="nav navbar-nav navbar-right">
-      	<li><p class="navbar-text text-primary"><strong>${session.user.ch_name}</strong></p></li>
-      	 <li class="dropdown active">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Bug列表 <b class="caret"></b></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#">项目一</a></li>
-                <li><a href="#">项目二</a></li>
-                <li><a href="#">项目四</a></li>
-              </ul>
-        </li>
-        <li>
-          <a href="../javascript">个人中心</a>
-        </li>
-        <li>
-        	<a data-toggle="modal" data-target="#div-adout-system" href="#">关于系统</a>
-        </li>
-        <li>
-        	<a href="javascript:showConfirm({title:'退出Bugs Fly',content:'确定要退出系统吗？',ensure:function(){location='${ctx}/login/logout'}});">退出</a>
-        </li>
+	  	<li><p class="navbar-text text-primary"><strong>${session.user.ch_name}</strong></p></li>
+	    <li class="dropdown <#if menu == 'bug'>active</#if>">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Bug列表 <b class="caret"></b></a>
+           <ul class="dropdown-menu" role="menu">
+             <#if session.user.projects?? && session.user.projects?size gte 1 >
+             	<#list session.user.projects as pj >
+             		<#if menu == 'bug' && pj.name == (project.name)! >
+             		<li class="active"><a href="#">${pj.name}</a></li>
+             		<#else>
+             		<li><a href="${ctx}/bug/${pj.id}">${pj.name}</a></li>
+             		</#if>
+             	</#list>
+             <#else>
+             	<li class="disabled"><a>您尚未参与任何项目</a></li>
+             </#if>
+           </ul>
+	    </li>
+	    <li <#if menu == 'user'>class="active"</#if>>
+	      <a href="${ctx}/user">个人中心</a>
+	    </li>
+	    <li>
+	       <a data-toggle="modal" data-target="#div-adout-system" href="#">关于系统</a>
+	    </li>
+	    <li>
+	       <a href="javascript:showConfirm({title:'退出Bugs Fly',content:'确定要退出系统吗？',ensure:function(){location='${ctx}/login/logout'}});">退出</a>
+	    </li>
       </ul>
     </nav>
     </div>
@@ -91,4 +99,35 @@
 <#--页面的脚部，网站的声明信息和友情链接等-->
 <#macro footer>
 
+</#macro>
+<#--分页显示,主要针对jfinal的page类 -->
+<#macro pagination page>
+	<#assign pn = page.pageNumber />
+	<#assign tp = page.totalPage />
+	<#--开始页-->
+	<#assign bp = (pn%5)?int+1 />
+	<#--结束页-->
+	<#if (bp+5) gt tp >
+		<#assign ep = (bp+5) />
+	<#else>
+		<#assign ep = tp />
+	</#if> 
+	<ul class="pagination pagination-lg">
+          <#if bp gt 1 >
+          <#--首页链接-->
+          <li><a href="?pn=1">&lt;&lt;</a></li>
+          <#--前5页链接-->
+          <li><a href="?pn=${bp-1}">&lt;</a></li>
+          </#if>
+          <#list bp..ep as p>
+          	<li <#if p == pn>class="active"</#if><a href="?pn=${p}">${p}</a></li>
+          </#list>
+          <#if ep lt tp >
+          <#--下5页链接-->
+ 		  <li><a href="?pn=${ep+1}">${ep+1}</a></li>         
+ 		  <li><a href="?pn=${tp}">${tp}</a></li>         
+          <#--最后一页链接-->
+          </#if>
+    </ul>
+	
 </#macro>
