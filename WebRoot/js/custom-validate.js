@@ -30,6 +30,11 @@ jQuery.validator.addMethod("password", function(val, el, params) {
 	var pattern = /^[\w!@#\$%\^&\*\(\)\+\-=`~\.]{6,16}$/;
 	return pattern.test(val);
 }, "密码必须是6-16位字符，由字母数字符号组成");
+jQuery.validator.addMethod("account", function(val, el, params) {
+	var pattern1 = /^1[3458]\d{9}$/;
+	var pattern2 = /^([a-zA-Z0-9_\.\-])+@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+	return this.optional(el) ||pattern1.test(val)||pattern2.test(val);
+},"请输入格式正确的手机号或邮箱");
 jQuery.validator.addMethod("mobile", function(val, el, params) {
 	var pattern = /^1[3458]\d{9}$/;
 	return this.optional(el) || pattern.test(val);
