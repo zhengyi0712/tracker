@@ -131,3 +131,15 @@
     </ul>
 	
 </#macro>
+<#macro personalCenterMenu menu='none'>
+	<div class="list-group">
+		<a class="list-group-item <#if menu == 'basic_info'>active</#if>" href="${ctx}/user">基本信息</a>		
+		<a class="list-group-item <#if menu == 'company'>active</#if>">所在公司</a>		
+		<a class="list-group-item <#if menu == 'project'>active</#if>">参与项目</a>		
+		<#if session.user.admin>
+		<a href="#" id="admin-menu" class="list-group-item <#if menu == 'admin_menu'>active</#if>" data-placement="right" data-toggle="popover" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">Click to toggle popover</a>
+		<script>$("#admin-menu").popover();</script>
+		<a class="list-group-item <#if menu == 'admin_menu'>active</#if>" href="${ctx}/user/adminMenu">系统管理</a>		
+		</#if>
+	</div>
+</#macro>

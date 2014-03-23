@@ -1,7 +1,5 @@
 package com.bugsfly.login;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpSession;
 
 import com.bugsfly.Webkeys;
@@ -11,7 +9,6 @@ import com.jfinal.aop.Before;
 import com.jfinal.aop.ClearInterceptor;
 import com.jfinal.aop.ClearLayer;
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
 public class LoginController extends Controller {
@@ -41,8 +38,7 @@ public class LoginController extends Controller {
 		}
 		
 		//更新登录时间
-		user.set("login_time", new Date());
-		Db.update("user", user);
+		userManager.updateLoginTime(user.getStr("id"));
 		
 		// 如果有引用链接，回到登录前的页面，没有就去首页
 		HttpSession session = getSession();

@@ -1,5 +1,6 @@
 package com.bugsfly.user;
 
+import java.util.Date;
 import java.util.List;
 
 import com.jfinal.plugin.activerecord.Db;
@@ -34,4 +35,13 @@ public class UserManager {
 
 		return user;
 	}
+	/**
+	 * 更新登录时间
+	 * @param id
+	 */
+	public void updateLoginTime(String id) {
+		Db.update("update user set login_time=? where id=?",new Date(),id);
+		
+	}
+
 }
