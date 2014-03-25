@@ -2,32 +2,18 @@
 Navicat MySQL Data Transfer
 
 Source Server         : mysql
-Source Server Version : 50525
+Source Server Version : 50612
 Source Host           : localhost:3306
 Source Database       : bugsfly
 
 Target Server Type    : MYSQL
-Target Server Version : 50525
+Target Server Version : 50612
 File Encoding         : 65001
 
-Date: 2014-03-24 23:15:16
+Date: 2014-03-25 10:45:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
-
--- ----------------------------
--- Table structure for application
--- ----------------------------
-DROP TABLE IF EXISTS `application`;
-CREATE TABLE `application` (
-  `id` varchar(36) NOT NULL,
-  `email` varchar(255) NOT NULL COMMENT '邮箱 ',
-  `applicant` varchar(15) NOT NULL COMMENT '申请人',
-  `explain` varchar(1500) NOT NULL COMMENT '说明',
-  `team_name` varchar(255) NOT NULL COMMENT '团队名称',
-  `status` varchar(20) NOT NULL COMMENT '状态',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='申请';
 
 -- ----------------------------
 -- Table structure for bug
@@ -35,7 +21,7 @@ CREATE TABLE `application` (
 DROP TABLE IF EXISTS `bug`;
 CREATE TABLE `bug` (
   `id` varchar(36) NOT NULL,
-  `project_id` varchar(36) DEFAULT NULL COMMENT '项目ID',
+  `project_id` varchar(36) NOT NULL COMMENT '项目ID',
   `bug_status` varchar(50) NOT NULL COMMENT 'bug的状态',
   `title` varchar(255) NOT NULL COMMENT '标题',
   `detail` longtext COMMENT '详情',
@@ -55,9 +41,9 @@ CREATE TABLE `bug` (
 DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
   `id` varchar(36) NOT NULL,
-  `name` varchar(255) DEFAULT NULL COMMENT '项目名称',
+  `name` varchar(255) NOT NULL COMMENT '项目名称',
   `team_id` varchar(36) NOT NULL COMMENT '公司ID',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `fk_project_team` (`team_id`),
   CONSTRAINT `fk_project_team` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
@@ -93,8 +79,8 @@ CREATE TABLE `sys_admin` (
 DROP TABLE IF EXISTS `team`;
 CREATE TABLE `team` (
   `id` varchar(36) NOT NULL,
-  `name` varchar(255) DEFAULT NULL COMMENT '团队名称',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `name` varchar(255) NOT NULL COMMENT '团队名称',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `uk_company_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='团队表';
@@ -126,8 +112,8 @@ CREATE TABLE `user` (
   `md5` varchar(50) NOT NULL COMMENT '密码的md5加密结果',
   `create_time` datetime NOT NULL COMMENT '用户创建时间',
   `login_time` datetime DEFAULT NULL COMMENT '用户登录时间',
-  `salt` varchar(50) DEFAULT NULL COMMENT 'md5加密盐值',
-  `disabled` tinyint(1) DEFAULT '0' COMMENT '禁用',
+  `salt` varchar(50) NOT NULL COMMENT 'md5加密盐值',
+  `disabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT '禁用',
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_user_email` (`email`),
   UNIQUE KEY `uk_user_mobile` (`mobile`)
