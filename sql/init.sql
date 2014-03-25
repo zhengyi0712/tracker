@@ -1,3 +1,6 @@
+--创建数据库
+create database bugsfly;
+use bugsfly;
 /*
 Navicat MySQL Data Transfer
 

@@ -14,7 +14,15 @@
 					<@common.personalCenterMenu 'basic_info'/>
 				</div>
 				<div class="col-md-10">
-				
+					<button class="btn btn-primary" type="button" data-toggle="tooltip-menu" data-target="#tooltipMenu">工具提示菜单演示</button>
+					<div class="tooltip-menu" id="tooltipMenu">
+						<a class="list-group-item" href="#">菜单一二三四五</a>
+						<a class="list-group-item" href="#">菜单一二三四五</a>
+						<a class="list-group-item" href="#">菜单一二三四五</a>
+						<a class="list-group-item" href="#">菜单一二三四五</a>
+						<a class="list-group-item" href="#">菜单一二三四五</a>
+						<a class="list-group-item" href="#">菜单一二三四五</a>
+					</div>
 				</div>
 			
 			</div>

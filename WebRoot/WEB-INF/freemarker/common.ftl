@@ -46,23 +46,8 @@
     </div>
     <nav class="collapse navbar-collapse" id="top-navbar" role="navigation">
       <ul class="nav navbar-nav navbar-right">
-	  	<li><p class="navbar-text text-primary"><strong>${session.user.ch_name}</strong></p></li>
-	    <li class="dropdown <#if menu == 'bug'>active</#if>">
-           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Bug列表 <b class="caret"></b></a>
-           <ul class="dropdown-menu" role="menu">
-             <#if session.user.projects?? && session.user.projects?size gte 1 >
-             	<#list session.user.projects as pj >
-             		<#if menu == 'bug' && pj.name == (project.name)! >
-             		<li class="active"><a href="#">${pj.name}</a></li>
-             		<#else>
-             		<li><a href="${ctx}/bug/${pj.id}">${pj.name}</a></li>
-             		</#if>
-             	</#list>
-             <#else>
-             	<li class="disabled"><a>您尚未参与任何项目</a></li>
-             </#if>
-           </ul>
-	    </li>
+	  	<li><strong class="navbar-text"><span class="glyphicon glyphicon-user"></span> ${session.user.ch_name}</strong></li>
+	  	<li <#if menu == 'bug'>class="active"</#if>><a href="${ctx}/bug">查看BUG</a></li>
 	    <li <#if menu == 'user'>class="active"</#if>>
 	      <a href="${ctx}/user">个人中心</a>
 	    </li>
@@ -132,14 +117,22 @@
 	
 </#macro>
 <#macro personalCenterMenu menu='none'>
+	
 	<div class="list-group">
 		<a class="list-group-item <#if menu == 'basic_info'>active</#if>" href="${ctx}/user">基本信息</a>		
-		<a class="list-group-item <#if menu == 'company'>active</#if>">所在公司</a>		
+		<a class="list-group-item <#if menu == 'company'>active</#if>">所在团队</a>		
 		<a class="list-group-item <#if menu == 'project'>active</#if>">参与项目</a>		
-		<#if session.user.admin>
-		<a href="#" id="admin-menu" class="list-group-item <#if menu == 'admin_menu'>active</#if>" data-placement="right" data-toggle="popover" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">Click to toggle popover</a>
-		<script>$("#admin-menu").popover();</script>
-		<a class="list-group-item <#if menu == 'admin_menu'>active</#if>" href="${ctx}/user/adminMenu">系统管理</a>		
+		<#if session.user.isAdmin>
+		<li class="list-group-item <#if menu == 'admin_menu'>active</#if>">
+			<a data-toggle="dropdown" href="#" id="sdfsd">系统管理</a>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="sdfsd">
+				<li role="presentation">菜单一</li>
+				<li role="presentation">菜单一</li>
+				<li role="presentation">菜单一</li>
+				<li role="presentation">菜单一</li>
+				<li role="presentation">菜单一</li>
+			</ul>		
+		</li>
 		</#if>
 	</div>
 </#macro>

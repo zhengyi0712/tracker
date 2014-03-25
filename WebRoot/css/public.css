@@ -4,3 +4,10 @@
 		width:auto !important;	
 	}
 }
+.tooltip-menu{
+	display:none;
+}
+.tooltip-inner .tooltip-menu{
+	margin: -2px -7px;
+	display:block;
+}

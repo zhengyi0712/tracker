@@ -117,3 +117,33 @@ function showModal(config){
 	$(modal).modal({backdrop:"static",keyboard:false});
 	window._modal_id = id;
 }
+/**
+ * 初始化激活工具提示菜单(tooltip-menu)
+ */
+$(function(){
+	$.each($("[data-toggle='tooltip-menu']"),function(){
+		var target = $(this).data("target");
+		if(!target){
+			target = $(this).attr("href");
+		}
+		if(!target){
+			return;
+		}
+		var targetObj = $(target);
+		if(targetObj.length==0){
+			return;
+		}
+		if(!targetObj.hasClass("tooltip-menu")){
+			return;
+		}
+		var title = "<div class='tooltip-menu'>"+targetObj.html()+"</div>";
+		$(this).tooltip({
+			html:true,
+			placement:$(this).data("placement"),
+			title:title,
+			trigger:"click",
+			container:$(this).data("container")
+		});
+		
+	});
+});
