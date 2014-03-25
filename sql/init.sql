@@ -1,4 +1,4 @@
---创建数据库
+-- 创建数据库
 create database bugsfly;
 use bugsfly;
 /*

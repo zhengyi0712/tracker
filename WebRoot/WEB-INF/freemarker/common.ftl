@@ -123,16 +123,12 @@
 		<a class="list-group-item <#if menu == 'company'>active</#if>">所在团队</a>		
 		<a class="list-group-item <#if menu == 'project'>active</#if>">参与项目</a>		
 		<#if session.user.isAdmin>
-		<li class="list-group-item <#if menu == 'admin_menu'>active</#if>">
-			<a data-toggle="dropdown" href="#" id="sdfsd">系统管理</a>
-			<ul class="dropdown-menu" role="menu" aria-labelledby="sdfsd">
-				<li role="presentation">菜单一</li>
-				<li role="presentation">菜单一</li>
-				<li role="presentation">菜单一</li>
-				<li role="presentation">菜单一</li>
-				<li role="presentation">菜单一</li>
-			</ul>		
-		</li>
+		<a class="list-group-item <#if menu == 'admin_menu'>active</#if>" data-toggle="tooltip-menu" data-container="body" data-placement="right" href="#adminMenu">系统管理</a>
+		<div class="tooltip-menu" id="adminMenu">
+			<a class="list-group-item" href="${ctx}/team/allTeams">所有团队</a>
+			<a class="list-group-item" href="${ctx}/project/allProjects">所有项目</a>
+			<a class="list-group-item" href="${ctx}/user/allUsers">所有用户</a>
+		</div>
 		</#if>
 	</div>
 </#macro>

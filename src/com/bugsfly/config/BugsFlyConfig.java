@@ -85,7 +85,7 @@ public class BugsFlyConfig extends JFinalConfig {
 		routes.add("/um", UMController.class);
 		routes.add("/login", LoginController.class, "/login");
 		routes.add("/user", UserController.class, "/user");
-		routes.add("/team", TeamController.class, "/company");
+		routes.add("/team", TeamController.class, "/team");
 		routes.add("/project", ProjectController.class, "/project");
 		routes.add("/bug", BugController.class, "/bug");
 

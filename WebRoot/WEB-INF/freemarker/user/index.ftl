@@ -14,17 +14,23 @@
 					<@common.personalCenterMenu 'basic_info'/>
 				</div>
 				<div class="col-md-10">
-					<button class="btn btn-primary" type="button" data-toggle="tooltip-menu" data-target="#tooltipMenu">工具提示菜单演示</button>
-					<div class="tooltip-menu" id="tooltipMenu">
-						<a class="list-group-item" href="#">菜单一二三四五</a>
-						<a class="list-group-item" href="#">菜单一二三四五</a>
-						<a class="list-group-item" href="#">菜单一二三四五</a>
-						<a class="list-group-item" href="#">菜单一二三四五</a>
-						<a class="list-group-item" href="#">菜单一二三四五</a>
-						<a class="list-group-item" href="#">菜单一二三四五</a>
-					</div>
+					<dl class="dl-horizontal">
+						<dt>姓名：</dt><dd>${session.user.ch_name}</dd>
+						<#if session.user.en_name??>
+						<dt>英文名：</dt><dd>${session.user.en_name}</dd>
+						</#if>
+						<#if session.user.email??>
+						<dt>邮箱：</dt><dd>${session.user.email}</dd>
+						</#if>
+						<#if session.user.mobile??>
+						<dt>手机：</dt><dd>${session.user.mobile}</dd>
+						</#if>
+						<dt>开户时间 ：</dt><dd>${session.user.create_time}</dd>
+						<#if session.user.login_time??>
+						<dt>上次登录 ：</dt><dd>${session.user.login_time}</dd>
+						</#if>
+					</dl>			
 				</div>
-			
 			</div>
 		</div>
 	</body>
