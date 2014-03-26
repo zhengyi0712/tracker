@@ -93,14 +93,14 @@
 		<a class="list-group-item <#if menu == 'company'>active</#if>">所在团队</a>		
 		<a class="list-group-item <#if menu == 'project'>active</#if>">参与项目</a>		
 		<#if session.user.isAdmin>
-		<a class="list-group-item <#if menu == 'admin_menu'>active</#if> hidden-xs" data-toggle="tooltip-menu" data-container="body" data-placement="right" href="#adminMenu">系统管理</a>
 		<a class="list-group-item <#if menu == 'admin_menu'>active</#if> visible-xs" data-toggle="tooltip-menu" data-container="body" data-placement="bottom" href="#adminMenu">系统管理</a>
+		<a class="list-group-item <#if menu == 'admin_menu'>active</#if> hidden-xs" data-toggle="tooltip-menu" data-container="body" data-placement="right" href="#adminMenu">系统管理</a>
 		</#if>
-		<#--管理员菜单-->
-		<div class="tooltip-menu" id="adminMenu">
-			<a class="list-group-item" href="${ctx}/team/allTeams">所有团队</a>
-			<a class="list-group-item" href="${ctx}/project/allProjects">所有项目</a>
-			<a class="list-group-item" href="${ctx}/user/allUsers">所有用户</a>
-		</div>
+	</div>
+	<#--管理员菜单-->
+	<div class="tooltip-menu" id="adminMenu">
+		<a class="list-group-item" href="${ctx}/team/allTeams">所有团队</a>
+		<a class="list-group-item" href="${ctx}/project/allProjects">所有项目</a>
+		<a class="list-group-item" href="${ctx}/user/allUsers">所有用户</a>
 	</div>
 </#macro>

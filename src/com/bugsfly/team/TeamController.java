@@ -1,20 +1,27 @@
 package com.bugsfly.team;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
 import com.bugsfly.Webkeys;
+import com.bugsfly.util.PaginationUtil;
 import com.bugsfly.util.RegExpUtil;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
 public class TeamController extends Controller {
-	private Record user = (Record) getSession().getAttribute(
-			Webkeys.SESSION_USER);
 
 	/**
 	 * 所有团队
 	 */
 	public void allTeams() {
+		Record user = (Record) getSession().getAttribute(Webkeys.SESSION_USER);
 
 		if (!user.getBoolean("isAdmin")) {
 			setAttr(Webkeys.REQUEST_MESSAGE, "抱歉您没有权限进行查看所有团队！");
@@ -40,22 +47,74 @@ public class TeamController extends Controller {
 		sql.append(" from team_user ");
 		sql.append(" group by team_id ");
 		sql.append(" ) uc on uc.team_id=t.id ");
-		// 查询条件，目前暂时没有，以后可能会加
+		// 查询条件
+		List<String> params = new ArrayList<String>();
+		String name = getPara("name");
+		if(StringKit.notBlank(name)){
+			sql.append(" where name like ? ");
+			params.add("%"+name+"%");
+			setAttr("name", name);
+		}
+		
 		// 排序
 		sql.append(" order by t.create_time desc ");
 
 		Page<Record> page = Db.paginate(pn, 10,
-				"select t.*,pc.p_count,uc.u_count ", sql.toString());
+				"select t.*,pc.p_count,uc.u_count ", sql.toString(),params.toArray());
 
 		setAttr("page", page);
+		setAttr("pageLink", PaginationUtil.generatePaginateHTML(getRequest(), page));
 		render("allTeams.ftl");
 	}
 
 	public void createTeam() {
 		render("createTeam.ftl");
 	}
-
+	/**
+	 * 保存团队
+	 */
 	public void saveTeamJson() {
+		Record user = (Record) getSession().getAttribute(Webkeys.SESSION_USER);
 
+		if (!user.getBoolean("isAdmin")) {
+			setAttr("msg", "权限不足，无法创建团队");
+			renderJson();
+			return;
+		}
+		String name = getPara("name");
+		if(StringKit.isBlank(name)){
+			setAttr("msg", "请填写团队名称");
+			renderJson();
+			return;
+		}
+		//团队名称可以是汉字字母数字组成，允许使用空格，首尾空格程序会给去掉
+		name = name.trim();
+		String regex = "^[a-zA-Z0-9\\s\\u4e00-\\u9fa5]{2,50}$";
+		if(!Pattern.matches(regex, name)){
+			setAttr("msg", "团队名称只能由汉字字母和数字组成，2-50字符，中间可以有空格。");
+			renderJson();
+			return;
+		}
+		
+		Record team = Db.findFirst("select * from team where name=? ",name);
+		if(team!=null){
+			setAttr("msg", "团队已经存在，请更换名称");
+			renderJson();
+			return;
+		}
+		
+		team = new Record();
+		team.set("id", UUID.randomUUID().toString().replace("-", ""));
+		team.set("name", name);
+		team.set("create_time", new Date());
+		
+		if(!Db.save("team", team)){
+			setAttr("msg", "创建团队失败");
+			renderJson();
+			return;
+		}
+		
+		setAttr("ok", true);
+		renderJson();
 	}
 }

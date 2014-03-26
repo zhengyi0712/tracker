@@ -147,3 +147,11 @@ $(function(){
 		
 	});
 });
+//为jQuery的ajax设置默认值
+jQuery.ajaxSetup({
+	error:function(){
+		showAlert({title:"操作失败",content:"系统繁忙，请刷新重试",after:function(){
+			$(".modal").modal("hide");
+		}});
+	}
+});
