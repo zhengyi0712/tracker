@@ -85,37 +85,7 @@
 <#macro footer>
 
 </#macro>
-<#--分页显示,主要针对jfinal的page类 -->
-<#macro pagination page>
-	<#assign pn = page.pageNumber />
-	<#assign tp = page.totalPage />
-	<#--开始页-->
-	<#assign bp = (pn%5)?int+1 />
-	<#--结束页-->
-	<#if (bp+5) gt tp >
-		<#assign ep = (bp+5) />
-	<#else>
-		<#assign ep = tp />
-	</#if> 
-	<ul class="pagination pagination-lg">
-          <#if bp gt 1 >
-          <#--首页链接-->
-          <li><a href="?pn=1">&lt;&lt;</a></li>
-          <#--前5页链接-->
-          <li><a href="?pn=${bp-1}">&lt;</a></li>
-          </#if>
-          <#list bp..ep as p>
-          	<li <#if p == pn>class="active"</#if><a href="?pn=${p}">${p}</a></li>
-          </#list>
-          <#if ep lt tp >
-          <#--下5页链接-->
- 		  <li><a href="?pn=${ep+1}">${ep+1}</a></li>         
- 		  <li><a href="?pn=${tp}">${tp}</a></li>         
-          <#--最后一页链接-->
-          </#if>
-    </ul>
-	
-</#macro>
+<#--个人中心菜单-->
 <#macro personalCenterMenu menu='none'>
 	
 	<div class="list-group">
@@ -123,12 +93,14 @@
 		<a class="list-group-item <#if menu == 'company'>active</#if>">所在团队</a>		
 		<a class="list-group-item <#if menu == 'project'>active</#if>">参与项目</a>		
 		<#if session.user.isAdmin>
-		<a class="list-group-item <#if menu == 'admin_menu'>active</#if>" data-toggle="tooltip-menu" data-container="body" data-placement="right" href="#adminMenu">系统管理</a>
+		<a class="list-group-item <#if menu == 'admin_menu'>active</#if> hidden-xs" data-toggle="tooltip-menu" data-container="body" data-placement="right" href="#adminMenu">系统管理</a>
+		<a class="list-group-item <#if menu == 'admin_menu'>active</#if> visible-xs" data-toggle="tooltip-menu" data-container="body" data-placement="bottom" href="#adminMenu">系统管理</a>
+		</#if>
+		<#--管理员菜单-->
 		<div class="tooltip-menu" id="adminMenu">
 			<a class="list-group-item" href="${ctx}/team/allTeams">所有团队</a>
 			<a class="list-group-item" href="${ctx}/project/allProjects">所有项目</a>
 			<a class="list-group-item" href="${ctx}/user/allUsers">所有用户</a>
 		</div>
-		</#if>
 	</div>
 </#macro>

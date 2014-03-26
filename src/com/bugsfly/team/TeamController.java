@@ -8,11 +8,14 @@ import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
 public class TeamController extends Controller {
+	private Record user = (Record) getSession().getAttribute(
+			Webkeys.SESSION_USER);
+
 	/**
 	 * 所有团队
 	 */
 	public void allTeams() {
-		Record user = (Record) getSession().getAttribute(Webkeys.SESSION_USER);
+
 		if (!user.getBoolean("isAdmin")) {
 			setAttr(Webkeys.REQUEST_MESSAGE, "抱歉您没有权限进行查看所有团队！");
 			renderError(403);
@@ -46,5 +49,13 @@ public class TeamController extends Controller {
 
 		setAttr("page", page);
 		render("allTeams.ftl");
+	}
+
+	public void createTeam() {
+		render("createTeam.ftl");
+	}
+
+	public void saveTeamJson() {
+
 	}
 }
