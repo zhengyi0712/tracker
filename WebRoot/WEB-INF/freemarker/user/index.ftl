@@ -8,7 +8,7 @@
 	<body>
 		<@common.topNavbar 'user'/>
 		<div class="container">
-			<h3 class="page-header">个人中心—基本信息</h3>
+			<h3 class="page-header">个人中心>基本信息</h3>
 			<div class="row">
 				<div class="col-md-2">
 					<@common.personalCenterMenu 'basic_info'/>

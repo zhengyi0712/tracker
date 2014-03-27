@@ -4,8 +4,9 @@ import java.util.Date;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import com.bugsfly.Webkeys;
-import com.bugsfly.util.MD5Util;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.ClearInterceptor;
 import com.jfinal.aop.ClearLayer;
@@ -37,7 +38,7 @@ public class LoginController extends Controller {
 		}
 
 		String salt = user.getStr("salt");
-		if (!user.getStr("md5").equals(MD5Util.encrypt(pwd + salt))) {
+		if (!user.getStr("md5").equals(DigestUtils.md5Hex(pwd + salt))) {
 			setAttr("msg", "帐号或者密码错误");
 			index();
 			return;
