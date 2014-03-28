@@ -11,3 +11,9 @@
 	margin: -2px -7px;
 	display:block;
 }
+.pager li.active a{
+	color: #fff;
+	cursor: default;
+	background-color: #428bca;
+	border-color: #428bca;
+}

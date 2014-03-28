@@ -13,7 +13,6 @@
 	        <#else>
 	        <p>抱歉，操作被禁止。</p>
 	        </#if>
-	        <p><a href="${ctx}" class="btn btn-primary"><span class="glyphicon glyphicon-home"></span> 回到主页 </a></p>
       	</div>
 	</body>
 </html>

@@ -55,6 +55,7 @@ public class LoginController extends Controller {
 				"select * from sys_admin where admin_id=?", user.getStr("id")) != null;
 		user.set("isAdmin", isAdmin);
 
+		
 		// 更新登录时间
 		Db.update("update user set login_time=? where id=?", new Date(),
 				user.getStr("id"));

@@ -28,7 +28,7 @@ public class PaginationUtil {
 		int tp = page.getTotalPage();// 总页数
 		// 如果一共只有一页，不用生成链接了
 		if (tp <= 1) {
-			return null;
+			return "";
 		}
 		// 根据request参数生成url
 		Map<String, String[]> parameterMap = req.getParameterMap();
@@ -77,11 +77,11 @@ public class PaginationUtil {
 		}
 		// 生成从ps到pe的分页链接
 		for (int i = ps; i <= pe; i++) {
-			html.append("<li><a href='" + url + i + "'");
-			if (pn == i) {
-				html.append(" class='active' ");
+			if(pn==i){
+				html.append("<li class='active'><a>"+ i + "</a></li>");
+			}else{
+				html.append("<li><a href='" + url + i + "'>" + i + "</a></li>");
 			}
-			html.append(">" + i + "</a></li>");
 		}
 		// 省略号
 		if (tp - pe > 1) {

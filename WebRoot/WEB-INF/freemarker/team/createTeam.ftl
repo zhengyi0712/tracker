@@ -24,7 +24,7 @@
 					});
 				return;
 			}
-			location.reload();
+			refresh();
 		}
 	});
 	return false;

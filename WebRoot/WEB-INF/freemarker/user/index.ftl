@@ -4,32 +4,31 @@
 	<head>
 		<@common.headerReference />
 		<title>个人中心</title>
+		<script type="text/javascript" src="${ctx}/js/user-index.js"></script>
 	</head>
 	<body>
 		<@common.topNavbar 'user'/>
 		<div class="container">
-			<h3 class="page-header">个人中心>基本信息</h3>
-			<div class="row">
+			<h3 class="page-header">个人中心&gt;<span id="user-index-title">基本信息</span></h3>
+			<div class="row" id="row-body">
 				<div class="col-md-2">
-					<@common.personalCenterMenu 'basic_info'/>
+					<div class="list-group" id="user-menu">
+						<a class="list-group-item active" href="${ctx}/user/userinfo">基本信息</a>		
+						<a class="list-group-item" href="${ctx}/team/myTeams">所在团队</a>		
+						<a class="list-group-item" href="${ctx}/project/myProjects">参与项目</a>		
+						<#if session.user.isAdmin>
+						<a class="list-group-item visible-xs" data-toggle="tooltip-menu" data-container="#row-body" data-placement="bottom" href="#adminMenu">系统管理</a>
+						<a class="list-group-item hidden-xs" data-toggle="tooltip-menu" data-container="#row-body" data-placement="right" href="#adminMenu">系统管理</a>
+						</#if>
+					</div>
+					<#--管理员菜单-->
+					<div class="tooltip-menu" id="adminMenu">
+						<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/team/allTeams">所有团队</a>
+						<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/project/allProjects">所有项目</a>
+						<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/user/allUsers">所有用户</a>
+					</div>
 				</div>
-				<div class="col-md-10">
-					<dl class="dl-horizontal">
-						<dt>姓名：</dt><dd>${session.user.ch_name}</dd>
-						<#if session.user.en_name??>
-						<dt>英文名：</dt><dd>${session.user.en_name}</dd>
-						</#if>
-						<#if session.user.email??>
-						<dt>邮箱：</dt><dd>${session.user.email}</dd>
-						</#if>
-						<#if session.user.mobile??>
-						<dt>手机：</dt><dd>${session.user.mobile}</dd>
-						</#if>
-						<dt>开户时间 ：</dt><dd>${session.user.create_time}</dd>
-						<#if session.user.login_time??>
-						<dt>上次登录 ：</dt><dd>${session.user.login_time}</dd>
-						</#if>
-					</dl>			
+				<div class="col-md-10" id="col-content">
 				</div>
 			</div>
 		</div>
