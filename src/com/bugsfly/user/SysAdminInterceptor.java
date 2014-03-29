@@ -18,7 +18,7 @@ public class SysAdminInterceptor implements Interceptor {
 
 		if (!user.getBoolean("isAdmin")) {
 			controller.setAttr(Webkeys.REQUEST_MESSAGE, "抱歉您没有权限进行此操作！");
-			controller.renderError(403);
+			controller.render(Webkeys.REQUEST_MESSAGE);
 			return;
 		}
 		ai.invoke();

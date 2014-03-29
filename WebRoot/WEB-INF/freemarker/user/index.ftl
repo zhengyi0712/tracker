@@ -9,7 +9,10 @@
 	<body>
 		<@common.topNavbar 'user'/>
 		<div class="container">
-			<h3 class="page-header">个人中心&gt;<span id="user-index-title">基本信息</span></h3>
+			<h3 class="page-header">
+				个人中心&gt;<span id="user-index-title">基本信息</span>
+				<button class="btn btn-info pull-right" onclick="refresh()"><span class="glyphicon glyphicon-refresh"></span>&nbsp;刷新</button>
+			</h3>
 			<div class="row" id="row-body">
 				<div class="col-md-2">
 					<div class="list-group" id="user-menu">
@@ -20,6 +23,7 @@
 						<a class="list-group-item visible-xs" data-toggle="tooltip-menu" data-container="#row-body" data-placement="bottom" href="#adminMenu">系统管理</a>
 						<a class="list-group-item hidden-xs" data-toggle="tooltip-menu" data-container="#row-body" data-placement="right" href="#adminMenu">系统管理</a>
 						</#if>
+						<a class="list-group-item">修改密码</a>
 					</div>
 					<#--管理员菜单-->
 					<div class="tooltip-menu" id="adminMenu">

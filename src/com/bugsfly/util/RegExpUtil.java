@@ -147,8 +147,8 @@ public class RegExpUtil {
 		if (username == null) {
 			return false;
 		}
-		String regex = "^[a-zA-Z\u4e00-\u9fa5][\u4e00-\u9fa5\\w]{2,24}$";
-		String str = username.replaceAll("[\u4e00-\u9fa5]", "XX");
+		String regex = "^[a-zA-Z\\u4e00-\\u9fa5][\\u4e00-\\u9fa5\\w]{2,24}$";
+		String str = username.replaceAll("[\\u4e00-\\u9fa5]", "XX");
 		return Pattern.matches(regex, username) && str.length() >= 5
 				&& str.length() <= 25;
 

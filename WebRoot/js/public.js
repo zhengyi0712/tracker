@@ -158,7 +158,8 @@ $.fn.tooltipMenu = function() {
 	$(this).bind("show.bs.tooltip", function() {
 		var menus = $("[data-toggle='tooltip-menu']:visible");
 		$.each(menus, function() {
-			if ($(this).data("bs.tooltip").tip().hasClass("in")) {
+			var bs_tooltip = $(this).data("bs.tooltip");
+			if (bs_tooltip && bs_tooltip.tip().hasClass("in")) {
 				$(this).tooltip("hide");
 			}
 		});
@@ -168,10 +169,12 @@ $.fn.tooltipMenu = function() {
 			"shown.bs.tooltip",
 			function() {
 				var $this = $(this);
-				$(this).data("bs.tooltip").tip().find(
-						"[data-dismiss='tooltip-menu']").click(function() {
-							$this.tooltip("hide");
-				});
+				if($(this).data("bs.tooltip")){
+					$(this).data("bs.tooltip").tip().find(
+					"[data-dismiss='tooltip-menu']").click(function() {
+						$this.tooltip("hide");
+					});
+				}
 			});
 
 };
@@ -180,7 +183,7 @@ jQuery.ajaxSetup({
 	error : function() {
 		showAlert({
 			title : "操作失败",
-			content : "系统繁忙，请刷新重试",
+			content : "请求发生错误，请尝试刷新后重试",
 			after : function() {
 				$(".modal").modal("hide");
 			}

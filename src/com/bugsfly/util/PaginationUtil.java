@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Page;
 
 /**
@@ -20,8 +21,7 @@ public class PaginationUtil {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static String generatePaginateHTML(HttpServletRequest req,
-			Page page) {
+	public static String generatePaginateHTML(HttpServletRequest req, Page page) {
 		String url = req.getRequestURI();
 		StringBuilder html = new StringBuilder();
 		int pn = page.getPageNumber();// 当前页码
@@ -77,9 +77,9 @@ public class PaginationUtil {
 		}
 		// 生成从ps到pe的分页链接
 		for (int i = ps; i <= pe; i++) {
-			if(pn==i){
-				html.append("<li class='active'><a>"+ i + "</a></li>");
-			}else{
+			if (pn == i) {
+				html.append("<li class='active'><a>" + i + "</a></li>");
+			} else {
 				html.append("<li><a href='" + url + i + "'>" + i + "</a></li>");
 			}
 		}
@@ -99,5 +99,14 @@ public class PaginationUtil {
 		html.append("</ul>");
 
 		return html.toString();
+	}
+
+	public static int getPageNumber(Controller controller) {
+		// 页码
+		int pn = 1;
+		if (RegExpUtil.checkPositiveInteger(controller.getPara("pn"))) {
+			pn = Integer.parseInt(controller.getPara("pn"));
+		}
+		return pn;
 	}
 }

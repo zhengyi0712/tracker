@@ -15,6 +15,7 @@ public class SysAdminJSONInterceptor implements Interceptor{
 				Webkeys.SESSION_USER);
 
 		if (!user.getBoolean("isAdmin")) {
+			controller.setAttr("ok", false);
 			controller.setAttr("msg", "权限不足，无法完成操作");
 			controller.renderJson();
 			return;

@@ -1,17 +1,15 @@
 package com.bugsfly.login;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.bugsfly.Webkeys;
+import com.bugsfly.user.UserManager;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.ClearInterceptor;
 import com.jfinal.aop.ClearLayer;
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
 public class LoginController extends Controller {
@@ -26,10 +24,9 @@ public class LoginController extends Controller {
 	public void login() {
 		String account = getPara("account");
 		String pwd = getPara("pwd");
+		UserManager userManager = new UserManager();
 
-		Record user = Db.findFirst(
-				"select * from user where mobile=? or email=?", account,
-				account);
+		Record user = userManager.getUserByAccount(account);
 
 		if (user == null) {
 			setAttr("msg", "帐号或者密码错误");
@@ -50,15 +47,8 @@ public class LoginController extends Controller {
 			return;
 		}
 
-		// 判断用户是否超级管理员
-		boolean isAdmin = Db.findFirst(
-				"select * from sys_admin where admin_id=?", user.getStr("id")) != null;
-		user.set("isAdmin", isAdmin);
-
-		
 		// 更新登录时间
-		Db.update("update user set login_time=? where id=?", new Date(),
-				user.getStr("id"));
+		userManager.updateLoginTime(user.getStr("id"));
 
 		// 如果有引用链接，回到登录前的页面，没有就去首页
 		HttpSession session = getSession();

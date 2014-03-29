@@ -34,12 +34,11 @@
 			<tr>
 				<td>${team_index+1}</td>							
 				<td class="dropdown">
-					<a data-toggle="tooltip-menu" data-placement="auto bottom" href="#team-menu-${team.id}" data-container="body">${team.name}</a>
+					<a data-toggle="tooltip-menu" data-placement="bottom" href="#team-menu-${team.id}" data-container="#col-content">${team.name}</a>
 					<ul class="tooltip-menu" id="team-menu-${team.id}">
-						<a class="list-group-item">菜单一</a>
-						<a class="list-group-item">菜单一</a>
-						<a class="list-group-item">菜单一</a>
-						<a class="list-group-item">菜单一</a>
+						<a class="list-group-item" href="${ctx}/user/usersOfTeam/${team.id}">查看团队成员</a>
+						<a class="list-group-item" href="${ctx}/project/projectsOfTeam/${team.id}">查看团队项目</a>
+						<a class="list-group-item" data-dismiss="tooltip-menu" href="#">取消</a>
 					</ul>
 				</td>							
 				<td>${team.create_time}</td>							
