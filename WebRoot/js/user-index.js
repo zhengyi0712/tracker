@@ -31,5 +31,5 @@ $(function() {
 function refresh() {
 	$("#col-content").load(currentUrl);
 	$(".modal").modal("hide");
-	$(".modal-backdrop").remove();
+	$(".modal-backdrop").hide();
 }

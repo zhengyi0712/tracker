@@ -48,7 +48,7 @@ jQuery.validator.addMethod("tel", function(val, el, params) {
 	var pattern2 = /^1[3458]\d{9}$/;
 	return this.optional(el) || pattern1.test(val) || pattern2.test(val);
 }, "请输入正确的手机号码或固话号码");
-jQuery.validator.addMethod("cnName", function(val, el, params) {
+jQuery.validator.addMethod("zhName", function(val, el, params) {
 	var pattern = /^[\u4e00-\u9fa5]{2,5}$/;
 	return this.optional(el) || pattern.test(val);
 },"中文名必须是2-5个汉字，不支持生僻字");

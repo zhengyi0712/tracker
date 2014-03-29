@@ -1,19 +1,16 @@
--- 创建数据库
-create database bugsfly;
-use bugsfly;
 /*
 Navicat MySQL Data Transfer
 
 Source Server         : mysql
-Source Server Version : 50612
+Source Server Version : 50525
 Source Host           : localhost:3306
 Source Database       : bugsfly
 
 Target Server Type    : MYSQL
-Target Server Version : 50612
+Target Server Version : 50525
 File Encoding         : 65001
 
-Date: 2014-03-25 10:45:48
+Date: 2014-03-29 23:34:33
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -108,7 +105,7 @@ CREATE TABLE `team_user` (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` varchar(36) NOT NULL,
-  `ch_name` varchar(15) NOT NULL COMMENT '中文名',
+  `zh_name` varchar(15) NOT NULL COMMENT '中文名',
   `en_name` varchar(50) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
   `mobile` varchar(15) DEFAULT NULL COMMENT '手机',

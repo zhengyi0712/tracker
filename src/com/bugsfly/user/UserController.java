@@ -45,7 +45,7 @@ public class UserController extends Controller {
 			return;
 		}
 
-		setAttr("role", role);
+		setAttr("userRole", role);
 		setAttr("team", team);
 
 		StringBuilder sql = new StringBuilder();
@@ -62,22 +62,75 @@ public class UserController extends Controller {
 		render("usersOfTeam.ftl");
 
 	}
+
 	/**
 	 * 为团队添加用户
 	 */
-	public void addUserToTeam(){
+	public void addUserToTeam() {
 		UserManager userManager = new UserManager();
 		try {
 			userManager.addUserOfTeam(this);
-			render("addUserOfTeam.ftl");
+			render("addUserToTeam.ftl");
 		} catch (BusinessException e) {
 			setAttr(Webkeys.REQUEST_MESSAGE, e.getMessage());
 			render(Webkeys.PROMPT_PAGE_PATH);
 		}
 	}
-	public void saveUserToTeam(){
-		
+
+	/**
+	 * 为团队保存用户
+	 */
+	public void saveUserToTeam() {
+		UserManager userManager = new UserManager();
+		try {
+			userManager.saveUserToTeam(this);
+			setAttr("ok", true);
+			renderJson();
+		} catch (BusinessException e) {
+			setAttr("ok", false);
+			setAttr("msg", e.getMessage());
+			renderJson();
+		}
 	}
-	
-	
+
+	/**
+	 * 为团队添加现有的用户
+	 */
+	public void addCurrentUserToTeam() {
+
+	}
+
+	/**
+	 * 把现有用户设置为团队成员
+	 */
+	public void setCurrentUserToTeam() {
+
+	}
+
+	/**
+	 * 检查邮箱是否存在
+	 */
+	public void checkEmailExist() {
+		String email = getPara("email");
+		UserManager userManager = new UserManager();
+		if (userManager.isEmailExist(email)) {
+			renderJson(false);
+		} else {
+			renderJson(true);
+		}
+	}
+
+	/**
+	 * 检查手机号是否存在
+	 */
+	public void checkMobileExist() {
+		String mobile = getPara("mobile");
+		UserManager userManager = new UserManager();
+		if (userManager.isMobileExist(mobile)) {
+			renderJson(false);
+		} else {
+			renderJson(true);
+		}
+	}
+
 }

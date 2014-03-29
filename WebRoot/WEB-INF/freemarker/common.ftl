@@ -46,7 +46,7 @@
     </div>
     <nav class="collapse navbar-collapse" id="top-navbar" role="navigation">
       <ul class="nav navbar-nav navbar-right">
-	  	<li><strong class="navbar-text"><span class="glyphicon glyphicon-user"></span> ${session.user.ch_name}</strong></li>
+	  	<li><strong class="navbar-text"><span class="glyphicon glyphicon-user"></span> ${session.user.zh_name}</strong></li>
 	  	<li <#if menu == 'bug'>class="active"</#if>><a href="${ctx}/bug">查看BUG</a></li>
 	    <li <#if menu == 'user'>class="active"</#if>>
 	      <a href="${ctx}/user">个人中心</a>

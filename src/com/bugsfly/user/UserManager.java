@@ -1,11 +1,17 @@
 package com.bugsfly.user;
 
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.UUID;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.bugsfly.Webkeys;
 import com.bugsfly.exception.BusinessException;
 import com.bugsfly.team.TeamManager;
+import com.bugsfly.util.RegExpUtil;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
 public class UserManager {
@@ -59,6 +65,108 @@ public class UserManager {
 			}
 		}
 		controller.setAttr("team", team);
+	}
+
+	/**
+	 * 保存用户 到团队
+	 * 
+	 * @param controller
+	 * @throws BusinessException
+	 */
+	public void saveUserToTeam(UserController controller)
+			throws BusinessException {
+		Record user = (Record) controller.getSession().getAttribute(
+				Webkeys.SESSION_USER);
+		final String teamId = controller.getPara("teamId");
+		String zhName = controller.getPara("zhName");
+		String enName = controller.getPara("enName");
+		String email = controller.getPara("email");
+		String mobile = controller.getPara("mobile");
+		final String teamRole = controller.getPara("role");
+
+		TeamManager teamManager = new TeamManager();
+		Record team = teamManager.getTeam(teamId);
+		if (team == null) {
+			throw new BusinessException("找不到相关的团队");
+		}
+
+		String userRole = teamManager.getRoleOfUser(teamId, user.getStr("id"));
+		if (!TeamManager.ROLE_ADMIN.equals(userRole)
+				&& !user.getBoolean("isAdmin")) {
+			throw new BusinessException("抱歉，您无权限进行此操作");
+		}
+
+		if (zhName == null || !zhName.matches("^[\u4e00-\u9fa5]{2,5}$")) {
+			throw new BusinessException("不正确的中文名");
+		}
+
+		if (enName == null || !enName.matches("^[a-zA-Z]{2,20}$")) {
+			throw new BusinessException("不正确的英文名");
+		}
+
+		if (!RegExpUtil.checkMail(email)) {
+			throw new BusinessException("邮箱填写不正确");
+		}
+
+		if (!RegExpUtil.checkMobile(mobile)) {
+			throw new BusinessException("手机号填写不正确");
+		}
+
+		if (!TeamManager.ROLE_ADMIN.equals(teamRole)
+				&& !TeamManager.ROLE_ORDINARY.equals(teamRole)) {
+			throw new BusinessException("未知的角色");
+		}
+
+		final Record newUser = new Record();
+		newUser.set("id", UUID.randomUUID().toString().replace("-", ""));
+		newUser.set("zh_name", zhName);
+		newUser.set("en_name", enName);
+		newUser.set("email", email);
+		newUser.set("mobile", mobile);
+		// 初始密码为手机号后六位
+		// 生成盐值
+		String salt = UUID.randomUUID().toString().replace("-", "");
+		newUser.set("salt", salt);
+		String pwd = mobile.substring(mobile.length() - 7);
+		newUser.set("md5", DigestUtils.md5Hex(pwd + salt));
+		//创建日期
+		newUser.set("create_time", new Date());
+
+		boolean succeed = Db.tx(new IAtom() {
+
+			@Override
+			public boolean run() throws SQLException {
+				UserManager manager = new UserManager();
+				if (manager.isEmailExist(newUser.getStr("email"))) {
+					return false;
+				}
+				if (manager.isMobileExist(newUser.getStr("mobile"))) {
+					return false;
+				}
+				Record team_user = new Record();
+				team_user.set("team_id", teamId);
+				team_user.set("user_id", newUser.getStr("id"));
+				System.err.println("user_id:"+newUser.getStr("id"));
+				team_user.set("role", teamRole);
+				boolean count1 = Db.save("user", newUser);
+				boolean count2 = Db.save("team_user", team_user);
+				return count1 && count2;
+			}
+		});
+		
+		if (!succeed) {
+			throw new BusinessException("添加成员失败");
+
+		}
+
+	}
+
+	public boolean isEmailExist(String email) {
+		return Db.findFirst("select 1 from user where email=?", email) != null;
+	}
+
+	public boolean isMobileExist(String mobile) {
+		return Db.findFirst("select 1 from user where mobile=?", mobile) != null;
 	}
 
 }
