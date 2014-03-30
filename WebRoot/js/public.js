@@ -156,13 +156,7 @@ $.fn.tooltipMenu = function() {
 	});
 	// 关闭其它的气泡菜单
 	$(this).bind("show.bs.tooltip", function() {
-		var menus = $("[data-toggle='tooltip-menu']:visible");
-		$.each(menus, function() {
-			var bs_tooltip = $(this).data("bs.tooltip");
-			if (bs_tooltip && bs_tooltip.tip().hasClass("in")) {
-				$(this).tooltip("hide");
-			}
-		});
+		$("[data-toggle='tooltip-menu']:visible").not($(this)[0]).tooltip("hide");
 	});
 	// 对于有属性data-dismiss为tooltip-menu的赋予关闭气泡菜单的功能
 	$(this).bind(
