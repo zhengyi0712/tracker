@@ -127,7 +127,7 @@ public class UserManager {
 		// 生成盐值
 		String salt = UUID.randomUUID().toString().replace("-", "");
 		newUser.set("salt", salt);
-		String pwd = mobile.substring(mobile.length() - 7);
+		String pwd = mobile.substring(mobile.length() - 6);
 		newUser.set("md5", DigestUtils.md5Hex(pwd + salt));
 		//创建日期
 		newUser.set("create_time", new Date());
