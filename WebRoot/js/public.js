@@ -129,48 +129,56 @@ function showModal(config) {
  * 添加工具提示菜单方法
  */
 $.fn.tooltipMenu = function() {
-	if (!$(this).data("toggle") || $(this).data("toggle") != "tooltip-menu") {
-		return;
-	}
-	var target = $(this).data("target");
-	if (!target) {
-		target = $(this).attr("href");
-	}
-	if (!target) {
-		return;
-	}
-	var targetObj = $(target);
-	if (targetObj.length == 0) {
-		return;
-	}
-	if (!targetObj.hasClass("tooltip-menu")) {
-		return;
-	}
-	var title = "<div class='tooltip-menu'>" + targetObj.html() + "</div>";
-	$(this).tooltip({
-		html : true,
-		placement : $(this).data("placement"),
-		title : title,
-		trigger : "click",
-		container : $(this).data("container")
-	});
-	// 关闭其它的气泡菜单
-	$(this).bind("show.bs.tooltip", function() {
-		$("[data-toggle='tooltip-menu']:visible").not($(this)[0]).tooltip("hide");
-	});
-	// 对于有属性data-dismiss为tooltip-menu的赋予关闭气泡菜单的功能
-	$(this).bind(
-			"shown.bs.tooltip",
+	$.each($(this),
 			function() {
-				var $this = $(this);
-				if($(this).data("bs.tooltip")){
-					$(this).data("bs.tooltip").tip().find(
-					"[data-dismiss='tooltip-menu']").click(function() {
-						$this.tooltip("hide");
-					});
+				if (!$(this).data("toggle")
+						|| $(this).data("toggle") != "tooltip-menu") {
+					return;
 				}
+				var target = $(this).data("target");
+				if (!target) {
+					target = $(this).attr("href");
+				}
+				if (!target) {
+					return;
+				}
+				var targetObj = $(target);
+				if (targetObj.length == 0) {
+					return;
+				}
+				if (!targetObj.hasClass("tooltip-menu")) {
+					return;
+				}
+				var title = "<div class='tooltip-menu'>" + targetObj.html()
+						+ "</div>";
+				$(this).tooltip({
+					html : true,
+					placement : $(this).data("placement"),
+					title : title,
+					trigger : "click",
+					container : $(this).data("container")
+				});
+				// 关闭其它的气泡菜单
+				$(this).bind(
+						"show.bs.tooltip",
+						function() {
+							$("[data-toggle='tooltip-menu']:visible").not(
+									$(this)[0]).tooltip("hide");
+						});
+				// 对于有属性data-dismiss为tooltip-menu的赋予关闭气泡菜单的功能
+				$(this).bind(
+						"shown.bs.tooltip",
+						function() {
+							var $this = $(this);
+							if ($(this).data("bs.tooltip")) {
+								$(this).data("bs.tooltip").tip().find(
+										"[data-dismiss='tooltip-menu']").click(
+										function() {
+											$this.tooltip("hide");
+										});
+							}
+						});
 			});
-
 };
 // 为jQuery的ajax设置默认值
 jQuery.ajaxSetup({

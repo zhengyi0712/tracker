@@ -25,8 +25,6 @@ $(function() {
 			});
 	// 触发牌选中状态的菜单的click事件
 	$("#user-menu a.active").trigger("click");
-	// 激活菜单按钮
-	$("[data-toggle='tooltip-menu']:visible").tooltipMenu();
 });
 function refresh() {
 	$("#col-content").load(currentUrl);
