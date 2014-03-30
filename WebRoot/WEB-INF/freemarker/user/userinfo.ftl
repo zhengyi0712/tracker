@@ -1,5 +1,5 @@
 <dl class="dl-horizontal">
-	<dt>中文名：</dt><dd>${session.user.ch_name}</dd>
+	<dt>中文名：</dt><dd>${session.user.zh_name}</dd>
 	<#if session.user.en_name??>
 		<dt>英文名：</dt><dd>${session.user.en_name}</dd>
 	</#if>

@@ -1,6 +1,6 @@
 INSERT INTO USER (
 	id,
-	ch_name,
+	zh_name,
 	en_name,
 	email,
 	mobile,

@@ -14,14 +14,17 @@
 <#if !list?? || list?size==0 >
 	<div class="alert alert-warning">团队还没有成员</div>
 <#else>
-	<table class="table table-responsive">
+	<div class="table-responsive">
+	<table class="table">
 		<thead>
 			<tr>
 				<th>中文名</th>		
-				<th>英文名</th>		
+				<th>英文名</th>
+				<th>角色</th>
+				<th>邮箱</th>		
+				<th>手机</th>		
 				<th>开户时间</th>		
 				<th>最后登录时间</th>		
-				<th>操作</th>		
 			</tr>
 		</thead>
 		<tbody>
@@ -29,11 +32,22 @@
 		<tr>
 			<td>${user.zh_name}</td>
 			<td>${user.en_name}</td>
+			<td>
+				<#if user.role == 'ordinary'>
+					普通用户
+				<#elseif user.role == 'admin'>
+					管理员
+				<#else>
+					未知
+				</#if>
+			</td>
+			<td>${user.email}</td>
+			<td>${user.mobile}</td>
 			<td>${user.create_time}</td>
 			<td>${user.login_time!}</td>
-			<td><a>移出</a></td>
 		</tr>		
 		</#list>
 		</tbody>
 	</table>
+	</div>
 </#if>

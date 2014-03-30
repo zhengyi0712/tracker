@@ -19,6 +19,7 @@
 <#if !page.list?? || page.list?size == 0 >
 	<div class="alert alert-warning">无可显示数据</div>
 <#else>
+	<div class="table-responsive">
 	<table class="table table-responsive">
 		<thead>
 			<tr>
@@ -48,6 +49,7 @@
 			</#list>
 		</tbody>
 	</table>
+	</div>
 	${pageLink}
 </#if>
 <script type="text/javascript">
