@@ -69,7 +69,7 @@ public class UserController extends Controller {
 	public void addUserToTeam() {
 		UserManager userManager = new UserManager();
 		try {
-			userManager.addUserOfTeam(this);
+			userManager.addUserToTeam(this);
 			render("addUserToTeam.ftl");
 		} catch (BusinessException e) {
 			setAttr(Webkeys.REQUEST_MESSAGE, e.getMessage());
@@ -97,14 +97,48 @@ public class UserController extends Controller {
 	 * 为团队添加现有的用户
 	 */
 	public void addCurrentUserToTeam() {
-
+		UserManager userManager = new UserManager();
+		try {
+			userManager.addUserToTeam(this);
+			render("addCurrentUserToTeam.ftl");
+		} catch (BusinessException e) {
+			setAttr(Webkeys.REQUEST_MESSAGE, e.getMessage());
+			render(Webkeys.PROMPT_PAGE_PATH);
+		}
 	}
 
 	/**
 	 * 把现有用户设置为团队成员
 	 */
 	public void setCurrentUserToTeam() {
+		UserManager userManager = new UserManager();
+		try {
+			userManager.setCurrentUserToTeam(this);
+			setAttr("ok", true);
+			renderJson();
+		} catch (BusinessException e) {
+			setAttr("ok", false);
+			setAttr("msg", e.getMessage());
+			renderJson();
+		}
+	}
 
+	/**
+	 * 搜索用户，返回json数据
+	 */
+	public void searchUserJSON() {
+		String key = getPara("key");
+		if (key == null) {
+			renderJson("{list:null}");
+			return;
+		}
+		String sql = " from user where disabled=0 and(zh_name like ? ";
+		sql += " or en_name like ? or mobile like ? or email like ?)";
+		key = "%" + key + "%";
+		Page<Record> page = Db.paginate(1, 5, "select * ", sql, key, key, key,
+				key);
+		setAttr("list", page.getList());
+		renderJson();
 	}
 
 	/**

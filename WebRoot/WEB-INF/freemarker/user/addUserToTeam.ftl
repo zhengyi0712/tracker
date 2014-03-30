@@ -30,21 +30,6 @@
 				<input type="text" class="form-control" name="mobile" id="mobile" required remote="${ctx}/user/checkMobileExist"/>
 			</div>		
 		</div>
-		<div class="form-group">
-			<label class="col-md-2 control-label">角色：</label>
-			<div class="col-md-9">
-				<div class="radio-inline">
-					<label>
-						<input type="radio" name="role" value="ordinary" checked="checked">普通成员
-					</label>
-				</div>
-				<div class="radio-inline">
-					<label>
-						<input type="radio" name="role" value="admin">管理员
-					</label>
-				</div>
-			</div>
-		</div>
 </div>
 <div class="modal-footer">
 	<button class="btn btn-default" data-dismiss="modal" type="button">取消</button>

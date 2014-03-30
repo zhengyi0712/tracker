@@ -35,6 +35,10 @@ public class UserManager {
 		return user;
 	}
 
+	public Record getUser(String id) {
+		return Db.findFirst("select * from user where id=?", id);
+	}
+
 	/**
 	 * 更新登录时间
 	 * 
@@ -45,7 +49,7 @@ public class UserManager {
 		Db.update(sql, new Date(), id);
 	}
 
-	public void addUserOfTeam(UserController controller)
+	public void addUserToTeam(UserController controller)
 			throws BusinessException {
 		Record user = (Record) controller.getSession().getAttribute(
 				Webkeys.SESSION_USER);
@@ -82,7 +86,6 @@ public class UserManager {
 		String enName = controller.getPara("enName");
 		String email = controller.getPara("email");
 		String mobile = controller.getPara("mobile");
-		final String teamRole = controller.getPara("role");
 
 		TeamManager teamManager = new TeamManager();
 		Record team = teamManager.getTeam(teamId);
@@ -112,11 +115,6 @@ public class UserManager {
 			throw new BusinessException("手机号填写不正确");
 		}
 
-		if (!TeamManager.ROLE_ADMIN.equals(teamRole)
-				&& !TeamManager.ROLE_ORDINARY.equals(teamRole)) {
-			throw new BusinessException("未知的角色");
-		}
-
 		final Record newUser = new Record();
 		newUser.set("id", UUID.randomUUID().toString().replace("-", ""));
 		newUser.set("zh_name", zhName);
@@ -129,7 +127,7 @@ public class UserManager {
 		newUser.set("salt", salt);
 		String pwd = mobile.substring(mobile.length() - 6);
 		newUser.set("md5", DigestUtils.md5Hex(pwd + salt));
-		//创建日期
+		// 创建日期
 		newUser.set("create_time", new Date());
 
 		boolean succeed = Db.tx(new IAtom() {
@@ -146,14 +144,14 @@ public class UserManager {
 				Record team_user = new Record();
 				team_user.set("team_id", teamId);
 				team_user.set("user_id", newUser.getStr("id"));
-				System.err.println("user_id:"+newUser.getStr("id"));
-				team_user.set("role", teamRole);
+				System.err.println("user_id:" + newUser.getStr("id"));
+				team_user.set("role", TeamManager.ROLE_ORDINARY);
 				boolean count1 = Db.save("user", newUser);
 				boolean count2 = Db.save("team_user", team_user);
 				return count1 && count2;
 			}
 		});
-		
+
 		if (!succeed) {
 			throw new BusinessException("添加成员失败");
 
@@ -169,4 +167,50 @@ public class UserManager {
 		return Db.findFirst("select 1 from user where mobile=?", mobile) != null;
 	}
 
+	/**
+	 * 将用户设置为团队成员
+	 * 
+	 * @param controller
+	 * @throws BusinessException
+	 */
+	public void setCurrentUserToTeam(UserController controller)
+			throws BusinessException {
+		String teamId = controller.getPara("teamId");
+		String userId = controller.getPara("userId");
+		TeamManager teamManager = new TeamManager();
+		Record team = teamManager.getTeam(teamId);
+		if (team == null) {
+			throw new BusinessException("找不到相关的团队");
+		}
+
+		Record addUser = getUser(userId);
+		if (addUser == null) {
+			throw new BusinessException("要添加的用户不存在");
+		}
+
+		Record user = (Record) controller.getSession().getAttribute(
+				Webkeys.SESSION_USER);
+		String teamRole = teamManager.getRoleOfUser(teamId, user.getStr("id"));
+		if (!TeamManager.ROLE_ADMIN.equals(teamRole)
+				&& !user.getBoolean("isAdmin")) {
+			throw new BusinessException("抱歉，您无权限进行此操作");
+		}
+
+		Record team_user = Db.findFirst(
+				"select * from team_user where team_id=? and user_id=?",
+				teamId, userId);
+		if (team_user != null) {
+			throw new BusinessException("该用户已经是团队成员了");
+		}
+
+		team_user = new Record();
+		team_user.set("team_id", teamId);
+		team_user.set("user_id", userId);
+		team_user.set("role", TeamManager.ROLE_ORDINARY);
+
+		if (!Db.save("team_user", team_user)) {
+			throw new BusinessException("保存失败");
+		}
+
+	}
 }

@@ -1,8 +1,11 @@
 <form class="form-inline" role="form">
 	<label class="control-label">团队：<span class="text-warning">${team.name}</span></label>
 	<label class="control-label">创建时间：<span class="text-warning">${team.create_time}</span></label>
-	<button class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addUserToTeam/${team.id}">
-		<span class="glyphicon glyphicon-plus"></span>&nbsp;为团队添加新的成员
+	<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addUserToTeam/${team.id}">
+		<span class="glyphicon glyphicon-plus"></span>&nbsp;创建新的团队成员
+	</button>
+	<button class="btn btn-warning btn-xs" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addCurrentUserToTeam/${team.id}">
+		<span class="glyphicon glyphicon-plus"></span>&nbsp;添加系统已有用户为团队成员
 	</button>
 </form>
 <#--添加用户 模态框-->
@@ -34,7 +37,7 @@
 			<td>${user.en_name}</td>
 			<td>
 				<#if user.role == 'ordinary'>
-					普通用户
+					普通成员
 				<#elseif user.role == 'admin'>
 					管理员
 				<#else>

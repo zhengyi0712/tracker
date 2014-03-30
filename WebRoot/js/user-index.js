@@ -10,7 +10,6 @@ $(function() {
 			"click",
 			"a",
 			function(e) {
-				e.preventDefault();
 				var href = $(this).attr("href");
 				if (!href || href.substr(0, 1) == "#"
 						|| href.indexOf("javascript:") != -1) {
@@ -20,6 +19,7 @@ $(function() {
 				if ($(this).data("toggle") || $(this).attr("role")) {
 					return;
 				}
+				e.preventDefault();
 				$("#col-content").load($(this).attr("href"));
 				currentUrl = href;
 			});
