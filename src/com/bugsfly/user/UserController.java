@@ -39,7 +39,7 @@ public class UserController extends Controller {
 		}
 
 		String role = teamManager.getRoleOfUser(teamId, user.getStr("id"));
-		if (role == null && !user.getBoolean("isAdmin")) {
+		if (TeamManager.ROLE_ADMIN.equals(role) && !user.getBoolean("isAdmin")) {
 			setAttr(Webkeys.REQUEST_MESSAGE, "抱歉，你无权限进行此操作");
 			render(Webkeys.PROMPT_PAGE_PATH);
 			return;
