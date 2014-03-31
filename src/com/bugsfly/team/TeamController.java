@@ -139,14 +139,14 @@ public class TeamController extends Controller {
 		sql.append(" group by team_id ");
 		sql.append(" ) uc on uc.team_id=t.id ");
 		// 用户关联子查询
-		sql.append(" left join team_user tu on tu.team_id=team ");
+		sql.append(" left join team_user tu on tu.team_id=t.id ");
 		List<String> params = new ArrayList<String>();
 		sql.append(" where tu.user_id=? ");
 		params.add(user.getStr("id"));
 		// 查询条件
 		String name = getPara("name");
 		if (StringKit.notBlank(name)) {
-			sql.append(" where name like ? ");
+			sql.append(" where t.name like ? ");
 			params.add("%" + name + "%");
 			setAttr("name", name);
 		}
@@ -157,18 +157,33 @@ public class TeamController extends Controller {
 		Page<Record> page = Db.paginate(pn, 10,
 				"select t.*,pc.p_count,uc.u_count,tu.role ", sql.toString(),
 				params.toArray());
-		setAttr("page", page);
+		setAttr("list", page.getList());
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
+		render("myTeams.ftl");
 	}
 
 	/**
 	 * 设置用户的角色
 	 */
 	public void setUserRole() {
-		TeamManager teamManager  = new TeamManager();
+		TeamManager teamManager = new TeamManager();
 		try {
 			teamManager.setUserRole(this);
+			setAttr("ok", true);
+		} catch (BusinessException e) {
+			setAttr("msg", e.getMessage());
+		}
+		renderJson();
+	}
+
+	/**
+	 * 踢人
+	 */
+	public void kickUser() {
+		TeamManager manager = new TeamManager();
+		try {
+			manager.kickUser(this);
 			setAttr("ok", true);
 		} catch (BusinessException e) {
 			setAttr("msg", e.getMessage());

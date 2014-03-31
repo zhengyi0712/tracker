@@ -47,7 +47,9 @@ public class TeamManager {
 
 		team_user.set("role", role);
 
-		if (!Db.update("team_user", team_user)) {
+		if (Db.update(
+				"update team_user set role=? where team_id=? and user_id=?",
+				role, teamId, userId) != 1) {
 			throw new BusinessException("保存失败");
 		}
 	}
@@ -78,9 +80,18 @@ public class TeamManager {
 			throw new BusinessException("抱歉，您无权限进行此操作");
 		}
 		// 判断要踢除的用户是否已经参与团队的项目
-		
-		// TODO 未完
-		Db.delete("team_user", team_user);
+		String sql = "select 1 from project_user pu ";
+		sql += " left join project p on p.id=pu.project_id ";
+		sql += " where pu.user_id=? and p.team_id=? ";
+		boolean isJoinInProject = Db.findFirst(sql, userId, teamId) != null;
+		if (isJoinInProject) {
+			throw new BusinessException("该成员已经参与了团队的项目，不能移出");
+		}
+		// 删除相关数据
+		if (Db.update("delete from team_user where team_id=? and user_id=?",
+				teamId, userId) != 1) {
+			throw new BusinessException("保存不成功");
+		}
 	}
 
 }

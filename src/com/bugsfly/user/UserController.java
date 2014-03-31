@@ -133,7 +133,8 @@ public class UserController extends Controller {
 			return;
 		}
 		String sql = " from user where disabled=0 and(zh_name like ? ";
-		sql += " or en_name like ? or mobile like ? or email like ?)";
+		sql += " or en_name like ? or mobile like ? or email like ?) ";
+		sql += " order by login_time ";
 		key = "%" + key + "%";
 		Page<Record> page = Db.paginate(1, 5, "select * ", sql, key, key, key,
 				key);
