@@ -1,12 +1,15 @@
+<#assign isAdmin = (role == 'admin' || session.user.isAdmin)/>
 <form class="form-inline" role="form">
 	<label class="control-label">团队：<span class="text-warning">${team.name}</span></label>
 	<label class="control-label">创建时间：<span class="text-warning">${team.create_time}</span></label>
-	<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addUserToTeam/${team.id}">
-		<span class="glyphicon glyphicon-plus"></span>&nbsp;创建新的团队成员
-	</button>
-	<button class="btn btn-warning btn-xs" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addCurrentUserToTeam/${team.id}">
-		<span class="glyphicon glyphicon-plus"></span>&nbsp;添加系统已有用户为团队成员
-	</button>
+	<#if isAdmin>
+		<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addUserToTeam/${team.id}">
+			<span class="glyphicon glyphicon-plus"></span>&nbsp;创建新的团队成员
+		</button>
+		<button class="btn btn-warning btn-xs" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addCurrentUserToTeam/${team.id}">
+			<span class="glyphicon glyphicon-plus"></span>&nbsp;添加系统已有用户为团队成员
+		</button>
+	</#if>
 </form>
 <#--添加用户 模态框-->
 <div class="modal fade" id="modal-add-user" role="dialog" aria-hidden="true">
@@ -33,7 +36,9 @@
 		<tbody>
 		<#list list as user >
 		<tr>
-			<td>${user.zh_name}</td>
+			<td>
+				<a href="#">${user.zh_name}</a>
+			</td>
 			<td>${user.en_name}</td>
 			<td>
 				<#if user.role == 'ordinary'>

@@ -45,7 +45,7 @@ public class UserController extends Controller {
 			return;
 		}
 
-		setAttr("userRole", role);
+		setAttr("role", role);
 		setAttr("team", team);
 
 		StringBuilder sql = new StringBuilder();

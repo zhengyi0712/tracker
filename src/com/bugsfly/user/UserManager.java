@@ -36,7 +36,7 @@ public class UserManager {
 	}
 
 	public Record getUser(String id) {
-		return Db.findFirst("select * from user where id=?", id);
+		return Db.findById("user", id);
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import com.bugsfly.Webkeys;
+import com.bugsfly.exception.BusinessException;
 import com.bugsfly.user.SysAdminInterceptor;
 import com.bugsfly.user.SysAdminJSONInterceptor;
 import com.bugsfly.util.PaginationUtil;
@@ -75,7 +76,7 @@ public class TeamController extends Controller {
 	 */
 	@Before(SysAdminJSONInterceptor.class)
 	public void saveTeamJson() {
-		
+
 		String name = getPara("name");
 		if (StringKit.isBlank(name)) {
 			setAttr("msg", "请填写团队名称");
@@ -159,5 +160,19 @@ public class TeamController extends Controller {
 		setAttr("page", page);
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
+	}
+
+	/**
+	 * 设置用户的角色
+	 */
+	public void setUserRole() {
+		TeamManager teamManager  = new TeamManager();
+		try {
+			teamManager.setUserRole(this);
+			setAttr("ok", true);
+		} catch (BusinessException e) {
+			setAttr("msg", e.getMessage());
+		}
+		renderJson();
 	}
 }
