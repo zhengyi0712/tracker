@@ -182,12 +182,20 @@ $.fn.tooltipMenu = function() {
 };
 // 为jQuery的ajax设置默认值
 jQuery.ajaxSetup({
-	error : function() {
+	error : function(xhr,textStatus,errorThrown) {
+		var content = "请求发生错误，请尝试刷新后重试";
+		var isUnLogin = xhr.getResponseHeader("login");
+		if(isUnLogin){
+			content = "登录超时，请点击确定后重新登录";
+		}
 		showAlert({
 			title : "操作失败",
-			content : "请求发生错误，请尝试刷新后重试",
+			content : content,
 			after : function() {
 				$(".modal").modal("hide");
+				if(isUnLogin){
+					location.reload();
+				}
 			}
 		});
 	}

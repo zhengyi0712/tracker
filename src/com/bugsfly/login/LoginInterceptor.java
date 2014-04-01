@@ -27,6 +27,7 @@ public class LoginInterceptor implements Interceptor {
 		if (request.getHeader("x-requested-with") != null) {
 			session.setAttribute(Webkeys.SESSION_REFERER,
 					request.getHeader("Referer"));
+			ai.getController().getResponse().setHeader("login", "unLogin");
 			ai.getController().getResponse().setStatus(401);
 			return;
 		} else if ("POST".equals(request.getMethod())) {
