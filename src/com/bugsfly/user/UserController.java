@@ -4,6 +4,7 @@ import com.bugsfly.Webkeys;
 import com.bugsfly.exception.BusinessException;
 import com.bugsfly.team.TeamManager;
 import com.bugsfly.util.PaginationUtil;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
@@ -39,7 +40,8 @@ public class UserController extends Controller {
 		}
 
 		String role = teamManager.getRoleOfUser(teamId, user.getStr("id"));
-		if (TeamManager.ROLE_ADMIN.equals(role) && !user.getBoolean("isAdmin")) {
+		// 如果不是团队成员并且也不是系统管理员，禁止
+		if (role == null && !user.getBoolean("isAdmin")) {
 			setAttr(Webkeys.REQUEST_MESSAGE, "抱歉，你无权限进行此操作");
 			render(Webkeys.PROMPT_PAGE_PATH);
 			return;
@@ -168,4 +170,11 @@ public class UserController extends Controller {
 		}
 	}
 
+	/**
+	 * 所有用户
+	 */
+	@Before(SysAdminInterceptor.class)
+	public void allUsers() {
+
+	}
 }
