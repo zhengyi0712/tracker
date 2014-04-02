@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import com.bugsfly.Webkeys;
 import com.bugsfly.exception.BusinessException;
 import com.bugsfly.team.TeamManager;
 import com.bugsfly.util.RegExpUtil;
@@ -49,28 +48,6 @@ public class UserManager {
 		Db.update(sql, new Date(), id);
 	}
 
-	public void addUserToTeam(UserController controller)
-			throws BusinessException {
-		Record user = (Record) controller.getSession().getAttribute(
-				Webkeys.SESSION_USER);
-		String teamId = controller.getPara();
-		TeamManager teamManager = new TeamManager();
-
-		Record team = teamManager.getTeam(teamId);
-		if (team == null) {
-			throw new BusinessException("不存在的团队");
-		}
-
-		// 如果不是管理员，要判断角色
-		if (!user.getBoolean("isAdmin")) {
-			String role = teamManager.getRoleOfUser(teamId, user.getStr("id"));
-			if (!TeamManager.ROLE_ADMIN.equals(role)) {
-				throw new BusinessException("抱歉，您滑 权限进行此操作");
-			}
-		}
-		controller.setAttr("team", team);
-	}
-
 	/**
 	 * 保存用户 到团队
 	 * 
@@ -79,23 +56,18 @@ public class UserManager {
 	 */
 	public void saveUserToTeam(UserController controller)
 			throws BusinessException {
-		Record user = (Record) controller.getSession().getAttribute(
-				Webkeys.SESSION_USER);
 		final String teamId = controller.getPara("teamId");
 		String zhName = controller.getPara("zhName");
 		String enName = controller.getPara("enName");
 		String email = controller.getPara("email");
 		String mobile = controller.getPara("mobile");
 
-		TeamManager teamManager = new TeamManager();
-		Record team = teamManager.getTeam(teamId);
+		Record team = TeamManager.getTeam(teamId);
 		if (team == null) {
 			throw new BusinessException("找不到相关的团队");
 		}
 
-		String userRole = teamManager.getRoleOfUser(teamId, user.getStr("id"));
-		if (!TeamManager.ROLE_ADMIN.equals(userRole)
-				&& !user.getBoolean("isAdmin")) {
+		if (!TeamManager.checkAdminPrivilege(controller, teamId)) {
 			throw new BusinessException("抱歉，您无权限进行此操作");
 		}
 
@@ -134,17 +106,9 @@ public class UserManager {
 
 			@Override
 			public boolean run() throws SQLException {
-				UserManager manager = new UserManager();
-				if (manager.isEmailExist(newUser.getStr("email"))) {
-					return false;
-				}
-				if (manager.isMobileExist(newUser.getStr("mobile"))) {
-					return false;
-				}
 				Record team_user = new Record();
 				team_user.set("team_id", teamId);
 				team_user.set("user_id", newUser.getStr("id"));
-				System.err.println("user_id:" + newUser.getStr("id"));
 				team_user.set("role", TeamManager.ROLE_ORDINARY);
 				boolean count1 = Db.save("user", newUser);
 				boolean count2 = Db.save("team_user", team_user);
@@ -159,13 +123,6 @@ public class UserManager {
 
 	}
 
-	public boolean isEmailExist(String email) {
-		return Db.findFirst("select 1 from user where email=?", email) != null;
-	}
-
-	public boolean isMobileExist(String mobile) {
-		return Db.findFirst("select 1 from user where mobile=?", mobile) != null;
-	}
 
 	/**
 	 * 将用户设置为团队成员
@@ -177,8 +134,7 @@ public class UserManager {
 			throws BusinessException {
 		String teamId = controller.getPara("teamId");
 		String userId = controller.getPara("userId");
-		TeamManager teamManager = new TeamManager();
-		Record team = teamManager.getTeam(teamId);
+		Record team = TeamManager.getTeam(teamId);
 		if (team == null) {
 			throw new BusinessException("找不到相关的团队");
 		}
@@ -188,11 +144,7 @@ public class UserManager {
 			throw new BusinessException("要添加的用户不存在");
 		}
 
-		Record user = (Record) controller.getSession().getAttribute(
-				Webkeys.SESSION_USER);
-		String teamRole = teamManager.getRoleOfUser(teamId, user.getStr("id"));
-		if (!TeamManager.ROLE_ADMIN.equals(teamRole)
-				&& !user.getBoolean("isAdmin")) {
+		if (!TeamManager.checkAdminPrivilege(controller, teamId)) {
 			throw new BusinessException("抱歉，您无权限进行此操作");
 		}
 
@@ -213,4 +165,5 @@ public class UserManager {
 		}
 
 	}
+
 }

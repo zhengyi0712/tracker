@@ -1,7 +1,6 @@
 <#assign isAdmin = (role! == 'admin' || session.user.isAdmin)/>
-<form class="form-inline" role="form">
-	<label class="control-label">团队：<span class="text-warning">${team.name}</span></label>
-	<label class="control-label">创建时间：<span class="text-warning">${team.create_time}</span></label>
+<p>
+	查看团队<strong class="text-danger">${team.name}</strong>的成员
 	<#if isAdmin>
 		<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#modal-add-user" data-remote="${ctx}/user/addUserToTeam/${team.id}">
 			<span class="glyphicon glyphicon-plus"></span>&nbsp;创建新的团队成员
@@ -10,7 +9,7 @@
 			<span class="glyphicon glyphicon-plus"></span>&nbsp;添加系统已有用户为团队成员
 		</button>
 	</#if>
-</form>
+</p>
 <#--添加用户 模态框-->
 <div class="modal fade" id="modal-add-user" role="dialog" aria-hidden="true">
 	<div class="modal-dialog">
@@ -94,7 +93,7 @@
 	}
 	function setRole(userId,role){
 		var teamId = "${team.id}";
-		$.post("${ctx}/team/setUserRole","teamId="+teamId+"&userId="+userId+"&role="+role
+		$.post("${ctx}/team/setRole","teamId="+teamId+"&userId="+userId+"&role="+role
 			,function(json){
 			if(!json.ok){
 				showAlert(json.msg);

@@ -3,7 +3,7 @@ package com.bugsfly.login;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.bugsfly.Webkeys;
+import com.bugsfly.common.Webkeys;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.kit.StringKit;

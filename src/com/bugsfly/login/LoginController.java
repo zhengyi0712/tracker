@@ -4,7 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import com.bugsfly.Webkeys;
+import com.bugsfly.common.Webkeys;
 import com.bugsfly.user.UserManager;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.ClearInterceptor;

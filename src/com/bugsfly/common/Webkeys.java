@@ -1,4 +1,4 @@
-package com.bugsfly;
+package com.bugsfly.common;
 
 /**
  * 放置共用的常量

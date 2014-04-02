@@ -1,4 +1,4 @@
-package com.bugsfly.config;
+package com.bugsfly.common;
 
 import java.io.File;
 import java.util.Properties;
@@ -28,7 +28,7 @@ import com.jfinal.render.FreeMarkerRender;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateModelException;
 
-public class BugsFlyConfig extends JFinalConfig {
+public class Config extends JFinalConfig {
 
 	@Override
 	public void configConstant(Constants constants) {

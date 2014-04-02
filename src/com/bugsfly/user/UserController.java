@@ -1,6 +1,6 @@
 package com.bugsfly.user;
 
-import com.bugsfly.Webkeys;
+import com.bugsfly.common.Webkeys;
 import com.bugsfly.exception.BusinessException;
 import com.bugsfly.team.TeamManager;
 import com.bugsfly.util.PaginationUtil;
@@ -29,9 +29,8 @@ public class UserController extends Controller {
 	public void usersOfTeam() {
 		Record user = (Record) getSession().getAttribute(Webkeys.SESSION_USER);
 
-		TeamManager teamManager = new TeamManager();
 		String teamId = getPara();
-		Record team = teamManager.getTeam(teamId);
+		Record team = TeamManager.getTeam(teamId);
 
 		if (team == null) {
 			setAttr(Webkeys.REQUEST_MESSAGE, "要查看的团队不存在");
@@ -39,7 +38,7 @@ public class UserController extends Controller {
 			return;
 		}
 
-		String role = teamManager.getRoleOfUser(teamId, user.getStr("id"));
+		String role = TeamManager.getRole(teamId, user.getStr("id"));
 		// 如果不是团队成员并且也不是系统管理员，禁止
 		if (role == null && !user.getBoolean("isAdmin")) {
 			setAttr(Webkeys.REQUEST_MESSAGE, "抱歉，你无权限进行此操作");
@@ -69,14 +68,9 @@ public class UserController extends Controller {
 	 * 为团队添加用户
 	 */
 	public void addUserToTeam() {
-		UserManager userManager = new UserManager();
-		try {
-			userManager.addUserToTeam(this);
-			render("addUserToTeam.ftl");
-		} catch (BusinessException e) {
-			setAttr(Webkeys.REQUEST_MESSAGE, e.getMessage());
-			render(Webkeys.PROMPT_PAGE_PATH);
-		}
+		String teamId = getPara();
+		setAttr("team", TeamManager.getTeam(teamId));
+		render("addUserToTeam.ftl");
 	}
 
 	/**
@@ -87,26 +81,19 @@ public class UserController extends Controller {
 		try {
 			userManager.saveUserToTeam(this);
 			setAttr("ok", true);
-			renderJson();
 		} catch (BusinessException e) {
-			setAttr("ok", false);
 			setAttr("msg", e.getMessage());
-			renderJson();
 		}
+		renderJson();
 	}
 
 	/**
 	 * 为团队添加现有的用户
 	 */
 	public void addCurrentUserToTeam() {
-		UserManager userManager = new UserManager();
-		try {
-			userManager.addUserToTeam(this);
-			render("addCurrentUserToTeam.ftl");
-		} catch (BusinessException e) {
-			setAttr(Webkeys.REQUEST_MESSAGE, e.getMessage());
-			render(Webkeys.PROMPT_PAGE_PATH);
-		}
+		String teamId = getPara();
+		setAttr("team", TeamManager.getTeam(teamId));
+		render("addCurrentUserToTeam.ftl");
 	}
 
 	/**
@@ -149,8 +136,9 @@ public class UserController extends Controller {
 	 */
 	public void checkEmailExist() {
 		String email = getPara("email");
-		UserManager userManager = new UserManager();
-		if (userManager.isEmailExist(email)) {
+		boolean isExist = Db.findFirst("select 1 from user where email=?",
+				email) != null;
+		if (isExist) {
 			renderJson(false);
 		} else {
 			renderJson(true);
@@ -162,8 +150,9 @@ public class UserController extends Controller {
 	 */
 	public void checkMobileExist() {
 		String mobile = getPara("mobile");
-		UserManager userManager = new UserManager();
-		if (userManager.isMobileExist(mobile)) {
+		boolean isExist = Db.findFirst("select 1 from user where mobile=?",
+				mobile) != null;
+		if (isExist) {
 			renderJson(false);
 		} else {
 			renderJson(true);

@@ -1,8 +1,15 @@
 package com.bugsfly.team;
 
-import com.bugsfly.Webkeys;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.bugsfly.common.Webkeys;
 import com.bugsfly.exception.BusinessException;
+import com.bugsfly.util.PaginationUtil;
+import com.jfinal.core.Controller;
+import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
 public class TeamManager {
@@ -10,20 +17,23 @@ public class TeamManager {
 	public final static String ROLE_ADMIN = "admin";
 	public final static String ROLE_ORDINARY = "ordinary";
 
-	public Record getTeam(String id) {
+	public static Record getTeam(String id) {
 		return Db.findById("team", id);
 	}
 
-	public String getRoleOfUser(String teamId, String userId) {
+	public static String getRole(String teamId, String userId) {
 		return Db.queryStr(
 				"select role from team_user where team_id=? and user_id=?",
 				teamId, userId);
 	}
 
-	public void setUserRole(TeamController controller) throws BusinessException {
-
-		Record user = (Record) controller.getSession().getAttribute(
-				Webkeys.SESSION_USER);
+	/**
+	 * 设置角色
+	 * 
+	 * @param controller
+	 * @throws BusinessException
+	 */
+	public void setRole(TeamController controller) throws BusinessException {
 
 		String teamId = controller.getPara("teamId");
 		String userId = controller.getPara("userId");
@@ -39,9 +49,7 @@ public class TeamManager {
 			throw new BusinessException("不存在的团队或用户");
 		}
 
-		if (!TeamManager.ROLE_ADMIN.equals(getRoleOfUser(teamId,
-				user.getStr("id")))
-				&& !user.getBoolean("isAdmin")) {
+		if (!checkAdminPrivilege(controller, teamId)) {
 			throw new BusinessException("抱歉，您无权限进行此操作");
 		}
 
@@ -60,9 +68,8 @@ public class TeamManager {
 	 * @param controller
 	 * @throws BusinessException
 	 */
-	public void kickUser(TeamController controller) throws BusinessException {
-		Record user = (Record) controller.getSession().getAttribute(
-				Webkeys.SESSION_USER);
+	public static void kickUser(TeamController controller)
+			throws BusinessException {
 		String teamId = controller.getPara("teamId");
 		String userId = controller.getPara("userId");
 
@@ -74,11 +81,14 @@ public class TeamManager {
 		}
 
 		// 判断权限，必须要是团队管理员或者系统管理员
-		if (!TeamManager.ROLE_ADMIN.equals(getRoleOfUser(teamId,
-				user.getStr("id")))
-				&& !user.getBoolean("isAdmin")) {
+		if (!checkAdminPrivilege(controller, teamId)) {
 			throw new BusinessException("抱歉，您无权限进行此操作");
 		}
+
+		if (ROLE_ADMIN.equals(getRole(teamId, userId))) {
+			throw new BusinessException("团队的管理员不能被移出");
+		}
+
 		// 判断要踢除的用户是否已经参与团队的项目
 		String sql = "select 1 from project_user pu ";
 		sql += " left join project p on p.id=pu.project_id ";
@@ -94,4 +104,77 @@ public class TeamManager {
 		}
 	}
 
+	/**
+	 * 检查管理员权限
+	 * 
+	 * @param controller
+	 * @param teamId
+	 * @return
+	 */
+	public static boolean checkAdminPrivilege(Controller controller, String teamId) {
+		Record user = (Record) controller.getSession()
+				.getAttribute(Webkeys.SESSION_USER);
+		if (user.getBoolean("isAdmin")) {
+			return true;
+		}
+		String role = getRole(teamId, user.getStr("id"));
+		if (ROLE_ADMIN.equals(role)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 团队列表
+	 * 
+	 * @param controller
+	 * @param userId
+	 * @return
+	 */
+	public static Page<Record> getTeamList(TeamController controller,
+			String userId) {
+		StringBuilder sql = new StringBuilder();
+		List<String> params = new ArrayList<String>();
+		sql.append(" from team t ");
+		// 项目统计
+		sql.append(" left join (  ");
+		sql.append(" select team_id,count(*) p_count ");
+		sql.append(" from project ");
+		sql.append(" group by team_id ");
+		sql.append(" ) pc on pc.team_id=t.id ");
+		// 用户统计
+		sql.append(" left join ( ");
+		sql.append(" select team_id,count(*) u_count ");
+		sql.append(" from team_user ");
+		sql.append(" group by team_id ");
+		sql.append(" ) uc on uc.team_id=t.id ");
+		// 用户关联
+		if (userId != null) {
+			sql.append(" left join team_user tu on tu.team_id=t.id ");
+		}
+		sql.append(" where 1=1 ");
+		if (userId != null) {
+			sql.append(" and tu.user_id=? ");
+			params.add(userId);
+		}
+		// 查询条件
+		String name = controller.getPara("name");
+		if (StringKit.notBlank(name)) {
+			sql.append(" and t.name like ? ");
+			params.add("%" + name + "%");
+		}
+
+		// 排序
+		sql.append(" order by t.create_time desc ");
+
+		String selectSql = "select t.*,pc.p_count,uc.u_count ";
+		if (userId != null) {
+			selectSql = "select t.*,pc.p_count,uc.u_count,tu.role ";
+		}
+		Page<Record> page = Db.paginate(
+				PaginationUtil.getPageNumber(controller), 10, selectSql,
+				sql.toString(), params.toArray());
+		controller.keepPara();
+		return page;
+	}
 }

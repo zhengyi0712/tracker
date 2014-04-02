@@ -11,6 +11,7 @@
 		<button type="submit" class="btn btn-primary">
 			<span class="glyphicon glyphicon-search"></span>&nbsp;搜索
 		</button>
+		<small class="text-muted">仅显示5条结果</small>
 	</form>
 </div>
 <script type="text/javascript">

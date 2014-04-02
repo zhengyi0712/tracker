@@ -1,6 +1,6 @@
 package com.bugsfly.user;
 
-import com.bugsfly.Webkeys;
+import com.bugsfly.common.Webkeys;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.core.Controller;

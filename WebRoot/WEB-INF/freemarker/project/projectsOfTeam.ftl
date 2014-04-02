@@ -1,13 +1,12 @@
 <#assign isAdmin = (role! == 'admin' || session.user.isAdmin)/>
-<form class="form-inline" role="form">
-	<label class="control-label">团队：<span class="text-warning">${team.name}</span></label>
-	<label class="control-label">创建时间：<span class="text-warning">${team.create_time}</span></label>
+<p>
+	查看团队<strong class="text-danger">${team.name}</strong>的项目
 	<#if isAdmin>
 		<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#modal-add-project">
 			<span class="glyphicon glyphicon-plus"></span>&nbsp;为团队创建新的项目
 		</button>
 	</#if>
-</form>
+</p>
 <div class="modal fade" id="modal-add-project" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
