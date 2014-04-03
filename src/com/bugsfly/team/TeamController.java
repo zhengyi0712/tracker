@@ -117,4 +117,16 @@ public class TeamController extends Controller {
 		}
 		renderJson();
 	}
+
+	@Before(SysAdminJSONInterceptor.class)
+	public void deleteTeam() {
+		String teamId = getPara("teamId");
+		try {
+			TeamManager.deleteTeam(teamId);
+			setAttr("ok", true);
+		} catch (BusinessException e) {
+			setAttr("msg", e.getMessage());
+		}
+		renderJson();
+	}
 }

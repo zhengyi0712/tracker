@@ -42,7 +42,7 @@
 		<#list list as user >
 		<tr>
 			<td class="td-zh-name">
-				<#if isAdmin && user.id != session.user.id >
+				<#if isAdmin>
 					<a href="#menu-${user.id}" data-toggle="tooltip-menu" data-placement="bottom" data-container="#col-content">${user.zh_name}</a>
 					<div class="tooltip-menu" id="menu-${user.id}">
 						<a class="list-group-item" href="#" onclick="kick('${user.id}')">移出团队</a>

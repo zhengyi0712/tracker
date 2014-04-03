@@ -15,13 +15,12 @@
 				<h4 class="modal-title">为团队<span class="text-danger">${team.name}</span>创建项目</h4>
 			</div>
 			<div class="modal-body">
-				<form class="form-inline" role="form" action="${ctx}/project/saveProject" method="post">
-				<input type="hidden" valur="${team.id}" name="teamId"/>
+				<form class="form-inline" role="form" action="${ctx}/project/saveProject" method="post" name="projectForm">
+				<input type="hidden" value="${team.id}" name="teamId"/>
 					<div class="form-group">
-						<input type="text" class="form-control" name="name" placeholder="输入项目名称"/>
+						<input type="text" class="form-control" name="name" placeholder="输入项目名称" maxlength="50" minlength="3" required/>
 					</div>
 					<button type="submit" class="btn btn-primary">提交</button>
-							
 				</form>
 			</div>
 		</div>
@@ -34,20 +33,44 @@
 	<table class="table">
 		<thead>
 		<tr>
-			<td>#</td>
-			<td>项目名称</td>
-			<td>创建时间</td>
-			<td>参与人数</td>
+			<th>#</th>
+			<th>项目名称</th>
+			<th>创建时间</th>
+			<th>参与人数</th>
 		</tr>
 		</thead>
+		<tbody>
 		<#list list as p>
 		<tr>
 			<td>${p_index + 1}</td>		
-			<td>${p.name}</td>		
-			<td>${p.create_time}}</td>		
-			<td>${p.u_count}</td>		
+			<td>
+				<#if isAdmin>
+				<a href="#menu-${p.id}" data-toggle="tooltip-menu" data-placement="bottom" data-container="#col-content">${p.name}</a>
+				<div></div>
+				<#else>
+				</#if>
+			</td>		
+			<td>${p.create_time}</td>		
+			<td>${p.u_count!0}</td>		
 		</tr>
 		</#list>
+		</tbody>
 	</table>
 </div>
 </#if>
+<script type="text/javascript">
+	$(document.projectForm).validate({
+		submitHandler:function(form){
+			$(form).ajaxSubmit({
+				success:function(json){
+					if(!json.ok){
+						showAlert(json.msg);
+						return;
+					}
+					refresh();
+				}
+			})
+		}
+	});
+
+</script>

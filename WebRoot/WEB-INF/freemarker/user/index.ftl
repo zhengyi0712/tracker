@@ -3,6 +3,7 @@
 <html>
 	<head>
 		<@common.headerReference />
+		<@common.validateJs />
 		<title>个人中心</title>
 		<script type="text/javascript" src="${ctx}/js/user-index.js"></script>
 	</head>

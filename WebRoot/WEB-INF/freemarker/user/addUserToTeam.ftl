@@ -1,4 +1,3 @@
-<#import '*/common.ftl' as common/>
 <div class="modal-header">
 	<button class="close" data-dismiss="modal" >x</button>
 	<h4 class="modal-title">为团队<span class="text-danger">${team.name}</span>添加成员</h4>
@@ -36,7 +35,6 @@
 	<button class="btn btn-primary" type="submit">保存新成员</button>
 </div>
 </form>
-<@common.validateJs />
 <script type="text/javascript">
 	$("#addUserForm").validate({
 		rules:{

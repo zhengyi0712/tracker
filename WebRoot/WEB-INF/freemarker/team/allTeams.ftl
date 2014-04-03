@@ -39,6 +39,7 @@
 					<ul class="tooltip-menu" id="team-menu-${team.id}">
 						<a class="list-group-item" href="${ctx}/user/usersOfTeam/${team.id}">查看团队成员</a>
 						<a class="list-group-item" href="${ctx}/project/projectsOfTeam/${team.id}">查看团队项目</a>
+						<a class="list-group-item" href="#" onclick="del('${team.id}','${team.name}')">删除团队</a>
 						<a class="list-group-item" data-dismiss="tooltip-menu" href="#">取消</a>
 					</ul>
 				</td>							
@@ -55,4 +56,21 @@
 <script type="text/javascript">
 	$(document.teamSearchForm).ajaxForm({target:"#col-content"});
 	$("td.dropdown a").tooltipMenu();
+	function del(teamId,teamName){
+		showConfirm({
+			title:"删除项目",
+			content:"确定要删除团队<strong class='text-danger'>"+teamName+"</strong>吗？",
+			ensureText:"是的，毫不留情的删",
+			cancelText:"呃，我再想想",
+			ensure:function(){
+				$.getJSON("${ctx}/team/deleteTeam?teamId="+teamId,function(json){
+					if(!json.ok){
+						showAlert(json.msg);
+					}else{
+						refresh();
+					}
+				});
+			}
+		});
+	}
 </script>				

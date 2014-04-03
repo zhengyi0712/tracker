@@ -47,14 +47,17 @@ public class ProjectController extends Controller {
 		render("projectsOfTeam.ftl");
 	}
 
+	/**
+	 * 保存项目
+	 */
 	public void saveProject() {
-		ProjectManager manager = new ProjectManager();
 		try {
-			manager.saveProject(this);
+			ProjectManager.saveProject(this);
+			setAttr("ok", true);
 		} catch (BusinessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			setAttr("msg", e.getMessage());
 		}
+		renderJson();
 	}
 
 }

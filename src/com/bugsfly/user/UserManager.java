@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.bugsfly.exception.BusinessException;
+import com.bugsfly.project.ProjectManager;
 import com.bugsfly.team.TeamManager;
 import com.bugsfly.util.RegExpUtil;
 import com.jfinal.plugin.activerecord.Db;
@@ -34,7 +35,7 @@ public class UserManager {
 		return user;
 	}
 
-	public Record getUser(String id) {
+	public static Record getUser(String id) {
 		return Db.findById("user", id);
 	}
 
@@ -123,7 +124,6 @@ public class UserManager {
 
 	}
 
-
 	/**
 	 * 将用户设置为团队成员
 	 * 
@@ -166,4 +166,51 @@ public class UserManager {
 
 	}
 
+	/**
+	 * 为项目添加用户
+	 * 
+	 * @param controller
+	 * @throws BusinessException
+	 */
+	public static void addUserToProject(UserController controller)
+			throws BusinessException {
+		String userId = controller.getPara("userId");
+		String projectId = controller.getPara("projectId");
+		Record project = ProjectManager.getProject(projectId);
+		Record user = getUser(userId);
+
+		if (project == null) {
+			throw new BusinessException("不存在的项目");
+		}
+
+		if (user == null) {
+			throw new BusinessException("不存在的用户");
+		}
+
+		if (!ProjectManager.checkAdminPrivilege(controller, projectId)) {
+			throw new BusinessException("您无权限进行此操作");
+		}
+
+		String teamRole = TeamManager
+				.getRole(project.getStr("team_id"), userId);
+
+		if (teamRole == null) {
+			throw new BusinessException("用户不属于项目所在有团队");
+		}
+
+		String projectRole = ProjectManager.getRole(projectId, userId);
+		if (projectRole != null) {
+			throw new BusinessException("用户已经参与项目了");
+		}
+
+		Record project_user = new Record();
+		project_user.set("project_id", projectId);
+		project_user.set("user_id", userId);
+		project_user.set("role", ProjectManager.ROLE_DEVELOPER);
+
+		if (!Db.save("project_user", project_user)) {
+			throw new BusinessException("保存失败");
+		}
+
+	}
 }

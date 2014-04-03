@@ -47,6 +47,7 @@ function showModal(config) {
 	}
 	if (window._modal_id) {
 		$("#modal-" + window._modal_id).remove();
+		$(".modal-backdrop").hide();
 	}
 	if (!config.title) {
 		config.title = "来自" + location.host + "的消息";
@@ -193,6 +194,7 @@ jQuery.ajaxSetup({
 			content : content,
 			after : function() {
 				$(".modal").modal("hide");
+				$(".modal-backdrop").hide();
 				if(isUnLogin){
 					location.reload();
 				}

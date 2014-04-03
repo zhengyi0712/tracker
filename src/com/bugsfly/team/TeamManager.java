@@ -1,5 +1,6 @@
 package com.bugsfly.team;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import com.bugsfly.util.PaginationUtil;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -111,9 +113,10 @@ public class TeamManager {
 	 * @param teamId
 	 * @return
 	 */
-	public static boolean checkAdminPrivilege(Controller controller, String teamId) {
-		Record user = (Record) controller.getSession()
-				.getAttribute(Webkeys.SESSION_USER);
+	public static boolean checkAdminPrivilege(Controller controller,
+			String teamId) {
+		Record user = (Record) controller.getSession().getAttribute(
+				Webkeys.SESSION_USER);
 		if (user.getBoolean("isAdmin")) {
 			return true;
 		}
@@ -176,5 +179,35 @@ public class TeamManager {
 				sql.toString(), params.toArray());
 		controller.keepPara();
 		return page;
+	}
+
+	public static void deleteTeam(final String teamId) throws BusinessException {
+		Record team = getTeam(teamId);
+		if (team == null) {
+			throw new BusinessException("要删除的团队不存在");
+		}
+
+		long projectCount = Db.queryLong(
+				"select count(*) from project where team_id=?", teamId);
+		if (projectCount != 0) {
+			throw new BusinessException("团队已经有项目存在，不能删除");
+		}
+
+		long userCount = Db.queryLong(
+				"select count(*) from team_user where team_id=?", teamId);
+		if (userCount != 0) {
+			throw new BusinessException("团队已经有用户存在，不能删除");
+		}
+		boolean ok = Db.tx(new IAtom() {
+
+			@Override
+			public boolean run() throws SQLException {
+				return Db.deleteById("team", teamId);
+			}
+		});
+		
+		if (!ok) {
+			throw new BusinessException("删除失败");
+		}
 	}
 }
