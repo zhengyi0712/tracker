@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : mysql
-Source Server Version : 50525
+Source Server Version : 50612
 Source Host           : localhost:3306
 Source Database       : bugsfly
 
 Target Server Type    : MYSQL
-Target Server Version : 50525
+Target Server Version : 50612
 File Encoding         : 65001
 
-Date: 2014-03-29 23:34:33
+Date: 2014-04-04 10:30:56
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -28,6 +28,7 @@ CREATE TABLE `bug` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `finish_time` datetime DEFAULT NULL COMMENT '完成时间',
   `assign_user_id` varchar(36) DEFAULT NULL COMMENT '分派用户ID',
+  `tag` varchar(1000) DEFAULT NULL COMMENT '标签',
   PRIMARY KEY (`id`),
   KEY `fk_bug_project` (`project_id`),
   KEY `fk_bug_user` (`assign_user_id`),
@@ -42,11 +43,8 @@ DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
   `id` varchar(36) NOT NULL,
   `name` varchar(255) NOT NULL COMMENT '项目名称',
-  `team_id` varchar(36) NOT NULL COMMENT '公司ID',
   `create_time` datetime NOT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`),
-  KEY `fk_project_team` (`team_id`),
-  CONSTRAINT `fk_project_team` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目表';
 
 -- ----------------------------
@@ -74,32 +72,6 @@ CREATE TABLE `sys_admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统管理员表';
 
 -- ----------------------------
--- Table structure for team
--- ----------------------------
-DROP TABLE IF EXISTS `team`;
-CREATE TABLE `team` (
-  `id` varchar(36) NOT NULL,
-  `name` varchar(255) NOT NULL COMMENT '团队名称',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`),
-  KEY `uk_company_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='团队表';
-
--- ----------------------------
--- Table structure for team_user
--- ----------------------------
-DROP TABLE IF EXISTS `team_user`;
-CREATE TABLE `team_user` (
-  `team_id` varchar(36) NOT NULL,
-  `user_id` varchar(36) NOT NULL,
-  `role` varchar(50) NOT NULL COMMENT '角色',
-  PRIMARY KEY (`team_id`,`user_id`),
-  KEY `fk_team_user_user` (`user_id`),
-  CONSTRAINT `fk_team_user_team` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`),
-  CONSTRAINT `fk_team_user_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='公司与用户多对多映射表';
-
--- ----------------------------
 -- Table structure for user
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
@@ -107,8 +79,8 @@ CREATE TABLE `user` (
   `id` varchar(36) NOT NULL,
   `zh_name` varchar(15) NOT NULL COMMENT '中文名',
   `en_name` varchar(50) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
-  `mobile` varchar(15) DEFAULT NULL COMMENT '手机',
+  `email` varchar(255) NOT NULL COMMENT '邮箱',
+  `mobile` varchar(15) NOT NULL COMMENT '手机',
   `md5` varchar(50) NOT NULL COMMENT '密码的md5加密结果',
   `create_time` datetime NOT NULL COMMENT '用户创建时间',
   `login_time` datetime DEFAULT NULL COMMENT '用户登录时间',
