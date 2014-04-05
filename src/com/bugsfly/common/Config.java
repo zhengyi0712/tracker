@@ -3,12 +3,10 @@ package com.bugsfly.common;
 import java.io.File;
 import java.util.Properties;
 
-import com.bugsfly.IndexController;
-import com.bugsfly.bug.BugController;
+import com.bugsfly.issue.IssueController;
 import com.bugsfly.login.LoginController;
 import com.bugsfly.login.LoginInterceptor;
 import com.bugsfly.project.ProjectController;
-import com.bugsfly.team.TeamController;
 import com.bugsfly.um.UMController;
 import com.bugsfly.user.UserController;
 import com.jfinal.config.Constants;
@@ -81,13 +79,11 @@ public class Config extends JFinalConfig {
 
 	@Override
 	public void configRoute(Routes routes) {
-		routes.add("/", IndexController.class);
 		routes.add("/um", UMController.class);
 		routes.add("/login", LoginController.class, "/login");
 		routes.add("/user", UserController.class, "/user");
-		routes.add("/team", TeamController.class, "/team");
 		routes.add("/project", ProjectController.class, "/project");
-		routes.add("/bug", BugController.class, "/bug");
+		routes.add("/issue", IssueController.class, "/issue");
 
 	}
 

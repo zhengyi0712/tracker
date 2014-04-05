@@ -19,12 +19,10 @@
 					<div class="list-group" id="user-menu">
 						<a class="list-group-item active" href="${ctx}/user/userinfo">基本信息</a>		
 						<a class="list-group-item">修改密码</a>
-						<a class="list-group-item" href="${ctx}/team/myTeams">我的团队</a>		
 						<a class="list-group-item" href="${ctx}/project/myProjects">我的项目</a>		
+						<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/project/allProjects">所有项目</a>
 						<#if session.user.isAdmin>
 							<#--管理员菜单-->
-							<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/team/allTeams">所有团队</a>
-							<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/project/allProjects">所有项目</a>
 							<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/user/allUsers">所有用户</a>
 						</#if>
 					</div>

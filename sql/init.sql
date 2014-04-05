@@ -2,33 +2,32 @@
 Navicat MySQL Data Transfer
 
 Source Server         : mysql
-Source Server Version : 50612
+Source Server Version : 50525
 Source Host           : localhost:3306
 Source Database       : bugsfly
 
 Target Server Type    : MYSQL
-Target Server Version : 50612
+Target Server Version : 50525
 File Encoding         : 65001
 
-Date: 2014-04-04 10:30:56
+Date: 2014-04-05 18:54:26
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for bug
+-- Table structure for issue
 -- ----------------------------
-DROP TABLE IF EXISTS `bug`;
-CREATE TABLE `bug` (
+DROP TABLE IF EXISTS `issue`;
+CREATE TABLE `issue` (
   `id` varchar(36) NOT NULL,
   `project_id` varchar(36) NOT NULL COMMENT '项目ID',
-  `bug_status` varchar(50) NOT NULL COMMENT 'bug的状态',
+  `status` varchar(50) NOT NULL COMMENT 'bug的状态',
   `title` varchar(255) NOT NULL COMMENT '标题',
   `detail` longtext COMMENT '详情',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `finish_time` datetime DEFAULT NULL COMMENT '完成时间',
   `assign_user_id` varchar(36) DEFAULT NULL COMMENT '分派用户ID',
-  `tag` varchar(1000) DEFAULT NULL COMMENT '标签',
   PRIMARY KEY (`id`),
   KEY `fk_bug_project` (`project_id`),
   KEY `fk_bug_user` (`assign_user_id`),
@@ -44,6 +43,7 @@ CREATE TABLE `project` (
   `id` varchar(36) NOT NULL,
   `name` varchar(255) NOT NULL COMMENT '项目名称',
   `create_time` datetime NOT NULL COMMENT '创建时间',
+  `intro` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目表';
 
@@ -70,6 +70,19 @@ CREATE TABLE `sys_admin` (
   PRIMARY KEY (`admin_id`),
   CONSTRAINT `fk_SYS_ADMIN_USER` FOREIGN KEY (`admin_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统管理员表';
+
+-- ----------------------------
+-- Table structure for tag
+-- ----------------------------
+DROP TABLE IF EXISTS `tag`;
+CREATE TABLE `tag` (
+  `id` varchar(36) NOT NULL,
+  `name` varchar(36) NOT NULL,
+  `issue_id` varchar(36) CHARACTER SET utf8 NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_issue_tag` (`issue_id`),
+  CONSTRAINT `fk_issue_tag` FOREIGN KEY (`issue_id`) REFERENCES `issue` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for user

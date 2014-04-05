@@ -9,11 +9,13 @@ import com.bugsfly.user.UserManager;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.ClearInterceptor;
 import com.jfinal.aop.ClearLayer;
+import com.jfinal.core.ActionKey;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Record;
 
 public class LoginController extends Controller {
 	@ClearInterceptor(ClearLayer.ALL)
+	@ActionKey("/")
 	public void index() {
 		render("index.ftl");
 	}
@@ -59,7 +61,7 @@ public class LoginController extends Controller {
 			redirect(String.valueOf(referer));
 			return;
 		}
-		redirect("/");
+		redirect("/issue");
 	}
 
 	@ClearInterceptor(ClearLayer.ALL)

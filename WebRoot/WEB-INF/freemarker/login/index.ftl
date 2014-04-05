@@ -7,7 +7,7 @@
 	<@common.validateJs />
 	<title>欢迎访问bugsfly</title>
 	<meta name="Keywords" content="bugsfly">
-	<meta name="description" content="bugsfly - 简洁易用的bug跟踪系统">
+	<meta name="description" content="bugsfly - 简洁易用的bug跟踪系统，JFinal项目">
 	<style type="text/css">
 	#loginBtn{
 		width:150px;
