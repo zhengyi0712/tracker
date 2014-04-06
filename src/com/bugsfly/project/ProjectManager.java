@@ -2,7 +2,9 @@ package com.bugsfly.project;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.bugsfly.common.Webkeys;
 import com.bugsfly.exception.BusinessException;
@@ -25,6 +27,32 @@ public class ProjectManager {
 
 	public static void saveProject(ProjectController controller)
 			throws BusinessException {
+		String name = controller.getPara("name");
+		String intro = controller.getPara("intro");
+
+		if (StringKit.isBlank(name)) {
+			throw new BusinessException("名称不能为空");
+		}
+		name = name.trim();
+		if (name.length() < 2 || name.length() > 30) {
+			throw new BusinessException("名称必须在2-30字符之间");
+		}
+
+		if (StringKit.notBlank(intro)) {
+			if (intro.length() > 200) {
+				throw new BusinessException("简介不能超过200字");
+			}
+		}
+		Record project = new Record();
+		project.set("id", UUID.randomUUID().toString());
+		project.set("name", name);
+		project.set("intro", intro);
+		project.set("create_time", new Date());
+		
+		if (!Db.save("project", project)) {
+			throw new BusinessException("保存失败");
+		}
+
 	}
 
 	public static Page<Record> getProjectList(ProjectController controller,

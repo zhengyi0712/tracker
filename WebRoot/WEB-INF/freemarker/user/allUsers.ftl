@@ -3,7 +3,7 @@
 		<label for="user-search-key" class="sr-only">用户搜索关键字</label>
 		<input id="user-search-key" type="text" class="form-control" name="key" value="${key!}" placeholder="名字/邮箱/手机号" maxlength="30"/>
 	</div>
-	<button class="btn btn-default">
+	<button class="btn btn-default" type="submit">
 		<span class="glyphicon glyphicon-search"></span>&nbsp;搜索
 	</button>
 	<button class="btn btn-warning" type="button" data-toggle="modal" data-target="#add-user-modal">

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50525
 File Encoding         : 65001
 
-Date: 2014-04-05 18:54:26
+Date: 2014-04-06 19:19:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -44,7 +44,8 @@ CREATE TABLE `project` (
   `name` varchar(255) NOT NULL COMMENT '项目名称',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `intro` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_project_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目表';
 
 -- ----------------------------
