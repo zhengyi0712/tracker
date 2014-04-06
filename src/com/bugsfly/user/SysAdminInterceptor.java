@@ -16,7 +16,7 @@ public class SysAdminInterceptor implements Interceptor {
 		Record user = (Record) controller.getSession().getAttribute(
 				Webkeys.SESSION_USER);
 
-		if (!user.getBoolean("isAdmin")) {
+		if (!user.getBoolean("sysAdmin")) {
 			controller.setAttr(Webkeys.REQUEST_MESSAGE, "抱歉您没有权限进行此操作！");
 			controller.render(Webkeys.REQUEST_MESSAGE);
 			return;
