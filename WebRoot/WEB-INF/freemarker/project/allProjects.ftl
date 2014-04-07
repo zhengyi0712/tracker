@@ -1,9 +1,10 @@
 <style type="text/css">
 td.intro{
-	max-width: 150px;
+	max-width: 200px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	cursor:default;
 }
 </style>
 <form class="form-inline" role="form" action="${ctx}/project/allProjects" name="projectListForm">
@@ -54,10 +55,10 @@ td.intro{
 		<thead>
 			<tr>
 				<th>#</th>
-				<th>名称</th>
-				<th>参与人数</th>
+				<th>项目名称</th>
+				<th>人数</th>
 				<th>创建时间</th>
-				<th>简介</th>
+				<th class="hidden-xs">简介</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -67,20 +68,27 @@ td.intro{
 				<td>
 					<a href="#menu-${p.id}" data-toggle="tooltip-menu" data-placement="bottom" data-container="#col-content" >${p.name}</a>
 					<div class="tooltip-menu" id="menu-${p.id}" >
-						<a class="list-group-item">查看项目成员</a>
-						<a class="list-group-item">删除项目</a>
+						<a class="list-group-item" href="${ctx}/user/usersOfProject/${p.id}">查看项目成员</a>
+						<a class="list-group-item" href="${ctx}/issue">查看相关问题</a>
+						<a class="list-group-item" href="#">修改简介</a>
+						<a class="list-group-item" href="#" onclick="deleteProject('${p.id}','${p.name}')">删除项目</a>
 						<a class="list-group-item" data-dismiss="tooltip-menu" href="#">取消</a>
 					</div>
 				</td>
 				<td>${p.u_count!0}</td>
 				<td>${p.create_time}</td>
-				<td class="intro"  data-toggle="popover" data-content="${p.intro}">
-					<a href="#">${p.intro}</a>
+				<#if p.intro?? && p.intro?length gt 20 >
+				<td class="intro hidden-xs"  data-toggle="popover" data-content="${p.intro}">
+					${p.intro}
 				</td>
+				<#else>
+				<td>${p.intro!}</td>
+				</#if>
 			</tr>
 			</#list>
 		</tbody>
 	</table>
+	${pageLink}
 	</div>
 <#else>
 <div class="alert alert-warning">无可显示数据</div>
@@ -90,6 +98,16 @@ td.intro{
 	$("td.intro").popover({placement:"left",container:"#col-content",trigger:"hover"});
 	$("[data-toggle='tooltip-menu']").tooltipMenu();
 	$(document.addProjectForm).validate({
+		rules:{
+			name:{
+				remote:"${ctx}/project/checkNameExist"
+			}
+		},
+		messages:{
+			name:{
+				remote:"名称已经被使用了，换一个试试"
+			}
+		},
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				success:function(json){
@@ -102,4 +120,21 @@ td.intro{
 			});
 		}
 	});
+	function deleteProject(pid,pname){
+		showConfirm({
+			title:"删除项目",
+			content:"确定要删除项目<strong class='text-danger'>"+pname+"</strong>吗？",
+			ensureText:"确定一定以及肯定",
+			cancelText:"sorry,手贱点错了",
+			ensure:function(){
+				$.getJSON("${ctx}/project/deleteProject/"+pid,function(json){
+					if(!json.ok){
+						showAlert(json.msg);
+					}else{
+						refresh();
+					}
+				});
+			}
+		});
+	}
 </script>

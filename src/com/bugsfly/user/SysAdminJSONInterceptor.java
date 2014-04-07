@@ -6,13 +6,12 @@ import com.jfinal.core.ActionInvocation;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Record;
 
-public class SysAdminJSONInterceptor implements Interceptor{
+public class SysAdminJSONInterceptor implements Interceptor {
 
 	@Override
 	public void intercept(ActionInvocation ai) {
 		Controller controller = ai.getController();
-		Record user = (Record) controller.getSession().getAttribute(
-				Webkeys.SESSION_USER);
+		Record user = controller.getSessionAttr(Webkeys.SESSION_USER);
 
 		if (!user.getBoolean("sysAdmin")) {
 			controller.setAttr("ok", false);
@@ -21,7 +20,7 @@ public class SysAdminJSONInterceptor implements Interceptor{
 			return;
 		}
 		ai.invoke();
-		
+
 	}
 
 }

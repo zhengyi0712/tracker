@@ -1,6 +1,5 @@
 package com.bugsfly.project;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,14 +11,14 @@ import com.bugsfly.util.PaginationUtil;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
 public class ProjectManager {
 
-	public final static String ROLE_ADMIN = "admin";
-	public final static String ROLE_DEVELOPER = "developer";
+	public final static String ROLE_ADMIN = "ADMIN";
+	public final static String ROLE_DEVELOPER = "DEVELOPER";
+	public final static String ROLE_TESTER = "TESTER";
 
 	public static Record getProject(String id) {
 		return Db.findById("project", id);
@@ -38,6 +37,10 @@ public class ProjectManager {
 			throw new BusinessException("名称必须在2-30字符之间");
 		}
 
+		if (Db.findFirst("select 1 from project where name=?", name) != null) {
+			throw new BusinessException("项目名称已经存在，请更换一个试试");
+		}
+
 		if (StringKit.notBlank(intro)) {
 			if (intro.length() > 200) {
 				throw new BusinessException("简介不能超过200字");
@@ -48,7 +51,7 @@ public class ProjectManager {
 		project.set("name", name);
 		project.set("intro", intro);
 		project.set("create_time", new Date());
-		
+
 		if (!Db.save("project", project)) {
 			throw new BusinessException("保存失败");
 		}
@@ -56,7 +59,7 @@ public class ProjectManager {
 	}
 
 	public static Page<Record> getProjectList(ProjectController controller,
-			String teamId, String userId) {
+			String userId) {
 		StringBuilder sql = new StringBuilder();
 		List<String> params = new ArrayList<String>();
 
@@ -77,11 +80,6 @@ public class ProjectManager {
 		if (userId != null) {
 			sql.append(" and pu.user_id=? ");
 			params.add(userId);
-		}
-
-		if (teamId != null) {
-			sql.append(" and p.team_id=? ");
-			params.add(teamId);
 		}
 
 		String name = controller.getPara("name");
@@ -107,34 +105,28 @@ public class ProjectManager {
 	 * @param projectId
 	 * @throws BusinessException
 	 */
-	public static void deleteProject(String projectId) throws BusinessException {
-		final Record project = getProject(projectId);
+	public static void deleteProject(ProjectController controller)
+			throws BusinessException {
+		String projectId = controller.getPara();
+		Record project = getProject(projectId);
 		if (project == null) {
 			throw new BusinessException("要删除的项目找不到");
 		}
 
-		int userCount = Db.queryInt(
+		long userCount = Db.queryLong(
 				"select count(*) from project_user where project_id=? ",
 				projectId);
 		if (userCount != 0) {
-			throw new BusinessException("要删除的项目已经有用户存在");
+			throw new BusinessException("要删除的项目已经有用户存在，无法完成操作");
 		}
 
-		int bugCount = Db.queryInt(
-				"select count(*) from bug where project_id=?", projectId);
-		if (bugCount != 0) {
-			throw new BusinessException("要删除的项目有相关BUG数据存在，不能删除");
+		long issueCount = Db.queryLong(
+				"select count(*) from issue where project_id=?", projectId);
+		if (issueCount != 0) {
+			throw new BusinessException("要删除的项目已经有相关问题存在，无法完成操作");
 		}
 
-		boolean ok = Db.tx(new IAtom() {
-
-			@Override
-			public boolean run() throws SQLException {
-				return Db.delete("project", project);
-			}
-		});
-
-		if (!ok) {
+		if (!Db.deleteById("project", projectId)) {
 			throw new BusinessException("删除失败");
 		}
 	}

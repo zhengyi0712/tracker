@@ -6,51 +6,14 @@
 	<button class="btn btn-default" type="submit">
 		<span class="glyphicon glyphicon-search"></span>&nbsp;搜索
 	</button>
-	<button class="btn btn-warning" type="button" data-toggle="modal" data-target="#add-user-modal">
+	<button class="btn btn-warning" type="button" data-toggle="modal" data-target="#add-user-modal" data-remote="${ctx}/user/addUser">
 		<span class="glyphicon glyphicon-plus"></span>&nbsp;添加新的用户
 	</button>
 </form>
 <#--添加新用户模态框start-->
 <div class="modal fade" id="add-user-modal" role="dialog">
 	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        		<h4 class="modal-title">添加新的用户</h4>
-			</div>
-			<form class="form-horizontal" role="form" action="${ctx}/user/saveUser" style="margin-bottom:0;" name="userSaveForm" method="post">
-			<div class="modal-body">
-				<div class="form-group">
-					<label class="control-label col-md-2" for="zhName">中文名：</label>
-					<div class="col-md-10">
-						<input type="text" class="form-control" name="zhName" minlength="2" maxlength="5" required id="zhName" placeholder="2-5个汉字"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-md-2" for="enName">英文名：</label>
-					<div class="col-md-10">
-						<input type="text" class="form-control" name="enName" minlength="2" maxlength="20" id="enName" placeholder="2-20个英文字母"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-md-2" for="email">邮箱：</label>
-					<div class="col-md-10">
-						<input type="email" class="form-control" name="email" required id="email"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-md-2" for="mobile">手机号：</label>
-					<div class="col-md-10">
-						<input type="mobile" class="form-control" name="mobile" required id="mobile"/>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-default" type="button" data-dismiss="modal">取消</button>
-				<button class="btn btn-primary">确定保存</button>
-			</div>
-			</form>
-		</div>
+		<div class="modal-content"></div>
 	</div>
 </div>
 <#--添加新用户模态框end-->
@@ -66,6 +29,7 @@
 					<th>开户时间</th>
 					<th>状态</th>
 					<th>最后登录时间</th>
+					<th>操作</th>
 				</tr>
 			</thead>	
 			<tbody>
@@ -82,6 +46,7 @@
 						</a>
 					</td>
 					<td>${user.login_time!}</td>
+					<td><a>重置密码</a></td>
 				</tr>
 				</#list>
 			</tbody>
@@ -93,34 +58,6 @@
 </#if>
 <script type="text/javascript">
 	$(document.userListForm).ajaxForm({target:"#col-content"});
-	$(document.userSaveForm).validate({
-		rules:{
-			zhName:{zhName:true},
-			enName:{enName:true},
-			mobile:{
-				remote:"${ctx}/user/checkMobileExist"
-			},email:{
-				remote:"${ctx}/user/checkEmailExist"
-			}
-		},
-		messages:{
-			mobile:{
-				remote:"手机号已经被使用了，请换一个试试"
-			},email:{
-				remote:"邮箱已经被使用了，请换一个试试"
-			}
-		},submitHandler:function(form){
-			$(form).ajaxSubmit({
-				success:function(json){
-					if(!json.ok){
-						showAlert(json.msg);				
-					}else{
-						refresh();
-					}
-				}
-			});
-		}
-	});
 	function toggleStatus(el){
 		var username = $(el).data("username");
 		var userId = $(el).data("userid");
