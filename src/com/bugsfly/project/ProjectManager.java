@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.bugsfly.common.Webkeys;
 import com.bugsfly.exception.BusinessException;
+import com.bugsfly.issue.IssueManager;
 import com.bugsfly.util.PaginationUtil;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
@@ -183,6 +184,67 @@ public class ProjectManager {
 		}
 		project.set("intro", intro);
 		if (!Db.update("project", project)) {
+			throw new BusinessException("保存失败");
+		}
+	}
+
+	/**
+	 * 踢人
+	 * 
+	 * @param controller
+	 * @throws BusinessException
+	 */
+	public static void kickUser(ProjectController controller)
+			throws BusinessException {
+		String projectId = controller.getPara("projectId");
+		String userId = controller.getPara("userId");
+		Record project_user = Db.findFirst(
+				"select * from project_user where project_id=? and user_id=?",
+				projectId, userId);
+		if (project_user == null) {
+			throw new BusinessException("无关联的用户和项目");
+		}
+
+		if (ROLE_ADMIN.equals(project_user.getStr("role"))) {
+			throw new BusinessException("管理员不能被踢除");
+		}
+
+		if (Db.findFirst(
+				"select 1 from issue where assign_user_id=? and status in (?,?) ",
+				userId, IssueManager.STATUS_ASSIGNED,
+				IssueManager.STATUS_REWORKED) != null) {
+			throw new BusinessException("该用户有已经分派但是未完成的任务，不能踢除");
+		}
+
+		String sql = "delete from project_user where project_id=? and user_id=?";
+		if (Db.update(sql, projectId, userId) != 1) {
+			throw new BusinessException("保存失败");
+		}
+	}
+
+	/**
+	 * 设置角色
+	 * 
+	 * @param controller
+	 * @throws BusinessException
+	 */
+	public static void setRole(ProjectController controller)
+			throws BusinessException {
+		String projectId = controller.getPara("projectId");
+		String role = controller.getPara("role");
+		String userId = controller.getPara("userId");
+		Record project_user = Db.findFirst(
+				"select * from project_user where project_id=? and user_id=?",
+				projectId, userId);
+		if (project_user == null) {
+			throw new BusinessException("用户与项目不存在关联");
+		}
+		if (!ROLE_ADMIN.equals(role) && !ROLE_DEVELOPER.equals(role)
+				&& !ROLE_TESTER.equals(role)) {
+			throw new BusinessException("未知的角色");
+		}
+		String sql = "update project_user set role=? where project_id=? and user_id=?";
+		if (Db.update(sql, role, projectId, userId) != 1) {
 			throw new BusinessException("保存失败");
 		}
 	}

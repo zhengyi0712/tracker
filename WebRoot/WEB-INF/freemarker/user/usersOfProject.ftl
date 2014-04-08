@@ -89,7 +89,26 @@
 							未知
 						</#if>
 					</td>
-					<td>${user.zh_name}</td>
+					<td>
+						<#if projectAdmin?? >
+						<a data-toggle="tooltip-menu" href="#user-menu-${user.id}" data-placement="bottom" data-container="#col-content">${user.zh_name}</a>
+						<div class="tooltip-menu" id="user-menu-${user.id}">
+							<#if user.role != 'DEVELOPER'>
+								<a class="list-group-item" href="#" onclick="setRole('${user.id}','${user.zh_name}','DEVELOPER')">设为开发</a>
+							</#if>
+							<#if user.role != 'TESTER'>
+								<a class="list-group-item" href="#" onclick="setRole('${user.id}','${user.zh_name}','TESTER')">设为测试</a>
+							</#if>
+							<#if user.role != 'ADMIN'>
+								<a class="list-group-item" href="#" onclick="setRole('${user.id}','${user.zh_name}','ADMIN')">设为管理员</a>
+							</#if>
+							<a class="list-group-item" href="#" onclick="kickUser('${user.id}','${user.zh_name}')">移出</a>
+							<a class="list-group-item" href="#" data-dismiss="tooltip-menu">取消</a>
+						</div>
+						<#else>
+							${user.zh_name}
+						</#if>
+					</td>
 					<td>${user.en_name!}</td>
 					<td>${user.email}</td>
 					<td>${user.mobile}</td>
@@ -104,6 +123,7 @@
 <div class="alert alert-warning">无可显示数据</div>
 </#if>
 <script type="text/javascript">
+	$("a[data-toggle='tooltip-menu']").tooltipMenu();
 	$(document.userSearchForm).submit(function(){
 		$(this).ajaxSubmit({
 			success:function(json){
@@ -147,6 +167,50 @@
 				}else{
 					refresh();
 				}
+			}
+		});
+	}
+	function setRole(userId,username,role){
+		var roleName = null;
+		if('DEVELOPER'==role){
+			roleName = '开发';
+		}else if('TESTER'==role){
+			roleName = '测试';
+		}else if('ADMIN'==role){
+			roleName = '管理员';
+		}
+		showConfirm({
+			title:"设置用户的角色",
+			content:"确定要将<strong class='text-danger'>"+username+"</strong>设置为<strong class='text-danger'>"+roleName+"</strong>吗？",
+			ensureText:"是的，想好了",
+			cancelText:"不好意思，点错了",
+			ensure:function(){
+				var data = "projectId=${project.id}&userId="+userId+"&role="+role;
+				$.post("${ctx}/project/setRole",data,function(json){
+					if(!json.ok){
+						showAlert(json.msg);
+					}else{
+						refresh();
+					}
+				},"json");
+			}
+		});
+	}
+	function kickUser(userId,username){
+		showConfirm({
+			title:"移出用户",
+			content:"确定要将<strong class='text-danger'>"+username+"</strong>踢出项目吗？",
+			ensureText:"我想好了",
+			cancelText:"太残忍了，我再想想",
+			ensure:function(){
+				var data = "projectId=${project.id}&userId="+userId;
+				$.post("${ctx}/project/kickUser",data,function(json){
+					if(!json.ok){
+						showAlert(json.msg);
+					}else{
+						refresh();
+					}
+				},"json")
 			}
 		});
 	}

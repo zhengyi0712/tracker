@@ -40,15 +40,16 @@ public class ProjectController extends Controller {
 		}
 		renderJson();
 	}
+
 	/**
 	 * 修改简介，进入修改页面
 	 */
-	public void modifyIntro(){
+	public void modifyIntro() {
 		Record project = ProjectManager.getProject(getPara());
 		setAttr("project", project);
 		render("modifyIntro.ftl");
 	}
-	
+
 	/**
 	 * 更新简介
 	 */
@@ -84,5 +85,32 @@ public class ProjectController extends Controller {
 		} else {
 			renderJson(true);
 		}
+	}
+
+	/**
+	 * 踢人
+	 */
+	@Before(ProjectAdminJSONInterceptor.class)
+	public void kickUser() {
+		try {
+			ProjectManager.kickUser(this);
+			setAttr("ok", true);
+		} catch (BusinessException e) {
+			setAttr("msg", e.getMessage());
+		}
+		renderJson();
+	}
+	/**
+	 * 设置角色
+	 */
+	@Before(ProjectAdminJSONInterceptor.class)
+	public void setRole() {
+		try {
+			ProjectManager.setRole(this);
+			setAttr("ok", true);
+		} catch (BusinessException e) {
+			setAttr("msg", e.getMessage());
+		}
+		renderJson();
 	}
 }
