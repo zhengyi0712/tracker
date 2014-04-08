@@ -1,3 +1,4 @@
+--初始密码是123456
 INSERT INTO USER (
 	id,
 	zh_name,
