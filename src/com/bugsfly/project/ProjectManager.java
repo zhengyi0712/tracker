@@ -161,4 +161,29 @@ public class ProjectManager {
 
 		return true;
 	}
+
+	/**
+	 * 更新简介
+	 * 
+	 * @param controller
+	 * @throws BusinessException
+	 */
+	public static void updateIntro(ProjectController controller)
+			throws BusinessException {
+		String projectId = controller.getPara("projectId");
+		String intro = controller.getPara("intro");
+		Record project = getProject(projectId);
+		if (project == null) {
+			throw new BusinessException("要更新的项目不存在");
+		}
+		if (StringKit.notBlank(intro)) {
+			if (intro.length() > 200) {
+				throw new BusinessException("简介不能超过200字");
+			}
+		}
+		project.set("intro", intro);
+		if (!Db.update("project", project)) {
+			throw new BusinessException("保存失败");
+		}
+	}
 }

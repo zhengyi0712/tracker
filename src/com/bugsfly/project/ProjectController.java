@@ -40,6 +40,28 @@ public class ProjectController extends Controller {
 		}
 		renderJson();
 	}
+	/**
+	 * 修改简介，进入修改页面
+	 */
+	public void modifyIntro(){
+		Record project = ProjectManager.getProject(getPara());
+		setAttr("project", project);
+		render("modifyIntro.ftl");
+	}
+	
+	/**
+	 * 更新简介
+	 */
+	@Before(ProjectAdminJSONInterceptor.class)
+	public void updateIntro() {
+		try {
+			ProjectManager.updateIntro(this);
+			setAttr("ok", true);
+		} catch (BusinessException e) {
+			setAttr("msg", e.getMessage());
+		}
+		renderJson();
+	}
 
 	/**
 	 * 删除项目

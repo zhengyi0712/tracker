@@ -19,6 +19,7 @@ td.intro{
 		<span class="glyphicon glyphicon-plus"></span>&nbsp;添加新项目
 	</button>
 </form>
+<#--添加项目模态框-->
 <div class="modal fade" role="dialog" id="add-project-modal">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -49,6 +50,7 @@ td.intro{
 		</div>
 	</div>
 </div>
+<#--添加项目模态框end-->
 <#if list?? && list?size gt 0>
 	<div class="table-responsive">
 	<table class="table">
@@ -69,8 +71,8 @@ td.intro{
 					<a href="#menu-${p.id}" data-toggle="tooltip-menu" data-placement="bottom" data-container="#col-content" >${p.name}</a>
 					<div class="tooltip-menu" id="menu-${p.id}" >
 						<a class="list-group-item" href="${ctx}/user/usersOfProject/${p.id}">查看项目成员</a>
-						<a class="list-group-item" href="${ctx}/issue">查看相关问题</a>
-						<a class="list-group-item" href="#">修改简介</a>
+						<a class="list-group-item" href="${ctx}/issue/${p.id}">查看相关问题</a>
+						<a class="list-group-item" data-toggle="modal" data-target="#modify-intro-modal" href="${ctx}/project/modifyIntro/${p.id}">修改简介</a>
 						<a class="list-group-item" href="#" onclick="deleteProject('${p.id}','${p.name}')">删除项目</a>
 						<a class="list-group-item" data-dismiss="tooltip-menu" href="#">取消</a>
 					</div>
@@ -93,10 +95,20 @@ td.intro{
 <#else>
 <div class="alert alert-warning">无可显示数据</div>
 </#if>
+<#--修改简介模态框-->
+<div class="modal" role="dialog" id="modify-intro-modal">
+	<div class="modal-dialog">
+		<div class="modal-content"></div>
+	</div>
+</div>
+<#--修改简介模态框end-->
 <script type="text/javascript">
 	$(document.projectListForm).ajaxForm({target:"#col-content"});
 	$("td.intro").popover({placement:"left",container:"#col-content",trigger:"hover"});
 	$("[data-toggle='tooltip-menu']").tooltipMenu();
+	$("#modify-intro-modal").bind("hidden.bs.modal",function(e){
+		$("#modify-intro-modal").removeData("bs.modal").find(".modal-content").empty();
+	});
 	$(document.addProjectForm).validate({
 		rules:{
 			name:{

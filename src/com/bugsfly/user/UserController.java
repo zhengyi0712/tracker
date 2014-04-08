@@ -63,7 +63,7 @@ public class UserController extends Controller {
 			params.add("%" + key + "%");
 			params.add("%" + key + "%");
 		}
-		Page<Record> page = Db.paginate(1, 10, "select u.* ", sql.toString(),
+		Page<Record> page = Db.paginate(1, 10, "select distinct u.* ", sql.toString(),
 				params.toArray());
 		System.err.println("SQL:" + sql.toString());
 		setAttr("list", page.getList());
