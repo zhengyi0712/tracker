@@ -210,7 +210,7 @@ public class ProjectManager {
 		}
 
 		if (Db.findFirst(
-				"select 1 from issue where assign_user_id=? and status in (?,?) ",
+				"select 1 from task where assign_user_id=? and status in (?,?) ",
 				userId, TaskManager.STATUS_ASSIGNED,
 				TaskManager.STATUS_REWORKED) != null) {
 			throw new BusinessException("该用户有已经分派但是未完成的任务，不能踢除");
