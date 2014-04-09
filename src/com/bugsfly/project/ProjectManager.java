@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import com.bugsfly.common.Webkeys;
 import com.bugsfly.exception.BusinessException;
-import com.bugsfly.issue.IssueManager;
+import com.bugsfly.task.TaskManager;
 import com.bugsfly.util.PaginationUtil;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
@@ -211,8 +211,8 @@ public class ProjectManager {
 
 		if (Db.findFirst(
 				"select 1 from issue where assign_user_id=? and status in (?,?) ",
-				userId, IssueManager.STATUS_ASSIGNED,
-				IssueManager.STATUS_REWORKED) != null) {
+				userId, TaskManager.STATUS_ASSIGNED,
+				TaskManager.STATUS_REWORKED) != null) {
 			throw new BusinessException("该用户有已经分派但是未完成的任务，不能踢除");
 		}
 

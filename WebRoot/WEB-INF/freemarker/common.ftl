@@ -4,7 +4,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 	<link rel="shortcut icon" type="image/x-icon" href="${ctx}/favicon.ico"/>
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/bootstrap/css/bootstrap.min.css" />
+	<#--如果带有这个css，页面的元素带有立方体感，还是扁平化的好看，暂时去掉
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/bootstrap/css/bootstrap-theme.min.css" />
+	-->
 	<link rel="stylesheet" type="text/css" href="${ctx}/lib/Font-Awesome-3.2.1/css/font-awesome.min.css" />
 	<link rel="stylesheet" type="text/css" href="${ctx}/css/public.css" />
 	

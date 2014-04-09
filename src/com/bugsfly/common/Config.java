@@ -3,10 +3,10 @@ package com.bugsfly.common;
 import java.io.File;
 import java.util.Properties;
 
-import com.bugsfly.issue.IssueController;
 import com.bugsfly.login.LoginController;
 import com.bugsfly.login.LoginInterceptor;
 import com.bugsfly.project.ProjectController;
+import com.bugsfly.task.TaskController;
 import com.bugsfly.um.UMController;
 import com.bugsfly.user.UserController;
 import com.jfinal.config.Constants;
@@ -83,7 +83,7 @@ public class Config extends JFinalConfig {
 		routes.add("/login", LoginController.class, "/login");
 		routes.add("/user", UserController.class, "/user");
 		routes.add("/project", ProjectController.class, "/project");
-		routes.add("/issue", IssueController.class, "/issue");
+		routes.add("/issue", TaskController.class, "/issue");
 
 	}
 

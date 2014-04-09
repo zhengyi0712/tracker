@@ -2,38 +2,18 @@
 Navicat MySQL Data Transfer
 
 Source Server         : mysql
-Source Server Version : 50525
+Source Server Version : 50612
 Source Host           : localhost:3306
 Source Database       : bugsfly
 
 Target Server Type    : MYSQL
-Target Server Version : 50525
+Target Server Version : 50612
 File Encoding         : 65001
 
-Date: 2014-04-06 19:19:25
+Date: 2014-04-09 12:55:27
 */
 
 SET FOREIGN_KEY_CHECKS=0;
-
--- ----------------------------
--- Table structure for issue
--- ----------------------------
-DROP TABLE IF EXISTS `issue`;
-CREATE TABLE `issue` (
-  `id` varchar(36) NOT NULL,
-  `project_id` varchar(36) NOT NULL COMMENT '项目ID',
-  `status` varchar(50) NOT NULL COMMENT 'bug的状态',
-  `title` varchar(255) NOT NULL COMMENT '标题',
-  `detail` longtext COMMENT '详情',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `finish_time` datetime DEFAULT NULL COMMENT '完成时间',
-  `assign_user_id` varchar(36) DEFAULT NULL COMMENT '分派用户ID',
-  PRIMARY KEY (`id`),
-  KEY `fk_bug_project` (`project_id`),
-  KEY `fk_bug_user` (`assign_user_id`),
-  CONSTRAINT `fk_bug_project` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`),
-  CONSTRAINT `fk_bug_user` FOREIGN KEY (`assign_user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for project
@@ -79,11 +59,31 @@ DROP TABLE IF EXISTS `tag`;
 CREATE TABLE `tag` (
   `id` varchar(36) NOT NULL,
   `name` varchar(36) NOT NULL,
-  `issue_id` varchar(36) CHARACTER SET utf8 NOT NULL,
+  `task_id` varchar(36) CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_issue_tag` (`issue_id`),
-  CONSTRAINT `fk_issue_tag` FOREIGN KEY (`issue_id`) REFERENCES `issue` (`id`)
+  KEY `fk_issue_tag` (`task_id`),
+  CONSTRAINT `fk_task_tag` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Table structure for task
+-- ----------------------------
+DROP TABLE IF EXISTS `task`;
+CREATE TABLE `task` (
+  `id` varchar(36) NOT NULL,
+  `project_id` varchar(36) NOT NULL COMMENT '项目ID',
+  `status` varchar(50) NOT NULL COMMENT 'bug的状态',
+  `title` varchar(255) NOT NULL COMMENT '标题',
+  `detail` longtext COMMENT '详情',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `finish_time` datetime DEFAULT NULL COMMENT '完成时间',
+  `assign_user_id` varchar(36) DEFAULT NULL COMMENT '分派用户ID',
+  PRIMARY KEY (`id`),
+  KEY `fk_bug_project` (`project_id`) USING BTREE,
+  KEY `fk_bug_user` (`assign_user_id`) USING BTREE,
+  CONSTRAINT `fk_user_task` FOREIGN KEY (`assign_user_id`) REFERENCES `user` (`id`),
+  CONSTRAINT `fk_project_task` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for user

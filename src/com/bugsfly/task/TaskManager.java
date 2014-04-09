@@ -1,9 +1,9 @@
-package com.bugsfly.issue;
+package com.bugsfly.task;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class IssueManager {
+public class TaskManager {
 	public static final Set<String> tags = new HashSet<String>();
 
 	static {

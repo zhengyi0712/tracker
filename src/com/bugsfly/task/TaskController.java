@@ -1,8 +1,8 @@
-package com.bugsfly.issue;
+package com.bugsfly.task;
 
 import com.jfinal.core.Controller;
 
-public class IssueController extends Controller {
+public class TaskController extends Controller {
 	/**
 	 * bug列表。<br>
 	 * 程序首先会获取用户 参与的项目列表。<br>

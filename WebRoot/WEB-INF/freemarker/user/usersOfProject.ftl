@@ -201,7 +201,7 @@
 			title:"移出用户",
 			content:"确定要将<strong class='text-danger'>"+username+"</strong>踢出项目吗？",
 			ensureText:"我想好了",
-			cancelText:"太残忍了，我再想想",
+			cancelText:"呃，我再想想吧",
 			ensure:function(){
 				var data = "projectId=${project.id}&userId="+userId;
 				$.post("${ctx}/project/kickUser",data,function(json){
