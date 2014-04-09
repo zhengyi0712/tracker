@@ -49,7 +49,7 @@
     <nav class="collapse navbar-collapse" id="top-navbar" role="navigation">
       <ul class="nav navbar-nav navbar-right">
 	  	<li><strong class="navbar-text"><span class="glyphicon glyphicon-user"></span> ${session.user.zh_name}</strong></li>
-	  	<li <#if menu == 'bug'>class="active"</#if>><a href="${ctx}/issue">查看任务</a></li>
+	  	<li <#if menu == 'bug'>class="active"</#if>><a href="${ctx}/task">查看任务</a></li>
 	    <li <#if menu == 'user'>class="active"</#if>>
 	      <a href="${ctx}/user">个人中心</a>
 	    </li>

@@ -3,6 +3,9 @@ package com.bugsfly.task;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.Record;
+
 public class TaskManager {
 	public static final Set<String> tags = new HashSet<String>();
 
@@ -18,5 +21,16 @@ public class TaskManager {
 	public static final String STATUS_SOLVED = "solved";// 已解决
 	public static final String STATUS_REWORKED = "reworked";// 已打回
 	public static final String STATUS_CLOSED = "closed";// 已关闭
+
+	/**
+	 * 任务列表
+	 * 
+	 * @param controller
+	 * @return
+	 */
+	public Page<Record> getTaskListPage(TaskController controller) {
+		
+		return null;
+	}
 
 }

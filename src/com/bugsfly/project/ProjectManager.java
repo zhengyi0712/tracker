@@ -59,7 +59,7 @@ public class ProjectManager {
 
 	}
 
-	public static Page<Record> getProjectList(ProjectController controller,
+	public static Page<Record> getProjectListPage(ProjectController controller,
 			String userId) {
 		StringBuilder sql = new StringBuilder();
 		List<String> params = new ArrayList<String>();
@@ -247,5 +247,14 @@ public class ProjectManager {
 		if (Db.update(sql, role, projectId, userId) != 1) {
 			throw new BusinessException("保存失败");
 		}
+	}
+
+	public static List<Record> getProjectListOfUser(String userId) {
+		String sql = " select p.*,pu.role ";
+		sql += " from project p ";
+		sql += " left join project_user pu ";
+		sql += " on pu.project_id=p.id ";
+		sql += " where pu.user_id=?";
+		return Db.find(sql, userId);
 	}
 }

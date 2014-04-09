@@ -16,7 +16,7 @@ public class ProjectController extends Controller {
 	@Before(SysAdminInterceptor.class)
 	public void allProjects() {
 
-		Page<Record> page = ProjectManager.getProjectList(this, null);
+		Page<Record> page = ProjectManager.getProjectListPage(this, null);
 		setAttr("list", page.getList());
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
@@ -26,7 +26,7 @@ public class ProjectController extends Controller {
 
 	public void myProjects() {
 		Record user = getSessionAttr(Webkeys.SESSION_USER);
-		Page<Record> page = ProjectManager.getProjectList(this, user.getStr("id"));
+		Page<Record> page = ProjectManager.getProjectListPage(this, user.getStr("id"));
 		setAttr("list", page.getList());
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));

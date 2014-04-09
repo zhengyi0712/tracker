@@ -61,7 +61,7 @@ public class LoginController extends Controller {
 			redirect(String.valueOf(referer));
 			return;
 		}
-		redirect("/issue");
+		redirect("/task");
 	}
 
 	@ClearInterceptor(ClearLayer.ALL)

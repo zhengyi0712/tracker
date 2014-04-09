@@ -6,6 +6,7 @@ import java.util.Properties;
 import com.bugsfly.login.LoginController;
 import com.bugsfly.login.LoginInterceptor;
 import com.bugsfly.project.ProjectController;
+import com.bugsfly.task.Task;
 import com.bugsfly.task.TaskController;
 import com.bugsfly.um.UMController;
 import com.bugsfly.user.UserController;
@@ -75,6 +76,8 @@ public class Config extends JFinalConfig {
 		ActiveRecordPlugin aPlugin = new ActiveRecordPlugin(c3p0Plugin);
 		aPlugin.setDialect(new MysqlDialect());
 		plugins.add(aPlugin);
+		
+		aPlugin.addMapping("task", Task.class);
 	}
 
 	@Override
@@ -83,7 +86,7 @@ public class Config extends JFinalConfig {
 		routes.add("/login", LoginController.class, "/login");
 		routes.add("/user", UserController.class, "/user");
 		routes.add("/project", ProjectController.class, "/project");
-		routes.add("/issue", TaskController.class, "/issue");
+		routes.add("/task", TaskController.class, "/task");
 
 	}
 
