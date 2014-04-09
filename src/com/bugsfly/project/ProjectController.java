@@ -1,5 +1,6 @@
 package com.bugsfly.project;
 
+import com.bugsfly.common.Webkeys;
 import com.bugsfly.exception.BusinessException;
 import com.bugsfly.user.SysAdminInterceptor;
 import com.bugsfly.user.SysAdminJSONInterceptor;
@@ -24,7 +25,13 @@ public class ProjectController extends Controller {
 	}
 
 	public void myProjects() {
-
+		Record user = getSessionAttr(Webkeys.SESSION_USER);
+		Page<Record> page = ProjectManager.getProjectList(this, user.getStr("id"));
+		setAttr("list", page.getList());
+		setAttr("pageLink",
+				PaginationUtil.generatePaginateHTML(getRequest(), page));
+		keepPara();
+		render("myProjects.ftl");
 	}
 
 	/**
@@ -100,6 +107,7 @@ public class ProjectController extends Controller {
 		}
 		renderJson();
 	}
+
 	/**
 	 * 设置角色
 	 */
@@ -113,4 +121,5 @@ public class ProjectController extends Controller {
 		}
 		renderJson();
 	}
+
 }
