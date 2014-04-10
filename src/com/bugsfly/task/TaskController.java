@@ -3,7 +3,9 @@ package com.bugsfly.task;
 import java.util.List;
 
 import com.bugsfly.common.Webkeys;
+import com.bugsfly.project.Project;
 import com.bugsfly.project.ProjectManager;
+import com.bugsfly.user.User;
 import com.bugsfly.util.PaginationUtil;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
@@ -20,28 +22,23 @@ public class TaskController extends Controller {
 	 */
 	public void index() {
 		Record user = getSessionAttr(Webkeys.SESSION_USER);
+		// 项目后面会重构，统一使用model，这里暂时先凑合用
+		User userModel = User.dao.findById(user.get("is"));
 		String projectId = getPara();
-		Record project = null;
-		List<Record> projectList = null;
-		if (StringKit.notBlank(projectId)) {
-			project = ProjectManager.getProject(projectId);
-		}
+		Project project = null;
 
-		if (project != null) {
-			String role = ProjectManager.getRole(projectId, user.getStr("id"));
-			project.set("role", role);
-		}
-
-		if (project == null) {
+		if (StringKit.isBlank(projectId)) {
 			projectId = getCookie("project");
-			project = ProjectManager.getProject(projectId);
+		}
+
+		if (StringKit.notBlank(projectId)) {
+			project = Project.dao.findById(projectId);
 		}
 
 		if (project == null) {
-			projectList = ProjectManager
-					.getProjectListOfUser(user.getStr("id"));
-			if (projectList != null && projectList.size() > 0) {
-				project = projectList.get(0);
+			List<Project> projects = userModel.getProjects();
+			if (projects != null && projects.size() > 0) {
+				project = projects.get(0);
 			}
 		}
 
@@ -49,7 +46,9 @@ public class TaskController extends Controller {
 			render("index.ftl");
 			return;
 		}
+		
 		setAttr("project", project);
+		
 		String selectSql = " select t.id,t.title,t.status,t.create_time ";
 		selectSql += " ,t.finish_time,u.zh_name assign_user ";
 		String sqlExceptSelect = " from task t left join user u on u.id=t.assign_user_id ";
@@ -60,12 +59,8 @@ public class TaskController extends Controller {
 		setAttr("list", page.getList());
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
-		// 项目列表下拉菜单数据
-		if (projectList == null) {
-			projectList = ProjectManager
-					.getProjectListOfUser(user.getStr("id"));
-		}
-		setAttr("projectList", projectList);
+
+		setAttr("projectList", userModel.getProjects());
 		// 保存cookie
 		if (getCookie("project") == null) {
 			setCookie("project", project.getStr("id"), 60 * 60 * 24 * 15);
