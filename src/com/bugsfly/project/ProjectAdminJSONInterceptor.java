@@ -1,10 +1,10 @@
 package com.bugsfly.project;
 
 import com.bugsfly.common.Webkeys;
+import com.bugsfly.user.User;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Record;
 
 public class ProjectAdminJSONInterceptor implements Interceptor {
 
@@ -13,29 +13,27 @@ public class ProjectAdminJSONInterceptor implements Interceptor {
 
 		Controller controller = ai.getController();
 
-		Record user = (Record) controller.getSession().getAttribute(
-				Webkeys.SESSION_USER);
+		User user = controller.getSessionAttr(Webkeys.SESSION_USER);
 
-		if (user.getBoolean("sysAdmin")) {
+		if (user.isSysAdmin()) {
 			ai.invoke();
 			return;
 		}
 
-		String projectId = controller.getPara();
-		String role = ProjectManager.getRole(projectId, user.getStr("id"));
+		Project project = Project.dao.findById(controller.getPara());
 
-		if (role == null) {
-			projectId = controller.getPara("projectId");
-			role = ProjectManager.getRole(projectId, user.getStr("id"));
+		if (project == null) {
+			project = Project.dao.findById(controller.getPara("projectId"));
 		}
 
-		if (role == null) {
-			controller.setAttr("msg", "无法确定角色");
+		if (project == null) {
+			controller.setAttr("msg", "相关项目不存在 ");
 			controller.renderJson();
 			return;
 		}
 
-		if (!ProjectManager.ROLE_ADMIN.equals(role)) {
+		if (!ProjectManager.ROLE_ADMIN.equals(project.getRoleOfUser(user
+				.getId()))) {
 			controller.setAttr("msg", "权限不足");
 			return;
 		}

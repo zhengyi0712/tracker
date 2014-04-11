@@ -5,10 +5,12 @@ import java.util.Properties;
 
 import com.bugsfly.login.LoginController;
 import com.bugsfly.login.LoginInterceptor;
+import com.bugsfly.project.Project;
 import com.bugsfly.project.ProjectController;
 import com.bugsfly.task.Task;
 import com.bugsfly.task.TaskController;
 import com.bugsfly.um.UMController;
+import com.bugsfly.user.User;
 import com.bugsfly.user.UserController;
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
@@ -78,6 +80,8 @@ public class Config extends JFinalConfig {
 		plugins.add(aPlugin);
 		
 		aPlugin.addMapping("task", Task.class);
+		aPlugin.addMapping("user", User.class);
+		aPlugin.addMapping("project", Project.class);
 	}
 
 	@Override

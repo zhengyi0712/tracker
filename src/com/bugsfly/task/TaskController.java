@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.bugsfly.common.Webkeys;
 import com.bugsfly.project.Project;
-import com.bugsfly.project.ProjectManager;
 import com.bugsfly.user.User;
 import com.bugsfly.util.PaginationUtil;
 import com.jfinal.core.Controller;
@@ -21,9 +20,8 @@ public class TaskController extends Controller {
 	 * 如果cookie里没有可用的项目信息，就显示第一个项目的任务列表。
 	 */
 	public void index() {
-		Record user = getSessionAttr(Webkeys.SESSION_USER);
+		User user = getSessionAttr(Webkeys.SESSION_USER);
 		// 项目后面会重构，统一使用model，这里暂时先凑合用
-		User userModel = User.dao.findById(user.get("is"));
 		String projectId = getPara();
 		Project project = null;
 
@@ -36,7 +34,7 @@ public class TaskController extends Controller {
 		}
 
 		if (project == null) {
-			List<Project> projects = userModel.getProjects();
+			List<Project> projects = user.getProjects();
 			if (projects != null && projects.size() > 0) {
 				project = projects.get(0);
 			}
@@ -60,7 +58,7 @@ public class TaskController extends Controller {
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
 
-		setAttr("projectList", userModel.getProjects());
+		setAttr("projectList", user.getProjects());
 		// 保存cookie
 		if (getCookie("project") == null) {
 			setCookie("project", project.getStr("id"), 60 * 60 * 24 * 15);

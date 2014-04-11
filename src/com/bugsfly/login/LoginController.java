@@ -5,13 +5,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.bugsfly.common.Webkeys;
-import com.bugsfly.user.UserManager;
+import com.bugsfly.user.User;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.ClearInterceptor;
 import com.jfinal.aop.ClearLayer;
 import com.jfinal.core.ActionKey;
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Record;
 
 public class LoginController extends Controller {
 	@ClearInterceptor(ClearLayer.ALL)
@@ -26,9 +25,8 @@ public class LoginController extends Controller {
 	public void login() {
 		String account = getPara("account");
 		String pwd = getPara("pwd");
-		UserManager userManager = new UserManager();
 
-		Record user = userManager.getUserByAccount(account);
+		 User user = User.dao.getByAccount(account);
 
 		if (user == null) {
 			setAttr("msg", "帐号或者密码错误");
@@ -50,7 +48,7 @@ public class LoginController extends Controller {
 		}
 
 		// 更新登录时间
-		userManager.updateLoginTime(user.getStr("id"));
+		user.updateLoginTime();
 
 		// 如果有引用链接，回到登录前的页面，没有就去首页
 		HttpSession session = getSession();
