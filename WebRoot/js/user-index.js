@@ -20,6 +20,7 @@ $(function() {
 					return;
 				}
 				e.preventDefault();
+				$("#col-content").html("loading&nbsp;<i class='icon-spinner icon-spin icon-2x'></i>");
 				$("#col-content").load($(this).attr("href"));
 				currentUrl = href;
 			});
@@ -27,6 +28,7 @@ $(function() {
 	$("#user-menu a.active").trigger("click");
 });
 function refresh() {
+	$("#col-content").html("loading&nbsp;<i class='icon-spinner icon-spin icon-2x'></i>");
 	$("#col-content").load(currentUrl);
 	$(".modal").modal("hide");
 	$(".modal-backdrop").hide();

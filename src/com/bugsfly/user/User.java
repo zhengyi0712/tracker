@@ -3,6 +3,7 @@ package com.bugsfly.user;
 import java.util.List;
 
 import com.bugsfly.project.Project;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Model;
 
 public class User extends Model<User> {
@@ -18,4 +19,10 @@ public class User extends Model<User> {
 		sql += " where pu.user_id=? ";
 		return Project.dao.find(sql, this.getStr("id"));
 	}
+
+	public boolean isSysAdmin() {
+		return Db.findFirst("select * from sys_admin where admin_id=?",
+				this.getStr("id")) != null;
+	}
+
 }
