@@ -8,6 +8,7 @@ import com.bugsfly.project.Project;
 import com.bugsfly.user.User;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Model;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
 /**
@@ -49,5 +50,10 @@ public class Task extends Model<Task> {
 
 	public User getAssignUser() {
 		return User.dao.findById(this.getStr("assign_user_id"));
+	}
+
+	public Page<Task> paginate(int pn, String projectId) {
+		String sqlExceptSelect = " from task where project_id=? ";
+		return paginate(pn, 20, "select *", sqlExceptSelect,projectId);
 	}
 }

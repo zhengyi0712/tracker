@@ -8,9 +8,7 @@ import com.bugsfly.user.User;
 import com.bugsfly.util.PaginationUtil;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
-import com.jfinal.plugin.activerecord.Record;
 
 public class TaskController extends Controller {
 	/**
@@ -21,7 +19,6 @@ public class TaskController extends Controller {
 	 */
 	public void index() {
 		User user = getSessionAttr(Webkeys.SESSION_USER);
-		// 项目后面会重构，统一使用model，这里暂时先凑合用
 		String projectId = getPara();
 		Project project = null;
 
@@ -44,24 +41,19 @@ public class TaskController extends Controller {
 			render("index.ftl");
 			return;
 		}
-		
+
 		setAttr("project", project);
-		
-		String selectSql = " select t.id,t.title,t.status,t.create_time ";
-		selectSql += " ,t.finish_time,u.zh_name assign_user ";
-		String sqlExceptSelect = " from task t left join user u on u.id=t.assign_user_id ";
-		sqlExceptSelect += "  where project_id=?  ";
-		Page<Record> page = Db.paginate(PaginationUtil.getPageNumber(this), 20,
-				selectSql, sqlExceptSelect, project.getStr("id"));
+
+		Page<Task> page = Task.dao.paginate(PaginationUtil.getPageNumber(this),
+				project.getId());
 
 		setAttr("list", page.getList());
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
 
-		setAttr("projectList", user.getProjects());
 		// 保存cookie
 		if (getCookie("project") == null) {
-			setCookie("project", project.getStr("id"), 60 * 60 * 24 * 15);
+			setCookie("project", project.getId(), 60 * 60 * 24 * 15);
 		}
 		render("index.ftl");
 
