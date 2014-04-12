@@ -1,7 +1,7 @@
 <p>
 	查看项目<strong class="text-danger">${project.name}</strong>成员
 	<#if projectAdmin?? >
-	<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#add-user-modal" data-remote="${ctx}/user/addUser?projectId=${project.id}">
+	<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#add-user-modal" data-remote="${ctx}/user/addUser/${project.id}">
 		<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;创建新的用户
 	</button>
 	<button class="btn btn-warning btn-xs" type="button" data-toggle="modal" data-target="#add-existing-user-modal">
@@ -16,7 +16,7 @@
 		<div class="modal-content"></div>
 	</div>
 </div>
-<#--添加系统已经用户模态框-->
+<#--添加系统已有用户模态框-->
 <div class="modal fade" id="add-existing-user-modal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -35,18 +35,18 @@
 					</button>
 					<span class="text-muted">搜索结果不包含项目已有用户</span>
 				</form>
-				<form role="form" name="addExistingUserForm" action="${ctx}/user/addUsersToProject" style="margin-bottom:0;" method="post">
-					<input type="hidden" name="projectId" value="${project.id}"/>
+				<form role="form" name="addExistingUserForm" action="${ctx}/project/addCurrentUsers" style="margin-bottom:0;" method="post">
+					<input type="hidden" name="project.id" value="${project.id}"/>
 					<div class="form-group" id="add-existing-user-list"></div>
 					<div class="form-group" id="add-existing-user-role" style="display:none;">
 						<label class="radio-inline">
-							<input type="radio" name="role" value="DEVELOPER" checked="checked">开发
+							<input type="radio" name="project.role" value="DEVELOPER" checked="checked">开发
 						</label>
 						<label class="radio-inline">
-							<input type="radio" name="role" value="TESTER">测试
+							<input type="radio" name="project.role" value="TESTER">测试
 						</label>
 						<label class="radio-inline">
-							<input type="radio" name="role" value="ADMIN">管理员
+							<input type="radio" name="project.role" value="ADMIN">管理员
 						</label>
 					</div>
 				</form>
@@ -185,7 +185,7 @@
 			ensureText:"是的，想好了",
 			cancelText:"不好意思，点错了",
 			ensure:function(){
-				var data = "projectId=${project.id}&userId="+userId+"&role="+role;
+				var data = "project.id=${project.id}&user.id="+userId+"&project.role="+role;
 				$.post("${ctx}/project/setRole",data,function(json){
 					if(!json.ok){
 						showAlert(json.msg);
@@ -199,11 +199,11 @@
 	function kickUser(userId,username){
 		showConfirm({
 			title:"移出用户",
-			content:"确定要将<strong class='text-danger'>"+username+"</strong>踢出项目吗？",
+			content:"确定要将<strong class='text-danger'>"+username+"</strong>移出项目吗？",
 			ensureText:"我想好了",
 			cancelText:"呃，我再想想吧",
 			ensure:function(){
-				var data = "projectId=${project.id}&userId="+userId;
+				var data = "project.id=${project.id}&user.id="+userId;
 				$.post("${ctx}/project/kickUser",data,function(json){
 					if(!json.ok){
 						showAlert(json.msg);

@@ -36,8 +36,8 @@
 				<td>
 					<a href="#menu-${p.id}" data-toggle="tooltip-menu" data-placement="bottom" data-container="#col-content" >${p.name}</a>
 					<div class="tooltip-menu" id="menu-${p.id}" >
-						<a class="list-group-item" href="${ctx}/user/usersOfProject/${p.id}">查看项目成员</a>
-						<a class="list-group-item" href="${ctx}/task/${p.id}">查看任务</a>
+						<a class="list-group-item" href="${ctx}/project/showUsers/${p.id}">查看项目成员</a>
+						<a class="list-group-item" href="javascript:location='${ctx}/task/${p.id}';">查看任务</a>
 						<#if p.role == 'ADMIN' >
 						<a class="list-group-item" data-toggle="modal" data-target="#modify-intro-modal" href="${ctx}/project/modifyIntro/${p.id}">修改简介</a>
 						</#if>

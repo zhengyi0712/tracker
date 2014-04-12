@@ -3,10 +3,10 @@
 	<h4 class="modal-title">修改项目<strong class="text-danger">${project.name}</strong>的简介</h4>
 </div>
 <form role="form" action="${ctx}/project/updateIntro" method="post" name="modifyProjectForm" style="margin-bottom:0;" >
-<input type="hidden" name="projectId" value="${project.id}"/>
+<input type="hidden" name="project.id" value="${project.id}"/>
 <div class="modal-body">
 	<div class="form-group">
-		<textarea rows="5" class="form-control" name="intro">${project.intro}</textarea>
+		<textarea rows="5" class="form-control" name="project.intro">${project.intro!}</textarea>
 	</div>
 </div>
 <div class="modal-footer">
@@ -15,8 +15,13 @@
 </div>
 </form>
 <script type="text/javascript">
-	$(document.modifyProjectForm).submit(function(){
-		$(this).ajaxSubmit({
+	$(document.modifyProjectForm).validate({
+		rules:{
+			"project.intro":{
+				maxlength:200
+			}	
+		},submitHandler:function(form){
+			$(form).ajaxSubmit({
 			success:function(json){
 				if(!json.ok){
 					showAlert(json.msg);
@@ -25,6 +30,6 @@
 				}
 			}
 		});
-		return false;
+		}
 	});
 </script>

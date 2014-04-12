@@ -194,7 +194,6 @@ jQuery.ajaxSetup({
 			content : content,
 			after : function() {
 				$(".modal").modal("hide");
-				$(".modal-backdrop").hide();
 				if(isUnLogin){
 					location.reload();
 				}

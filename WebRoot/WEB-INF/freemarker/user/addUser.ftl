@@ -8,31 +8,31 @@
 </div>
 <form class="form-horizontal" role="form" action="${ctx}/user/saveUser" style="margin-bottom:0;" name="userSaveForm" method="post">
 <#if project?? >
-	<input type="hidden" name="projectId" value="${project.id}">
+	<input type="hidden" name="project.id" value="${project.id}">
 </#if>
 <div class="modal-body">
 	<div class="form-group">
 		<label class="control-label col-md-2" for="zhName">中文名：</label>
 		<div class="col-md-10">
-			<input type="text" class="form-control" name="zhName" minlength="2" maxlength="5" required id="zhName" placeholder="2-5个汉字"/>
+			<input type="text" class="form-control" name="user.zh_name" minlength="2" maxlength="5" required id="zhName" placeholder="2-5个汉字"/>
 		</div>
 	</div>
 	<div class="form-group">
 		<label class="control-label col-md-2" for="enName">英文名：</label>
 		<div class="col-md-10">
-			<input type="text" class="form-control" name="enName" minlength="2" maxlength="20" id="enName" placeholder="2-20个英文字母"/>
+			<input type="text" class="form-control" name="user.en_name" minlength="2" maxlength="20" id="enName" placeholder="2-20个英文字母"/>
 		</div>
 	</div>
 	<div class="form-group">
 		<label class="control-label col-md-2" for="email">邮箱：</label>
 		<div class="col-md-10">
-			<input type="email" class="form-control" name="email" required id="email"/>
+			<input type="email" class="form-control" name="user.email" required id="email"/>
 		</div>
 	</div>
 	<div class="form-group">
 		<label class="control-label col-md-2" for="mobile">手机号：</label>
 		<div class="col-md-10">
-			<input type="mobile" class="form-control" name="mobile" required id="mobile"/>
+			<input type="mobile" class="form-control" name="user.mobile" required id="mobile"/>
 		</div>
 	</div>
 	<#if project??>
@@ -40,13 +40,13 @@
 		<label class="control-label col-md-2">角色：</label>
 		<div class="col-md-10">
 			<label class="radio-inline">
-  				<input type="radio" name="role" value="DEVELOPER" checked="checked">开发
+  				<input type="radio" name="project.role" value="DEVELOPER" checked="checked">开发
 			</label>
 			<label class="radio-inline">
-  				<input type="radio" name="role" value="TESTER">测试
+  				<input type="radio" name="project.role" value="TESTER">测试
 			</label>
 			<label class="radio-inline">
-  				<input type="radio" name="role" value="ADMIN">管理员
+  				<input type="radio" name="project.role" value="ADMIN">管理员
 			</label>
 		</div>
 	</div>	
@@ -60,18 +60,19 @@
 <script type="text/javascript">
 $(document.userSaveForm).validate({
 		rules:{
-			zhName:{zhName:true},
-			enName:{enName:true},
-			mobile:{
+			"user.zh_name":{zhName:true},
+			"user.en_name":{enName:true},
+			"user.mobile":{
 				remote:"${ctx}/user/checkMobileExist"
-			},email:{
+				},
+			"user.email":{
 				remote:"${ctx}/user/checkEmailExist"
-			}
+				}
 		},
 		messages:{
-			mobile:{
+			"user.mobile":{
 				remote:"手机号已经被使用了，请换一个试试"
-			},email:{
+			},"user.email":{
 				remote:"邮箱已经被使用了，请换一个试试"
 			}
 		},submitHandler:function(form){

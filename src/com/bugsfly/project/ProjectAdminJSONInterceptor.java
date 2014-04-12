@@ -15,15 +15,10 @@ public class ProjectAdminJSONInterceptor implements Interceptor {
 
 		User user = controller.getSessionAttr(Webkeys.SESSION_USER);
 
-		if (user.isSysAdmin()) {
-			ai.invoke();
-			return;
-		}
-
 		Project project = Project.dao.findById(controller.getPara());
 
 		if (project == null) {
-			project = Project.dao.findById(controller.getPara("projectId"));
+			project = Project.dao.findById(controller.getPara("project.id"));
 		}
 
 		if (project == null) {
@@ -32,8 +27,12 @@ public class ProjectAdminJSONInterceptor implements Interceptor {
 			return;
 		}
 
-		if (!ProjectManager.ROLE_ADMIN.equals(project.getRoleOfUser(user
-				.getId()))) {
+		if (user.isSysAdmin()) {
+			ai.invoke();
+			return;
+		}
+
+		if (!Project.ROLE_ADMIN.equals(project.getRoleOfUser(user.getId()))) {
 			controller.setAttr("msg", "权限不足");
 			return;
 		}

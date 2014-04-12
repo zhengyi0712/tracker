@@ -32,13 +32,13 @@ td.intro{
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="ipt-project-name">名称：</label>
 					<div class="col-md-10">
-						<input type="text" minlength="2" maxlength="30" id="ipt-project-name" name="name" class="form-control" placeholder="30字以内" required />
+						<input type="text" minlength="2" maxlength="30" id="ipt-project-name" name="project.name" class="form-control" placeholder="30字以内" required />
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="textarea-project-intro">简介：</label>
 					<div class="col-md-10">
-						<textarea class="form-control" name="intro" id="textarea-project-intro"></textarea>
+						<textarea class="form-control" name="project.intro" id="textarea-project-intro"></textarea>
 					</div>
 				</div>
 			</div>
@@ -70,14 +70,14 @@ td.intro{
 				<td>
 					<a href="#menu-${p.id}" data-toggle="tooltip-menu" data-placement="bottom" data-container="#col-content" >${p.name}</a>
 					<div class="tooltip-menu" id="menu-${p.id}" >
-						<a class="list-group-item" href="${ctx}/user/usersOfProject/${p.id}">查看项目成员</a>
-						<a class="list-group-item" href="${ctx}/issue/${p.id}">查看相关问题</a>
+						<a class="list-group-item" href="${ctx}/project/showUsers/${p.id}">查看项目成员</a>
+						<a class="list-group-item" href="javascript:location='${ctx}/task/${p.id}';">查看相关任务</a>
 						<a class="list-group-item" data-toggle="modal" data-target="#modify-intro-modal" href="${ctx}/project/modifyIntro/${p.id}">修改简介</a>
 						<a class="list-group-item" href="#" onclick="deleteProject('${p.id}','${p.name}')">删除项目</a>
 						<a class="list-group-item" data-dismiss="tooltip-menu" href="#">取消</a>
 					</div>
 				</td>
-				<td>${p.u_count!0}</td>
+				<td>${p.userCount!0}</td>
 				<td>${p.create_time}</td>
 				<#if p.intro?? && p.intro?length gt 20 >
 				<td class="intro hidden-xs"  data-toggle="popover" data-content="${p.intro}">
@@ -111,12 +111,15 @@ td.intro{
 	});
 	$(document.addProjectForm).validate({
 		rules:{
-			name:{
+			"project.name":{
 				remote:"${ctx}/project/checkNameExist"
+			},
+			"project.intro":{
+				maxlength:200
 			}
 		},
 		messages:{
-			name:{
+			"project.name":{
 				remote:"名称已经被使用了，换一个试试"
 			}
 		},

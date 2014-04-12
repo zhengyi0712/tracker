@@ -1,17 +1,21 @@
 package com.bugsfly.user;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.bugsfly.common.Webkeys;
-import com.bugsfly.exception.BusinessException;
-import com.bugsfly.project.ProjectAdminJSONInterceptor;
-import com.bugsfly.project.ProjectManager;
+import com.bugsfly.project.Project;
 import com.bugsfly.util.PaginationUtil;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -40,15 +44,12 @@ public class UserController extends Controller {
 
 		sql.append(" from user u ");
 
-		if (StringKit.notBlank(projectId)) {
-			sql.append(" left join project_user pu ");
-			sql.append(" on pu.user_id=u.id ");
-		}
-
 		sql.append(" where u.disabled=0 ");
 
 		if (StringKit.notBlank(projectId)) {
-			sql.append(" and (pu.project_id is null or pu.project_id!=?) ");
+			sql.append(" and u.id not in ( ");
+			sql.append(" select user_id from project_user ");
+			sql.append(" where project_id=?) ");
 			params.add(projectId);
 
 		}
@@ -63,8 +64,8 @@ public class UserController extends Controller {
 			params.add("%" + key + "%");
 			params.add("%" + key + "%");
 		}
-		Page<Record> page = Db.paginate(1, 10, "select distinct u.* ", sql.toString(),
-				params.toArray());
+		Page<Record> page = Db.paginate(1, 10, "select distinct u.* ",
+				sql.toString(), params.toArray());
 		System.err.println("SQL:" + sql.toString());
 		setAttr("list", page.getList());
 		renderJson();
@@ -74,7 +75,7 @@ public class UserController extends Controller {
 	 * 检查邮箱是否存在
 	 */
 	public void checkEmailExist() {
-		String email = getPara("email");
+		String email = getPara("user.email");
 		boolean isExist = Db.findFirst("select 1 from user where email=?",
 				email) != null;
 		if (isExist) {
@@ -88,7 +89,7 @@ public class UserController extends Controller {
 	 * 检查手机号是否存在
 	 */
 	public void checkMobileExist() {
-		String mobile = getPara("mobile");
+		String mobile = getPara("user.mobile");
 		boolean isExist = Db.findFirst("select 1 from user where mobile=?",
 				mobile) != null;
 		if (isExist) {
@@ -103,7 +104,8 @@ public class UserController extends Controller {
 	 */
 	@Before(SysAdminInterceptor.class)
 	public void allUsers() {
-		Page<Record> page = UserManager.getUserPage(this, null);
+		Page<User> page = User.dao.paginate(PaginationUtil.getPageNumber(this),
+				getPara("key"));
 		setAttr("list", page.getList());
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
@@ -111,13 +113,63 @@ public class UserController extends Controller {
 		render("allUsers.ftl");
 	}
 
-	@Before(UserJSONValidator.class)
+	/**
+	 * 保存用户
+	 */
+	@Before(UserValidator.class)
 	public void saveUser() {
-		try {
-			UserManager.saveUser(this);
+		User sessionUser = getSessionAttr(Webkeys.SESSION_USER);
+		final Project project = Project.dao.findById(getPara("project.id"));
+		// 如果是添加用户到项目，需要是项目管理员。否则必须是系统管理员
+		if (project == null) {
+			if (!sessionUser.isSysAdmin()) {
+				setAttr("msg", "抱歉，您无权限进行些操作");
+				renderJson();
+				return;
+			}
+		} else {
+			if (!Project.ROLE_ADMIN.equals(project.getRoleOfUser(sessionUser
+					.getId())) && !sessionUser.isSysAdmin()) {
+				setAttr("msg", "抱歉，您无权限进行些操作");
+				renderJson();
+				return;
+			}
+		}
+
+		final User user = getModel(User.class);
+		user.set("id", UUID.randomUUID().toString());
+		user.set("create_time", new Date());
+		String mobile = user.getStr("mobile");
+		String pwd = mobile.substring(mobile.length() - 6);
+		String salt = UUID.randomUUID().toString();
+		String md5 = DigestUtils.md5Hex(pwd + salt);
+		user.set("salt", salt);
+		user.set("md5", md5);
+
+		final String role = getPara("project.role");
+		boolean ok = Db.tx(new IAtom() {
+
+			@Override
+			public boolean run() throws SQLException {
+				if (!user.save()) {
+					return false;
+				}
+				if (project != null) {
+					String sql = "insert into project_user(project_id,user_id,role) ";
+					sql += " values(?,?,?) ";
+					if (Db.update(sql, project.getId(), user.getId(), role) != 1) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		});
+
+		if (ok) {
 			setAttr("ok", true);
-		} catch (BusinessException e) {
-			setAttr("msg", e.getMessage());
+		} else {
+			setAttr("msg", "保存失败");
 		}
 		renderJson();
 	}
@@ -127,72 +179,25 @@ public class UserController extends Controller {
 	 */
 	@Before(SysAdminJSONInterceptor.class)
 	public void toggleStatus() {
-		try {
-			UserManager.toggleStatus(this);
-			setAttr("ok", true);
-		} catch (BusinessException e) {
-			setAttr("msg", e.getMessage());
+		User user = User.dao.findById(getPara("userId"));
+		if (user == null) {
+			setAttr("msg", "找不到相关的用户");
+			renderJson();
+			return;
 		}
+
+		user.set("disabled", !user.getBoolean("disabled"));
+		user.keep("id", "disabled");
+		user.update();
+		setAttr("ok", true);
 		renderJson();
-	}
-
-	/**
-	 * 项目成员，必须是该项目的成员或者系统管理员才可以查看
-	 */
-	public void usersOfProject() {
-		Record user = getSessionAttr(Webkeys.SESSION_USER);
-
-		String projectId = getPara();
-		Record project = ProjectManager.getProject(projectId);
-		if (project == null) {
-			setAttr(Webkeys.REQUEST_MESSAGE, "要查看的项目不存在");
-			render(Webkeys.PROMPT_PAGE_PATH);
-			return;
-		}
-		setAttr("project", project);
-
-		String role = ProjectManager.getRole(projectId, user.getStr("id"));
-		if (role == null && !user.getBoolean("sysAdmin")) {
-			setAttr(Webkeys.REQUEST_MESSAGE, "您无权查看此项目的成员");
-			render(Webkeys.PROMPT_PAGE_PATH);
-			return;
-		}
-
-		if (user.getBoolean("sysAdmin")
-				|| ProjectManager.ROLE_ADMIN.equals(role)) {
-			setAttr("projectAdmin", true);
-		}
-
-		Page<Record> page = UserManager.getUserPage(this, projectId);
-		setAttr("list", page.getList());
-		setAttr("pageLink",
-				PaginationUtil.generatePaginateHTML(getRequest(), page));
-		render("usersOfProject.ftl");
 	}
 
 	/**
 	 * 添加用户
 	 */
 	public void addUser() {
-		String projectId = getPara("projectId");
-		if (StringKit.notBlank(projectId)) {
-			Record project = ProjectManager.getProject(projectId);
-			setAttr("project", project);
-		}
+		setAttr("project", Project.dao.findById(getPara()));
 		render("addUser.ftl");
-	}
-
-	/**
-	 * 添加用户到项目
-	 */
-	@Before(ProjectAdminJSONInterceptor.class)
-	public void addUsersToProject() {
-		try {
-			UserManager.addUsersToProject(this);
-			setAttr("ok", true);
-		} catch (BusinessException e) {
-			setAttr("msg", e.getMessage());
-		}
-		renderJson();
 	}
 }
