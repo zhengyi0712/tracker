@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import com.bugsfly.common.RegExp;
 import com.bugsfly.common.Webkeys;
 import com.bugsfly.project.Project;
 import com.bugsfly.util.PaginationUtil;
@@ -199,5 +200,47 @@ public class UserController extends Controller {
 	public void addUser() {
 		setAttr("project", Project.dao.findById(getPara()));
 		render("addUser.ftl");
+	}
+
+	/**
+	 * 显示修改密码页面
+	 */
+	public void showChpwd() {
+		render("showChpwd.ftl");
+	}
+
+	/**
+	 * 更新密码
+	 */
+	public void updatePwdJSON() {
+		User user = getSessionAttr(Webkeys.SESSION_USER);
+		String oldPwd = getPara("oldPwd");
+		String newPwd1 = getPara("newPwd1");
+		String newPwd2 = getPara("newPwd2");
+
+		String salt = user.getStr("salt");
+		if (!DigestUtils.md5Hex(oldPwd + salt).equals(user.getStr("md5"))) {
+			setAttr("msg", "原密码不正确");
+			renderJson();
+			return;
+		}
+		if (StringKit.isBlank(newPwd1) || !newPwd1.matches(RegExp.PASSWORD)) {
+			setAttr("msg", "新密码不符合规范");
+			renderJson();
+			return;
+		}
+		if (!newPwd1.equals(newPwd2)) {
+			setAttr("msg", "两次输入密码不一致");
+			renderJson();
+			return;
+		}
+		// 更改密码
+		user.set("md5", DigestUtils.md5Hex(newPwd1 + salt));
+		user.keep("id", "md5");
+		user.update();
+		getSession().invalidate();
+		setAttr("ok", true);
+		renderJson();
+
 	}
 }

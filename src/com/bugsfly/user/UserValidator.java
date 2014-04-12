@@ -32,9 +32,7 @@ public class UserValidator extends Validator {
 		}
 		String role = c.getPara("project.role");
 		if (StringKit.notBlank(role)) {
-			if (!Project.ROLE_ADMIN.equals(role)
-					&& !Project.ROLE_DEVELOPER.equals(role)
-					&& !Project.ROLE_TESTER.equals(role)) {
+			if (!Project.checkRole(role)) {
 				addError("msg", "未知的项目角色");
 			}
 		}

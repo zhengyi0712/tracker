@@ -18,7 +18,7 @@
 				<div class="col-md-2">
 					<div class="list-group" id="user-menu">
 						<a class="list-group-item active" href="${ctx}/user/userinfo">基本信息</a>		
-						<a class="list-group-item">修改密码</a>
+						<a class="list-group-item" href="${ctx}/user/showChpwd">修改密码</a>
 						<a class="list-group-item" href="${ctx}/project/myProjects">我的项目</a>		
 						<#--管理员菜单-->
 						<#if session.user.sysAdmin>

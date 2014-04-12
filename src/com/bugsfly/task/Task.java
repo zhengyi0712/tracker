@@ -32,6 +32,13 @@ public class Task extends Model<Task> {
 		tags.add("新功能");
 	}
 
+	public static boolean checkStatus(String status) {
+		return STATUS_CREATED.equals(status) || STATUS_ASSIGNED.equals(status)
+				|| STATUS_SOLVED.equals(status)
+				|| STATUS_REWORKED.equals(status)
+				|| STATUS_CLOSED.equals(status);
+	}
+
 	public List<Record> getTags() {
 		return Db.find("select * from tag where task_id=?", this.getStr("id"));
 	}
