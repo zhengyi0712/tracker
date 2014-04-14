@@ -200,7 +200,7 @@ public class ProjectController extends Controller {
 		}
 
 		String sql = "select count(*) from task where project_id=? and assign_user_id=? and status !=? ";
-		if (Db.queryLong(sql, project.getId(), userId, Task.STATUS_SOLVED) > 0) {
+		if (Db.queryLong(sql, project.getId(), userId, Task.STATUS_FINISHED) > 0) {
 			setAttr("msg", "该成员有已分派且未完成的任务，不能踢除");
 			renderJson();
 			return;
