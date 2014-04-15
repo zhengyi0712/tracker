@@ -21,12 +21,17 @@
 				<input type="text" class="input-sm form-control" placeholder="标题/分派成员" maxlength="20"/>
 			</div>
 			<button class="btn btn-default btn-sm"><span class="glyphicon glyphicon-search"></span>&nbsp;搜索</button>
-			<button type="button" class="btn btn-warning btn-sm">
+			<button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-add-task" data-remote="${ctx}/task/showCreateTask/${project.id}">
 				<span class="glyphicon glyphicon-plus"></span>&nbsp;添加新的任务
 			</button>
 		</form>
-		
-		
+		<#--添加新任务模态框start-->
+		<div class="modal fade" role="dialog" id="modal-add-task">
+			<div class="modal-dialog">
+				<div class="modal-content"></div>
+			</div>
+		</div>
+		<#--添加新任务模态框end-->
 		<#--任务列表-->
 			<#if list?? && list?size gt 0 >
 			
