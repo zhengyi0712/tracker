@@ -40,11 +40,16 @@ public class Task extends Model<Task> {
 	}
 
 	public List<String> getTags() {
-		return Db.query("select name from tag where task_id=?", this.getStr("id"));
+		return Db.query("select name from tag where task_id=?",
+				this.getStr("id"));
 	}
-	
+
 	public Project getProject() {
 		return Project.dao.findById(this.getStr("project_id"));
+	}
+
+	public User getCreateUser() {
+		return User.dao.findById(this.getStr("create_user_id"));
 	}
 
 	public User getAssignUser() {
@@ -53,6 +58,6 @@ public class Task extends Model<Task> {
 
 	public Page<Task> paginate(int pn, String projectId) {
 		String sqlExceptSelect = " from task where project_id=? ";
-		return paginate(pn, 20, "select *", sqlExceptSelect,projectId);
+		return paginate(pn, 20, "select *", sqlExceptSelect, projectId);
 	}
 }

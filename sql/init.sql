@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : mysql
-Source Server Version : 50612
+Source Server Version : 50525
 Source Host           : localhost:3306
 Source Database       : bugsfly
 
 Target Server Type    : MYSQL
-Target Server Version : 50612
+Target Server Version : 50525
 File Encoding         : 65001
 
-Date: 2014-04-09 12:55:27
+Date: 2014-04-16 23:22:52
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -59,11 +59,9 @@ DROP TABLE IF EXISTS `tag`;
 CREATE TABLE `tag` (
   `id` varchar(36) NOT NULL,
   `name` varchar(36) NOT NULL,
-  `task_id` varchar(36) CHARACTER SET utf8 NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_issue_tag` (`task_id`),
-  CONSTRAINT `fk_task_tag` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `task_id` varchar(36) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for task
@@ -81,8 +79,8 @@ CREATE TABLE `task` (
   PRIMARY KEY (`id`),
   KEY `fk_bug_project` (`project_id`) USING BTREE,
   KEY `fk_bug_user` (`assign_user_id`) USING BTREE,
-  CONSTRAINT `fk_user_task` FOREIGN KEY (`assign_user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `fk_project_task` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`)
+  CONSTRAINT `fk_project_task` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`),
+  CONSTRAINT `fk_user_task` FOREIGN KEY (`assign_user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------

@@ -64,9 +64,7 @@ public class TaskController extends Controller {
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
 
 		// 保存cookie
-		if (getCookie("project") == null) {
-			setCookie("project", project.getId(), 60 * 60 * 24 * 15);
-		}
+		setCookie("project", project.getId(), 60 * 60 * 24 * 15);
 
 		render("index.ftl");
 
@@ -82,8 +80,8 @@ public class TaskController extends Controller {
 	public void showCreateTask() {
 		Project project = Project.dao.findById(getPara());
 		setAttr("project", project);
+		setAttr("tags", Task.TAGS);
 		render("showCreateTask.ftl");
-
 	}
 
 	@Before({ TaskValidator.class, Tx.class })
@@ -100,10 +98,11 @@ public class TaskController extends Controller {
 			return;
 		}
 
-		task.set("create_time", new Date());
 		String taskId = UUID.randomUUID().toString();
 		task.set("id", taskId);
+		task.set("create_time", new Date());
 		task.set("status", Task.STATUS_CREATED);
+		task.set("create_user_id", sessionUser.getId());
 
 		if (!task.save()) {
 			throw new IllegalStateException("保存任务失败");

@@ -1,10 +1,23 @@
 <#import "*/common.ftl" as common />
+<#import "task.common.ftl" as taskLib/>
 <!DOCTYPE xhtml>
 <html>
 	<head>
 		<@common.headerReference />
+		<@common.validateJs/>
 		<@common.umJs/>
 		<title>bug</title>
+		<style type="text/css">
+			.div-task{
+				border-bottom:1px dashed gray;
+				padding-bottom:5px;
+				padding-top:10px;
+			}
+			.div-task .title{
+				font-weight:bold;
+				font-size:16px;
+			}
+		</style>
 	</head>
 	<body>
 		<@common.topNavbar 'bug'/>
@@ -13,7 +26,7 @@
 		<p>
 			<big><strong>${project.name}</strong></big>&nbsp;
 			<small class="text-danger">(${project.create_time})</small>
-			<small class="text-muted">${project.intro!}</samll>
+			<small class="text-muted">${project.intro!}</small>
 		</p>
 		
 		<form class="form-inline" action="${ctx}/task/${project.id}">
@@ -34,7 +47,19 @@
 		<#--添加新任务模态框end-->
 		<#--任务列表-->
 			<#if list?? && list?size gt 0 >
-			
+				<#list list as task >
+					<div class="div-task">
+						<p>
+							<a class="title">${task.title}</a>
+							<small class="text-muted">(${task.create_time})</small>
+						</p>
+						<p>
+							<@taskLib.tag task.tags />
+							<span class="glyphicon glyphicon-user"></span>
+							由<span class="text-info">${task.createUser.zh_name}</span>创建
+						</p>		
+					</div>
+				</#list>
 			<#else>
 				<div class="alert alert-warning">无可显示数据</div>
 			</#if>
