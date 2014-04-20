@@ -1,9 +1,27 @@
 -- mysql
 -- create database
-create database bugsfly;
-use database bugsfly;
+create database bugsfly  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+use bugsfly;
 
-SET FOREIGN_KEY_CHECKS=0;
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` varchar(36) NOT NULL,
+  `zh_name` varchar(15) NOT NULL COMMENT '中文名',
+  `en_name` varchar(50) DEFAULT NULL,
+  `email` varchar(255) NOT NULL COMMENT '邮箱',
+  `mobile` varchar(15) NOT NULL COMMENT '手机',
+  `md5` varchar(50) NOT NULL COMMENT '密码的md5加密结果',
+  `create_time` datetime NOT NULL COMMENT '用户创建时间',
+  `login_time` datetime DEFAULT NULL COMMENT '用户登录时间',
+  `salt` varchar(50) NOT NULL COMMENT 'md5加密盐值',
+  `disabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT '禁用',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_user_email` (`email`),
+  UNIQUE KEY `uk_user_mobile` (`mobile`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 -- ----------------------------
 -- Table structure for project
@@ -67,12 +85,12 @@ CREATE TABLE `task` (
   `create_user_id` varchar(36) NOT NULL,
   `assign_user_id` varchar(36) DEFAULT NULL COMMENT '分派用户ID',
   PRIMARY KEY (`id`),
-  KEY `fk_bug_project` (`project_id`) USING BTREE,
-  KEY `fk_bug_user` (`assign_user_id`) USING BTREE,
-  KEY `fk_create_user_task` (`create_user_id`),
-  CONSTRAINT `fk_create_user_task` FOREIGN KEY (`create_user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `fk_project_task` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`),
-  CONSTRAINT `fk_user_task` FOREIGN KEY (`assign_user_id`) REFERENCES `user` (`id`)
+  KEY `pk_project_task` (`project_id`),
+  KEY `pk_create_user_task` (`create_user_id`),
+  KEY `pk_assign_user_task` (`assign_user_id`),
+  CONSTRAINT `pk_assign_user_task` FOREIGN KEY (`assign_user_id`) REFERENCES `user` (`id`),
+  CONSTRAINT `pk_create_user_task` FOREIGN KEY (`create_user_id`) REFERENCES `user` (`id`),
+  CONSTRAINT `pk_project_task` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -84,31 +102,13 @@ CREATE TABLE `task_tag` (
   `task_id` varchar(36) NOT NULL,
   PRIMARY KEY (`tag_id`,`task_id`),
   KEY `pk_task_tasktag` (`task_id`),
-  CONSTRAINT `pk_task_tasktag` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`),
-  CONSTRAINT `pk_tag_tasktag` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`)
+  CONSTRAINT `pk_tag_tasktag` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`),
+  CONSTRAINT `pk_task_tasktag` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for user
--- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `id` varchar(36) NOT NULL,
-  `zh_name` varchar(15) NOT NULL COMMENT '中文名',
-  `en_name` varchar(50) DEFAULT NULL,
-  `email` varchar(255) NOT NULL COMMENT '邮箱',
-  `mobile` varchar(15) NOT NULL COMMENT '手机',
-  `md5` varchar(50) NOT NULL COMMENT '密码的md5加密结果',
-  `create_time` datetime NOT NULL COMMENT '用户创建时间',
-  `login_time` datetime DEFAULT NULL COMMENT '用户登录时间',
-  `salt` varchar(50) NOT NULL COMMENT 'md5加密盐值',
-  `disabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT '禁用',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_user_email` (`email`),
-  UNIQUE KEY `uk_user_mobile` (`mobile`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
--- data of tag table
+-- Records of tag
+-- ----------------------------
 INSERT INTO `tag` VALUES ('BUG', '错误');
 INSERT INTO `tag` VALUES ('FEATURE', '新功能');
 INSERT INTO `tag` VALUES ('IMPROVE', '改善');

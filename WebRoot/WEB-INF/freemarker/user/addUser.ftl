@@ -53,6 +53,7 @@
 	</#if>
 </div>
 <div class="modal-footer">
+	<span class="text-muted">帐号初始密码是手机号后六位</span>
 	<button class="btn btn-default" type="button" data-dismiss="modal">取消</button>
 	<button class="btn btn-primary">确定保存</button>
 </div>
