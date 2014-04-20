@@ -1,3 +1,4 @@
 #bugs fly
-Bugs Fly是一个简洁易用的bug跟踪系统。并且支持移动设备，在移动设备上可以完成所有操作，方便快捷。
-项目使用jFinal+freemarker+bootstrap构建，目前尚未完成，预计五一前可以用，然后再针对移动端进行优化。
+Bugs Fly是一个简洁易用的bug跟踪系统。
+项目使用jFinal+freemarker+bootstrap构建，已完成。
+后面会进行测试，修正一些问题。如果时间充裕，会对移动设备进行优化，考虑增加新特性。
