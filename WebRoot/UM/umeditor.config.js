@@ -51,12 +51,13 @@
 
 
         //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的从新定义
+        //暂时先去掉um的图片上传功能，这与jquery form与冲突，后面再看能不能解决
         ,toolbar:[
             'undo redo emotion bold italic underline strikethrough',
 			' superscript subscript horizontal forecolor backcolor removeformat ',
             'insertorderedlist insertunorderedlist fontfamily fontsize' ,
             ' justifyleft justifycenter justifyright justifyjustify ',
-            'link unlink image'
+            'link unlink'
         ]
 
         //语言配置项,默认是zh-cn。有需要的话也可以使用如下这样的方式来自动多语言切换，当然，前提条件是lang文件夹下存在对应的语言文件：

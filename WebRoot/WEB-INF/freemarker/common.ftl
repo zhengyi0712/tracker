@@ -43,7 +43,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="${ctx}">Bugs Fly</a>
+      <a class="navbar-brand" href="#">Bugs Fly</a>
     </div>
     <nav class="collapse navbar-collapse" id="top-navbar" role="navigation">
       <ul class="nav navbar-nav navbar-right">
@@ -73,16 +73,13 @@
       <div class="modal-body">
         <p>
         	<img src="${ctx}/images/logo.jpg" width="50px" height="40px"/>
-        	<strong>Bugs Fly是一个简洁易用的bug跟踪系统，并且支持移动设备，在移动设备上可以完成所有操作，方便快捷。</strong>
+        	<strong>Bugs Fly是一个简洁易用的bug跟踪系统。</strong>
         </p>
         <p><strong>源代码：</strong><a target="_blank" href="http://git.oschina.net/tai/bugs-fly">http://git.oschina.net/tai/bugs-fly</a></p>
         <p><strong>建议反馈：</strong><a href="mailto:taijunfeng_it@sina.com">taijunfeng_it@sina.com</a></p>
+        <p><strong>友情链接：</strong><a href="http://www.jfinal.com" target="_blank">JFinal官网</a></p>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-</#macro>
-<#--页面的脚部，网站的声明信息和友情链接等-->
-<#macro footer>
-
 </#macro>

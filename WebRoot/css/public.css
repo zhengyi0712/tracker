@@ -17,3 +17,6 @@
 	background-color: #428bca;
 	border-color: #428bca;
 }
+.tooltip-menu .list-group-item{
+	min-width:160px;
+}

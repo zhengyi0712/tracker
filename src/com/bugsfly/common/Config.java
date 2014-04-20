@@ -7,6 +7,7 @@ import com.bugsfly.login.LoginController;
 import com.bugsfly.login.LoginInterceptor;
 import com.bugsfly.project.Project;
 import com.bugsfly.project.ProjectController;
+import com.bugsfly.task.Tag;
 import com.bugsfly.task.Task;
 import com.bugsfly.task.TaskController;
 import com.bugsfly.um.UMController;
@@ -82,6 +83,7 @@ public class Config extends JFinalConfig {
 		aPlugin.addMapping("task", Task.class);
 		aPlugin.addMapping("user", User.class);
 		aPlugin.addMapping("project", Project.class);
+		aPlugin.addMapping("tag", Tag.class);
 	}
 
 	@Override

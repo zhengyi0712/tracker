@@ -1,17 +1,7 @@
-/*
-Navicat MySQL Data Transfer
-
-Source Server         : mysql
-Source Server Version : 50525
-Source Host           : localhost:3306
-Source Database       : bugsfly
-
-Target Server Type    : MYSQL
-Target Server Version : 50525
-File Encoding         : 65001
-
-Date: 2014-04-17 23:45:54
-*/
+-- mysql
+-- create database
+create database bugsfly;
+use database bugsfly;
 
 SET FOREIGN_KEY_CHECKS=0;
 

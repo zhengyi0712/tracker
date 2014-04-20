@@ -1,7 +1,5 @@
 package com.bugsfly.task;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -56,23 +54,50 @@ public class TaskController extends Controller {
 
 		setAttr("project", project);
 
+		// 几个查询条件
+		String title = getPara("title");
+		String[] tagIdArr = getParaValues("tagId");
+		String[] statusArr = getParaValues("status");
+		String[] assignUserIdArr = getParaValues("assignUserId");
+
 		Page<Task> page = Task.dao.paginate(PaginationUtil.getPageNumber(this),
-				project.getId());
+				project.getId(), title, tagIdArr, statusArr, assignUserIdArr);
 
 		setAttr("list", page.getList());
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
+		setAttr("tags", Tag.dao.findAll());
+		setAttr("role", project.getRoleOfUser(user.getId()));
 
 		// 保存cookie
 		setCookie("project", project.getId(), 60 * 60 * 24 * 15);
+		// 这里不能用controller的keepara()方法，因为，如果多选只选了一个传到页面不是数组
+		setAttr("title", title);
+		setAttr("tagIdArr", tagIdArr);
+		setAttr("statusArr", statusArr);
+		setAttr("assignUserIdArr", assignUserIdArr);
 
 		render("index.ftl");
 
 	}
 
 	public void showTaskDetail() {
+		User user = getSessionAttr(Webkeys.SESSION_USER);
 		Task task = Task.dao.findById(getPara());
 		setAttr("task", task);
+		Project project = task.getProject();
+		setAttr("project", project);
+		String role = project.getRoleOfUser(user.getId());
+		setAttr("role", role);
+		// 是否可返工判定，条件：已完成状态并且完成不超过3天
+		if (Project.ROLE_ADMIN.equals(role)
+				&& Task.STATUS_FINISHED.equals(task.getStr("status"))) {
+			Date finishTime = task.getTimestamp("finish_time");
+			Date now = new Date();
+			if (now.getTime() - finishTime.getTime() < 1000 * 60 * 60 * 24 * 3) {
+				setAttr("reworkable", true);
+			}
+		}
 		render("showTaskDetail.ftl");
 
 	}
@@ -80,7 +105,7 @@ public class TaskController extends Controller {
 	public void showCreateTask() {
 		Project project = Project.dao.findById(getPara());
 		setAttr("project", project);
-		setAttr("tags", Task.TAGS);
+		setAttr("tags", Tag.dao.findAll());
 		render("showCreateTask.ftl");
 	}
 
@@ -108,11 +133,11 @@ public class TaskController extends Controller {
 			throw new IllegalStateException("保存任务失败");
 		}
 		// 保存标签
-		String[] tags = getParaValues("tag");
-		if (tags != null && tags.length > 0) {
-			String sql = "insert into tag(id,name,task_id)values(?,?,?)";
-			for (String tag : tags) {
-				if (Db.update(sql, UUID.randomUUID().toString(), tag, taskId) != 1) {
+		String[] tagIds = getParaValues("tagId");
+		if (tagIds != null) {
+			String sql = "insert into task_tag(tag_id,task_id)values(?,?)";
+			for (String tagId : tagIds) {
+				if (Db.update(sql, tagId, taskId) != 1) {
 					throw new IllegalStateException("保存标签失败");
 				}
 			}
@@ -124,7 +149,8 @@ public class TaskController extends Controller {
 	public void showUpdateTask() {
 		Task task = Task.dao.findById(getPara());
 		setAttr("task", task);
-		renderJson("showUpdateTask.ftl");
+		setAttr("tags", Tag.dao.findAll());
+		render("showUpdateTask.ftl");
 	}
 
 	@Before({ TaskValidator.class, Tx.class })
@@ -156,34 +182,23 @@ public class TaskController extends Controller {
 			throw new IllegalStateException("更新任务失败");
 		}
 		// 更新标签，为了逻辑简单，直接删除旧的，保存新的
-		String[] tags = getParaValues("tag");
-		// 防止空指针，如果是没有传值就拿空集合去比较
-		List<String> newTags = new ArrayList<>();
-		if (tags != null && tags.length > 0) {
-			newTags = Arrays.asList(tags);
-		}
-		List<String> oldTags = oldTask.getTags();
-		// 相同就不作任何操作了
-		if (newTags.equals(oldTags)) {
-			setAttr("ok", true);
-			renderJson();
-			return;
-		}
-		// 删除旧的，保存新的
-		String saveSql = "insert into tag(id,name.task_id)values(?,?,?)";
-		String deleteSql = "delete from tag where task_id=?";
-		if (oldTags != null && !oldTags.isEmpty()) {
-			if (Db.update(deleteSql, oldTask.getStr("id")) <= 0) {
-				throw new IllegalStateException("保存标签失败");
+		String[] tagIds = getParaValues("tagId");
+		List<Tag> oldTags = oldTask.getTags();
+
+		if (oldTags != null && oldTags.size() > 0) {
+			if (Db.update("delete from task_tag where task_id=?",
+					oldTask.getStr("id")) < 1) {
+				throw new RuntimeException("删除旧的标签失败");
 			}
 		}
-		if (!newTags.isEmpty()) {
-			for (String t : newTags) {
-				if (Db.update(saveSql, UUID.randomUUID().toString(), t,
-						oldTask.getStr("id")) != 1) {
-					throw new IllegalStateException("保存标签失败");
-				}
+
+		String saveTagSql = "insert into task_tag(tag_id,task_id)values(?,?)";
+		if (tagIds != null) {
+			for (String tagId : tagIds) {
+				if (Db.update(saveTagSql, tagId, oldTask.getStr("id")) != 1)
+					throw new RuntimeException("保存新的标签失败");
 			}
+
 		}
 
 		setAttr("ok", true);
@@ -263,7 +278,7 @@ public class TaskController extends Controller {
 		}
 		task.set("finish_time", new Date());
 		task.set("status", Task.STATUS_FINISHED);
-		task.keep("id", "assign_user_id", "finish_time");
+		task.keep("id", "assign_user_id", "finish_time","status");
 		task.update();
 		setAttr("ok", true);
 		renderJson();
@@ -291,7 +306,7 @@ public class TaskController extends Controller {
 			return;
 		}
 
-		Date finishTime = task.getDate("finish_time");
+		Date finishTime = task.getTimestamp("finish_time");
 		Date now = new Date();
 		if (now.getTime() - finishTime.getTime() > 1000 * 60 * 60 * 24 * 3) {
 			setAttr("msg", "任务完成已经超过3天，不能再返工");
@@ -357,6 +372,8 @@ public class TaskController extends Controller {
 			renderJson();
 			return;
 		}
+		//先删除任务关联标签，再删除任务
+		Db.update("delete from task_tag where task_id=?", task.getStr("id"));
 		task.delete();
 		setAttr("ok", true);
 		renderJson();

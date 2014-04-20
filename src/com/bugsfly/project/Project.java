@@ -37,6 +37,19 @@ public class Project extends Model<Project> {
 		return User.dao.find(sql, this.getStr("id"));
 	}
 
+	/**
+	 * 获取项目开发人员（包括管理员）
+	 * 
+	 * @return
+	 */
+	public List<User> getDevelopers() {
+		String sql = "select u.*,pu.role ";
+		sql += " from user u ";
+		sql += " left join project_user pu on pu.user_id=u.id ";
+		sql += " where pu.project_id=? and ( pu.role=? or pu.role=? ) ";
+		return User.dao.find(sql, this.getStr("id"),ROLE_ADMIN,ROLE_DEVELOPER);
+	}
+
 	public String getRoleOfUser(String userId) {
 		return Db
 				.queryStr(

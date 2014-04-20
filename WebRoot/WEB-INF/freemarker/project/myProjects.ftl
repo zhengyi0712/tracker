@@ -55,7 +55,7 @@
 							未知
 						</#if>
 				</td>
-				<td>${p.u_count!0}</td>
+				<td>${p.userCount!0}</td>
 				<td>${p.create_time}</td>
 				<#if p.intro?? && p.intro?length gt 20 >
 				<td class="intro hidden-xs"  data-toggle="popover" data-content="${p.intro}">

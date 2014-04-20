@@ -1,12 +1,11 @@
 package com.bugsfly.task;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import com.bugsfly.project.Project;
 import com.bugsfly.user.User;
-import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Page;
 
@@ -19,29 +18,18 @@ public class Task extends Model<Task> {
 
 	public static final Task dao = new Task();
 
-	public static final Set<String> TAGS = new HashSet<String>();
 	public static final String STATUS_CREATED = "CREATED";// 新建
 	public static final String STATUS_ASSIGNED = "ASSIGNED";// 已分派
 	public static final String STATUS_FINISHED = "FINISHED";// 已解决
 	public static final String STATUS_REWORKED = "REWORKED";// 已打回
 	public static final String STATUS_CLOSED = "CLOSED";// 已关闭
-	static {
-		TAGS.add("错误");
-		TAGS.add("优化");
-		TAGS.add("改善");
-		TAGS.add("新功能");
-	}
 
-	public static boolean checkStatus(String status) {
-		return STATUS_CREATED.equals(status) || STATUS_ASSIGNED.equals(status)
-				|| STATUS_FINISHED.equals(status)
-				|| STATUS_REWORKED.equals(status)
-				|| STATUS_CLOSED.equals(status);
-	}
+	public List<Tag> getTags() {
+		String sql = "select tag.* from task_tag tt ";
+		sql += " left join tag on tag.id=tt.tag_id ";
+		sql += " where tt.task_id=? ";
+		return Tag.dao.find(sql, getStr("id"));
 
-	public List<String> getTags() {
-		return Db.query("select name from tag where task_id=?",
-				this.getStr("id"));
 	}
 
 	public Project getProject() {
@@ -56,8 +44,70 @@ public class Task extends Model<Task> {
 		return User.dao.findById(this.getStr("assign_user_id"));
 	}
 
-	public Page<Task> paginate(int pn, String projectId) {
-		String sqlExceptSelect = " from task where project_id=? ";
-		return paginate(pn, 20, "select *", sqlExceptSelect, projectId);
+	/**
+	 * 分页查询任务
+	 * 
+	 * @param pn
+	 * @param projectId
+	 * @return
+	 */
+	public Page<Task> paginate(int pn, String projectId, String title,
+			String[] tagIdArr, String[] statusArr, String[] assignUserIdArr) {
+		StringBuilder sqlExceptSelect = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		sqlExceptSelect.append(" from task t ");
+		sqlExceptSelect.append(" left join task_tag tt on tt.task_id=t.id ");
+
+		sqlExceptSelect.append(" where project_id=? ");
+		params.add(projectId);
+		// 标题查询
+		if (StringKit.notBlank(title)) {
+			sqlExceptSelect.append(" and t.title like ? ");
+			params.add("%" + title + "%");
+		}
+
+		// 标签查询
+		if (tagIdArr != null && tagIdArr.length > 0) {
+			sqlExceptSelect.append(" and tt.tag_id in ( ");
+			for (int i = 0; i < tagIdArr.length; i++) {
+				if (i != tagIdArr.length - 1) {
+					sqlExceptSelect.append(" ?, ");
+				} else {
+					sqlExceptSelect.append(" ? ");
+				}
+				params.add(tagIdArr[i]);
+			}
+			sqlExceptSelect.append(" ) ");
+		}
+		// 状态查询条件
+		if (statusArr != null && statusArr.length > 0) {
+			sqlExceptSelect.append(" and t.status in ( ");
+			for (int i = 0; i < statusArr.length; i++) {
+				if (i != statusArr.length - 1) {
+					sqlExceptSelect.append(" ?, ");
+				} else {
+					sqlExceptSelect.append(" ? ");
+				}
+				params.add(statusArr[i]);
+			}
+			sqlExceptSelect.append(" ) ");
+		}
+		// 分派人查询
+		if (assignUserIdArr != null && assignUserIdArr.length > 0) {
+			sqlExceptSelect.append(" and t.assign_user_id in ( ");
+			for (int i = 0; i < assignUserIdArr.length; i++) {
+				if (i != assignUserIdArr.length - 1) {
+					sqlExceptSelect.append(" ?, ");
+				} else {
+					sqlExceptSelect.append(" ? ");
+				}
+				params.add(assignUserIdArr[i]);
+			}
+			sqlExceptSelect.append(" ) ");
+		}
+		sqlExceptSelect.append(" order by t.create_time desc ");
+
+		return paginate(pn, 20, "select distinct t.*",
+				sqlExceptSelect.toString(), params.toArray());
 	}
 }
