@@ -28,7 +28,7 @@
 </#macro>
 <#--阻止低版本IE访问-->
 <#macro preventIE>
-<!--[if lt IE 8]>
+<!--[if IE ]>
     <script type="text/javascript">alert("抱歉，系统检测到您还在使用低版本IE浏览器，请升级到最新版本或者使用其它浏览器访问。");window.close(); </script>
 <![endif]-->
 </#macro>

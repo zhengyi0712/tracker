@@ -20,3 +20,6 @@
 .tooltip-menu .list-group-item{
 	min-width:160px;
 }
+.btn{
+	min-width:100px;
+}

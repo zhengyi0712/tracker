@@ -30,10 +30,10 @@
 <style type="text/css">
 	.edui-container,.edui-body-container{
 		width:100% !important;
+		min-height:200px !important;
 	}
 </style>
 <script type="text/javascript">
-	$("#textarea-task-intro-create").css("height","150px");
 	//避免与编辑任务冲突
 	var umc = UM.getEditor("textarea-task-intro-create");
 	$("#add-task-form").validate({

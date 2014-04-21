@@ -27,10 +27,10 @@
 <style type="text/css">
 	.edui-container,.edui-body-container{
 		width:100% !important;
+		min-height:200px;
 	}
 </style>
 <script type="text/javascript">
-	$("#textarea-task-intro").css("height","150px");
 	if(um){
 		um.destroy()
 	}

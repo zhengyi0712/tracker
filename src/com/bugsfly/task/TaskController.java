@@ -67,10 +67,13 @@ public class TaskController extends Controller {
 		setAttr("pageLink",
 				PaginationUtil.generatePaginateHTML(getRequest(), page));
 		setAttr("tags", Tag.dao.findAll());
-		setAttr("role", project.getRoleOfUser(user.getId()));
+		String role = project.getRoleOfUser(user.getId());
+		setAttr("role", role);
 
-		// 保存cookie
-		setCookie("project", project.getId(), 60 * 60 * 24 * 15);
+		// 如果查看的是自己的项目，保存cookie
+		if (role != null) {
+			setCookie("project", project.getId(), 60 * 60 * 24 * 15);
+		}
 		// 这里不能用controller的keepara()方法，因为，如果多选只选了一个传到页面不是数组
 		setAttr("title", title);
 		setAttr("tagIdArr", tagIdArr);
@@ -278,7 +281,7 @@ public class TaskController extends Controller {
 		}
 		task.set("finish_time", new Date());
 		task.set("status", Task.STATUS_FINISHED);
-		task.keep("id", "assign_user_id", "finish_time","status");
+		task.keep("id", "assign_user_id", "finish_time", "status");
 		task.update();
 		setAttr("ok", true);
 		renderJson();
@@ -372,7 +375,7 @@ public class TaskController extends Controller {
 			renderJson();
 			return;
 		}
-		//先删除任务关联标签，再删除任务
+		// 先删除任务关联标签，再删除任务
 		Db.update("delete from task_tag where task_id=?", task.getStr("id"));
 		task.delete();
 		setAttr("ok", true);
