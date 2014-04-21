@@ -180,19 +180,19 @@
 		</div>
 		<#--添加新任务模态框start-->
 		<div class="modal fade" role="dialog" id="add-task-modal">
-			<div class="modal-dialog">
+			<div class="modal-dialog  modal-lg">
 				<div class="modal-content"></div>
 			</div>
 		</div>
 		<#--更新任务模态框-->
 		<div class="modal fade" role="dialog" id="updata-task-modal">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-lg">
 				<div class="modal-content"></div>
 			</div>
 		</div>
 		<#--查看任务模态框-->
 		<div class="modal fade" role="dialog" id="view-task-modal">
-			<div class="modal-dialog">
+			<div class="modal-dialog  modal-lg">
 				<div class="modal-content"></div>
 			</div>
 		</div>

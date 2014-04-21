@@ -34,7 +34,7 @@
 	</div>
 	</#if>
 	<#--操作-->
-	<#if 'ADMIN' == role>
+	<#if 'ADMIN' == role!>
 	<#--必须是未完成状态或者已完成状态并且可返工，不然管理员没有操作选项-->
 	<#if reworkable?? || 'FINISHED' != task.status >
 	<p>
