@@ -243,4 +243,24 @@ public class UserController extends Controller {
 		renderJson();
 
 	}
+
+	/**
+	 * 重置密码，密码会变为手机号后六位
+	 */
+	@Before(SysAdminJSONInterceptor.class)
+	public void resetPwd() {
+		User user = User.dao.findById(getPara());
+		String mobile = user.getStr("mobile");
+		String newPwd = mobile.substring(mobile.length() - 6);
+		String salt = user.getStr("salt");
+		
+		String md5 = DigestUtils.md5Hex(newPwd + salt);
+		user.set("md5", md5);
+		
+		user.keep("id","md5");
+		user.update();
+		
+		setAttr("ok", true);
+		renderJson();
+	}
 }

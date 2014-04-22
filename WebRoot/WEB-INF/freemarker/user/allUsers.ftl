@@ -46,7 +46,7 @@
 						</a>
 					</td>
 					<td>${user.login_time!}</td>
-					<td><a>重置密码</a></td>
+					<td><a href="javascript:resetPwd('${user.id}','${user.zh_name}');">重置密码</a></td>
 				</tr>
 				</#list>
 			</tbody>
@@ -86,5 +86,20 @@
 			}
 		});
 		
+	}
+	function resetPwd(userId,username){
+		showConfirm({
+			title:"重置密码",
+			content:"确定要将<strong class='text-danger'>"+username+"</strong>的密码重置吗？重置后密码变为手机号后六位。",
+			ensure:function(){
+				$.getJSON("${ctx}/user/resetPwd/"+userId,function(json){
+					if(json.ok){
+						refresh();
+					}else{
+						showAlert(json.msg);
+					}
+				});			
+			}
+		});
 	}
 </script>

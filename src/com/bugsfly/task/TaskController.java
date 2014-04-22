@@ -34,10 +34,11 @@ public class TaskController extends Controller {
 
 		if (StringKit.isBlank(projectId)) {
 			projectId = getCookie("project");
-		}
-
-		if (StringKit.notBlank(projectId)) {
 			project = Project.dao.findById(projectId);
+			//从cookie里取出的项目如果不是自己的，把project置空
+			if(project!=null&&project.getRoleOfUser(user.getId())==null){
+				project = null;
+			}
 		}
 
 		if (project == null) {
