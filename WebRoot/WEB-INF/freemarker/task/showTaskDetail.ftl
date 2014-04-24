@@ -4,7 +4,7 @@
 	<h4 class="modal-title">${task.title}</h4>
 </div>
 <div class="modal-body">
-	${task.detail}
+	${task.detail!'暂无任务详情说明'}
 	<hr/>
 	<p><strong>状态：</strong><@taskLib.echoTaskStatus task.status /></p>
 	<#if task.tags?? && task.tags?size gt 0 >
