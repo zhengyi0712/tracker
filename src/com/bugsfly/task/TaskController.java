@@ -10,7 +10,6 @@ import com.bugsfly.user.User;
 import com.bugsfly.util.PaginationUtil;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
-import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.tx.Tx;
@@ -29,14 +28,12 @@ public class TaskController extends Controller {
 	 */
 	public void index() {
 		User user = getSessionAttr(Webkeys.SESSION_USER);
-		String projectId = getPara();
-		Project project = null;
+		Project project = Project.dao.findById(getPara());
 
-		if (StringKit.isBlank(projectId)) {
-			projectId = getCookie("project");
-			project = Project.dao.findById(projectId);
-			//从cookie里取出的项目如果不是自己的，把project置空
-			if(project!=null&&project.getRoleOfUser(user.getId())==null){
+		if (project == null) {
+			project = Project.dao.findById(getCookie("project"));
+			// 从cookie里取出的项目如果不是自己的，把project置空
+			if (project != null && project.getRoleOfUser(user.getId()) == null) {
 				project = null;
 			}
 		}
