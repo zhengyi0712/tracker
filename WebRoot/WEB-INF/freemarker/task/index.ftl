@@ -22,6 +22,13 @@
 				margin-left: 10px;
 				padding: 2px 0px;
 			}
+			.edui-container,.edui-body-container{
+				width:100% !important;
+				min-height:300px !important;
+			}
+			.edui-scale{
+				box-sizing:content-box;	
+			}
 		</style>
 		<script type="text/javascript">
 			$(function(){
