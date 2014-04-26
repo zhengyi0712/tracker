@@ -1,27 +1,4 @@
--- mysql
--- create database
-create database bugsfly  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-use bugsfly;
-
--- ----------------------------
--- Table structure for user
--- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `id` varchar(36) NOT NULL,
-  `zh_name` varchar(15) NOT NULL COMMENT '中文名',
-  `en_name` varchar(50) DEFAULT NULL,
-  `email` varchar(255) NOT NULL COMMENT '邮箱',
-  `mobile` varchar(15) NOT NULL COMMENT '手机',
-  `md5` varchar(50) NOT NULL COMMENT '密码的md5加密结果',
-  `create_time` datetime NOT NULL COMMENT '用户创建时间',
-  `login_time` datetime DEFAULT NULL COMMENT '用户登录时间',
-  `salt` varchar(50) NOT NULL COMMENT 'md5加密盐值',
-  `disabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT '禁用',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_user_email` (`email`),
-  UNIQUE KEY `uk_user_mobile` (`mobile`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
 -- Table structure for project
@@ -29,26 +6,26 @@ CREATE TABLE `user` (
 DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
   `id` varchar(36) NOT NULL,
-  `name` varchar(255) NOT NULL COMMENT '项目名称',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `name` varchar(255) NOT NULL,
+  `create_time` datetime NOT NULL,
   `intro` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_project_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for project_user
 -- ----------------------------
 DROP TABLE IF EXISTS `project_user`;
 CREATE TABLE `project_user` (
-  `project_id` varchar(36) NOT NULL COMMENT '项目ID',
-  `user_id` varchar(36) NOT NULL COMMENT '用户ID',
-  `role` varchar(50) NOT NULL COMMENT '角色',
+  `project_id` varchar(36) NOT NULL,
+  `user_id` varchar(36) NOT NULL,
+  `role` varchar(50) NOT NULL,
   PRIMARY KEY (`project_id`,`user_id`),
   KEY `fk_project_user_user` (`user_id`),
   CONSTRAINT `fk_project_user_project` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`),
   CONSTRAINT `fk_project_user_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目与用户映射表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sys_admin
@@ -58,7 +35,7 @@ CREATE TABLE `sys_admin` (
   `admin_id` varchar(36) NOT NULL,
   PRIMARY KEY (`admin_id`),
   CONSTRAINT `fk_SYS_ADMIN_USER` FOREIGN KEY (`admin_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统管理员表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for tag
@@ -76,21 +53,24 @@ CREATE TABLE `tag` (
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE `task` (
   `id` varchar(36) NOT NULL,
-  `project_id` varchar(36) NOT NULL COMMENT '项目ID',
-  `status` varchar(50) NOT NULL COMMENT 'bug的状态',
-  `title` varchar(255) NOT NULL COMMENT '标题',
-  `detail` longtext COMMENT '详情',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `finish_time` datetime DEFAULT NULL COMMENT '完成时间',
+  `project_id` varchar(36) NOT NULL,
+  `status` varchar(50) NOT NULL COMMENT '',
+  `title` varchar(255) NOT NULL,
+  `detail` longtext,
+  `finish_time` datetime DEFAULT NULL,
   `create_user_id` varchar(36) NOT NULL,
-  `assign_user_id` varchar(36) DEFAULT NULL COMMENT '分派用户ID',
+  `assign_user_id` varchar(36) DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `update_user_id` varchar(36) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `pk_project_task` (`project_id`),
   KEY `pk_create_user_task` (`create_user_id`),
   KEY `pk_assign_user_task` (`assign_user_id`),
+  KEY `update_user_id` (`update_user_id`),
   CONSTRAINT `pk_assign_user_task` FOREIGN KEY (`assign_user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `pk_create_user_task` FOREIGN KEY (`create_user_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `pk_project_task` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`)
+  CONSTRAINT `pk_project_task` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`),
+  CONSTRAINT `task_ibfk_1` FOREIGN KEY (`update_user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -106,6 +86,25 @@ CREATE TABLE `task_tag` (
   CONSTRAINT `pk_task_tasktag` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` varchar(36) NOT NULL,
+  `zh_name` varchar(15) NOT NULL,
+  `en_name` varchar(50) DEFAULT NULL,
+  `email` varchar(255) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
+  `md5` varchar(50) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `login_time` datetime DEFAULT NULL,
+  `salt` varchar(50) NOT NULL,
+  `disabled` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_user_email` (`email`),
+  UNIQUE KEY `uk_user_mobile` (`mobile`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Records of tag
 -- ----------------------------
@@ -113,3 +112,35 @@ INSERT INTO `tag` VALUES ('BUG', '错误');
 INSERT INTO `tag` VALUES ('FEATURE', '新功能');
 INSERT INTO `tag` VALUES ('IMPROVE', '改善');
 INSERT INTO `tag` VALUES ('OPTIMIZATION', '优化');
+
+-- system admin data
+-- initial password is 123456
+INSERT INTO USER (
+	id,
+	zh_name,
+	en_name,
+	email,
+	mobile,
+	md5,
+	create_time,
+	login_time,
+	salt,
+	disabled
+)
+VALUES
+	(
+		'startagain',
+		'管理员',
+		'admin',
+		'admin@bugsfly.com',
+		'18888888888',
+		'ea42974e2cf40a9f26ad69f643ddbaf7',
+		now(),
+		null,
+		'd759b0204c7e469f9574849dc0648f67',
+		0
+	);
+
+INSERT INTO sys_admin (admin_id)
+VALUES
+	('startagain');
