@@ -126,9 +126,10 @@ public class TaskController extends Controller {
 
 		String taskId = UUID.randomUUID().toString();
 		task.set("id", taskId);
-		task.set("create_time", new Date());
+		task.set("update_time", new Date());
 		task.set("status", Task.STATUS_CREATED);
 		task.set("create_user_id", sessionUser.getId());
+		task.set("update_user_id", sessionUser.getId());
 
 		if (!task.save()) {
 			throw new IllegalStateException("保存任务失败");
@@ -178,7 +179,9 @@ public class TaskController extends Controller {
 			return;
 		}
 
-		taskModel.keep("id", "title", "detail");
+		taskModel.set("update_time", new Date());
+		taskModel.set("update_user_id", sessionUser.get("id"));
+		taskModel.keep("id", "title", "detail", "update_time", "update_user_id");
 		if (!taskModel.update()) {
 			throw new IllegalStateException("更新任务失败");
 		}

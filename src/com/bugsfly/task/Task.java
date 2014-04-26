@@ -44,6 +44,10 @@ public class Task extends Model<Task> {
 		return User.dao.findById(this.getStr("assign_user_id"));
 	}
 
+	public User getUpdateUser() {
+		return User.dao.findById(this.getStr("update_user_id"));
+	}
+
 	/**
 	 * 分页查询任务
 	 * 
@@ -105,7 +109,7 @@ public class Task extends Model<Task> {
 			}
 			sqlExceptSelect.append(" ) ");
 		}
-		sqlExceptSelect.append(" order by t.create_time desc ");
+		sqlExceptSelect.append(" order by t.update_time desc ");
 
 		return paginate(pn, 20, "select distinct t.*",
 				sqlExceptSelect.toString(), params.toArray());
