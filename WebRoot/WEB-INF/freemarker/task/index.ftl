@@ -59,7 +59,7 @@
 			<small class="text-muted">${project.intro!}</small>
 		</p>
 		<#--搜索查询表单-->
-		<form class="form-inline" action="${ctx}/task/${project.id}" method="post">
+		<form class="form-inline" action="${ctx}/task/${project.id}">
 			<input type="text" name="title" id="form-search-ipt-title" class="form-control input-sm" maxlength="20" placeholder="任务标题" value="${title!}"/>
 			<div class="btn-group">
 				<button type="button" data-toggle="dropdown" class="btn btn-default btn-sm">标签选择<span class="caret"></span></button>
