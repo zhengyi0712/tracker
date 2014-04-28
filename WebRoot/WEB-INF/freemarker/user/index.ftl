@@ -12,7 +12,6 @@
 		<div class="container">
 			<h3 class="page-header">
 				个人中心&gt;<span id="user-index-title">基本信息</span>
-				<button class="btn btn-info pull-right" onclick="refresh()"><span class="glyphicon glyphicon-refresh"></span>&nbsp;刷新</button>
 			</h3>
 			<div class="row" id="row-body">
 				<div class="col-md-2">
