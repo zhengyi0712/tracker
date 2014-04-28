@@ -106,7 +106,7 @@
 			<#--必须要项目多于一个人才有这个选项，因为系统管理员可以在项目没有人的情况下来查看-->
 			<#if project.users?? && project.users?size gt 0 >
 			<div class="btn-group">
-				<button type="button" data-toggle="dropdown" class="btn btn-default btn-sm">任务指派人<span class="caret"></span></button>
+				<button type="button" data-toggle="dropdown" class="btn btn-default btn-sm">任务接收人<span class="caret"></span></button>
 				<div class="dropdown-menu">
 				<#list project.users as u >
 					<div class="checkbox">
@@ -150,7 +150,7 @@
 							<@taskLib.echoTaskStatus task.status />
 							<#--分派人-->
 							<#if task.assignUser?? >
-							（指派人：<span class="text-danger">${task.assignUser.zh_name} ${task.assignUser.en_name!}</span>）
+							（任务接收人：<span class="text-danger">${task.assignUser.zh_name} ${task.assignUser.en_name!}</span>）
 							</#if>
 							<#--创建人-->
 							<span class="icon-user">
