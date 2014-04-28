@@ -37,7 +37,7 @@
 			$(form).ajaxSubmit({
 				success:function(json){
 					if(json.ok){
-						location.reload();
+						location="${ctx}/task";
 					}else{
 						showAlert(json.msg);
 					}
