@@ -47,3 +47,13 @@
 		</label>
 	</#list>
 </#macro>
+
+<#macro echoUsername user>
+	<span class="text-danger" title="${user.zh_name} ${user.en_name!}">
+	<#if user.en_name??>
+		${user.en_name}
+	<#else>
+		${user.zh_name}
+	</#if>
+	</span>
+</#macro>

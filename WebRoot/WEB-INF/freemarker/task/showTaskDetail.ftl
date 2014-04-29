@@ -12,8 +12,8 @@
 	</#if>
 	<p>
 		<strong>时间：</strong>
-		<span class="text-danger">${task.createUser.zh_name} ${task.createUser.en_name!}</span>创建
-		，由<span class="text-danger">${task.updateUser.zh_name} ${task.updateUser.en_name!}</span>
+		<@taskLib.echoUsername task.createUser/>创建
+		，由<@taskLib.echoUsername task.updateUser/>
 		最后更新于<span class="text-muted">${task.update_time}</span>
 	</p>
 	<#--任务分派信息-->
@@ -21,7 +21,7 @@
 	<div style="margin-bottom:10px;">
 		<strong>分派：</strong>
 		<#if task.assignUser??>
-		已分派给<span class="text-danger">${task.assignUser.zh_name}<#if task.assignUser.en_name?? >(${task.assignUser.en_name})</#if></span>
+		已分派给<@taskLib.echoUsername task.assignUser/>
 		<#if task.finish_time?? >
 		完成于<span class="text-muted">${task.finish_time}</span>
 		</#if>

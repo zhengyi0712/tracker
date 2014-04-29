@@ -29,6 +29,12 @@
 			.edui-scale{
 				box-sizing:content-box;	
 			}
+			body{
+				padding-bottom:20px;
+			}
+			.btn-sm{
+				border-radius: 3px !important;
+			}
 		</style>
 		<script type="text/javascript">
 			$(function(){
@@ -150,21 +156,15 @@
 							<@taskLib.echoTaskStatus task.status />
 							<#--分派人-->
 							<#if task.assignUser?? >
-							（任务接收人：<span class="text-danger">${task.assignUser.zh_name} ${task.assignUser.en_name!}</span>）
+							（任务接收人：<@taskLib.echoUsername task.assignUser/>）
 							</#if>
 							<#--创建人-->
 							<span class="icon-user">
-								由<span class="text-danger">
-								${task.createUser.zh_name} ${task.createUser.en_name}
-								</span>
-								创建
+								由<@taskLib.echoUsername task.createUser/>创建
 							</span>
 							<#--最后更新时间和操作人-->
 							<span class="icon-refresh">
-								由<span class="text-danger">
-								${task.updateUser.zh_name} ${task.updateUser.en_name}
-								</span>
-								最后更新于<span class="text-muted">${task.update_time}</span>
+								由<@taskLib.echoUsername task.updateUser/>最后更新于<span class="text-muted">${task.update_time}</span>
 							</span>
 							<#--完成时间-->
 							<#if task.finish_time??>
