@@ -59,9 +59,12 @@ public class Task extends Model<Task> {
 			String[] tagIdArr, String[] statusArr, String[] assignUserIdArr) {
 		StringBuilder sqlExceptSelect = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		sqlExceptSelect.append(" from ( select distinct t.* from task t ");
+		sqlExceptSelect.append(" from (  ");
+		
+		sqlExceptSelect.append(" select distinct t.* ");
+		sqlExceptSelect.append(" ,case when t.finish_time is null then 0 else 1 end finished ");
+		sqlExceptSelect.append(" from task t ");
 		sqlExceptSelect.append(" left join task_tag tt on tt.task_id=t.id ");
-
 		sqlExceptSelect.append(" where project_id=? ");
 		params.add(projectId);
 		// 标题查询
@@ -109,9 +112,11 @@ public class Task extends Model<Task> {
 			}
 			sqlExceptSelect.append(" ) ");
 		}
-		sqlExceptSelect.append(" order by t.update_time desc ) tt ");
+		sqlExceptSelect.append(" order by finished asc,t.update_time desc ");
+		
+		sqlExceptSelect.append(" ) s ");
 
-		return paginate(pn, 20, "select tt.*",
+		return paginate(pn, 20, "select s.*",
 				sqlExceptSelect.toString(), params.toArray());
 	}
 }
