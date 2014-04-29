@@ -10,7 +10,6 @@
 			<label for="ipt-task-title" class="sr-only">标题：</label>
 			<input type="text" class="form-control input-sm" id="ipt-task-title" name="task.title" maxlength="50" minlength="3" required placeholder="标题3-50个字符"/>
 		</div>
-	</form>
 		<div class="form-group">
 			<label>标签：</label>
 			<#list tags as tag>
@@ -19,6 +18,7 @@
 				</label>
 			</#list>
 		</div>
+	</form>
 		<div class="form-group">
 			<label for="textarea-task-intro-create" class="sr-only">详细说明：</label>
 			<script type="text/plain" id="textarea-task-intro-create" style="height:300px;"></script>
