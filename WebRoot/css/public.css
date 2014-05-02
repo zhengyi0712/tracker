@@ -1,25 +1,35 @@
 @CHARSET "UTF-8";
-@media (max-width:768px){
-	.container,.container-fluid{
-		width:auto !important;	
+
+@media ( max-width :768px) {
+	.container,.container-fluid {
+		width: auto !important;
 	}
 }
-.tooltip-menu{
-	display:none;
+
+.tooltip-menu {
+	display: none;
 }
-.tooltip-inner .tooltip-menu{
+
+.tooltip-inner .tooltip-menu {
 	margin: -2px -7px;
-	display:block;
+	display: block;
 }
-.pager li.active a{
+
+.pager li.active a {
 	color: #fff;
 	cursor: default;
 	background-color: #428bca;
 	border-color: #428bca;
 }
-.tooltip-menu .list-group-item{
-	min-width:160px;
+
+.tooltip-menu .list-group-item {
+	min-width: 160px;
 }
-.btn{
-	min-width:100px;
+
+.pager li {
+	margin: 0px 2px;
+}
+
+.btn {
+	min-width: 100px;
 }
