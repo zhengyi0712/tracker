@@ -60,12 +60,15 @@ public class Task extends Model<Task> {
 		StringBuilder sqlExceptSelect = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
 		sqlExceptSelect.append(" from (  ");
-		
+
 		sqlExceptSelect.append(" select distinct t.* ");
-		sqlExceptSelect.append(" ,case when t.finish_time is null then 0 else 1 end finished ");
+		sqlExceptSelect.append(" ,case t.status when ? then 2 when ? then 1 ");
+		sqlExceptSelect.append(" else 0 end status_order ");
 		sqlExceptSelect.append(" from task t ");
 		sqlExceptSelect.append(" left join task_tag tt on tt.task_id=t.id ");
 		sqlExceptSelect.append(" where project_id=? ");
+		params.add(STATUS_CLOSED);
+		params.add(STATUS_FINISHED);
 		params.add(projectId);
 		// 标题查询
 		if (StringKit.notBlank(title)) {
@@ -112,11 +115,13 @@ public class Task extends Model<Task> {
 			}
 			sqlExceptSelect.append(" ) ");
 		}
-		sqlExceptSelect.append(" order by finished asc,t.update_time desc ");
-		
+		// 排序，关闭和放最后，完成的其次，其它状态放最前
+		sqlExceptSelect
+				.append(" order by status_order asc,t.finish_time desc,t.update_time desc ");
+
 		sqlExceptSelect.append(" ) s ");
 
-		return paginate(pn, 20, "select s.*",
-				sqlExceptSelect.toString(), params.toArray());
+		return paginate(pn, 20, "select s.*", sqlExceptSelect.toString(),
+				params.toArray());
 	}
 }
