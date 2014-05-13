@@ -3,6 +3,7 @@ package com.bugsfly.login;
 import javax.servlet.http.HttpServletRequest;
 
 import com.bugsfly.common.Webkeys;
+import com.bugsfly.user.User;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.core.Controller;
@@ -18,6 +19,17 @@ public class LoginInterceptor implements Interceptor {
 		 * 对于session里没有用户对象的进行拦截
 		 */
 		if (controller.getSessionAttr(Webkeys.SESSION_USER) != null) {
+			ai.invoke();
+			return;
+		}
+		// 尝试从cookie里找userid
+		String userId = controller.getCookie(Webkeys.COOKIE_USER_ID);
+		User user = null;
+		if (StringKit.notBlank(userId)) {
+			user = User.dao.findById(userId);
+		}
+		if (user != null) {
+			controller.setSessionAttr(Webkeys.SESSION_USER, user);
 			ai.invoke();
 			return;
 		}

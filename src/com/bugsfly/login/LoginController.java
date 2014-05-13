@@ -26,7 +26,7 @@ public class LoginController extends Controller {
 		String account = getPara("account");
 		String pwd = getPara("pwd");
 
-		 User user = User.dao.getByAccount(account);
+		User user = User.dao.getByAccount(account);
 
 		if (user == null) {
 			setAttr("msg", "帐号或者密码错误");
@@ -49,6 +49,8 @@ public class LoginController extends Controller {
 
 		// 更新登录时间
 		user.updateLoginTime();
+		// 添加cookie
+		setCookie(Webkeys.COOKIE_USER_ID, user.getId(), 60 * 60 * 24 * 30);
 
 		// 如果有引用链接，回到登录前的页面，没有就去首页
 		HttpSession session = getSession();
@@ -65,6 +67,7 @@ public class LoginController extends Controller {
 	@ClearInterceptor(ClearLayer.ALL)
 	public void logout() {
 		getSession().invalidate();
+		removeCookie(Webkeys.COOKIE_USER_ID);
 		index();
 	}
 }
