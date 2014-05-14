@@ -6,7 +6,7 @@
 		<@common.headerReference />
 		<@common.validateJs/>
 		<@common.umJs/>
-		<title>bug</title>
+		<title>查看任务-Bugs Fly</title>
 		<style type="text/css">
 			.div-task{
 				border-bottom:1px dashed gray;

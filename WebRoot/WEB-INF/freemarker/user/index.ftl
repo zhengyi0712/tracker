@@ -4,7 +4,7 @@
 	<head>
 		<@common.headerReference />
 		<@common.validateJs />
-		<title>个人中心</title>
+		<title>个人中心-Bugs Fly</title>
 		<script type="text/javascript" src="${ctx}/js/user-index.js"></script>
 	</head>
 	<body>
