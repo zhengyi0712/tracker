@@ -144,6 +144,9 @@ public class TaskController extends Controller {
 				}
 			}
 		}
+		// 保存日志
+		task.log(sessionUser.toHTML() + "创建任务");
+
 		setAttr("ok", true);
 		renderJson();
 	}
@@ -181,7 +184,8 @@ public class TaskController extends Controller {
 
 		taskModel.set("update_time", new Date());
 		taskModel.set("update_user_id", sessionUser.get("id"));
-		taskModel.keep("id", "title", "detail", "update_time", "update_user_id");
+		taskModel
+				.keep("id", "title", "detail", "update_time", "update_user_id");
 		if (!taskModel.update()) {
 			throw new IllegalStateException("更新任务失败");
 		}
@@ -204,6 +208,8 @@ public class TaskController extends Controller {
 			}
 
 		}
+		// 记录日志
+		oldTask.log(sessionUser.toHTML() + "更新任务");
 
 		setAttr("ok", true);
 		renderJson();
@@ -245,6 +251,9 @@ public class TaskController extends Controller {
 		task.set("status", Task.STATUS_ASSIGNED);
 		task.keep("id", "assign_user_id", "status");
 		task.update();
+		// 记录日志
+		task.log(sessionUser.toHTML() + "将任务分派给" + user.toHTML());
+
 		setAttr("ok", true);
 		renderJson();
 
@@ -279,11 +288,16 @@ public class TaskController extends Controller {
 		// 任务没有被分派的情况
 		if (assignUser == null) {
 			task.set("assign_user_id", sessionUser.getId());
+			// 记录自动分派日志
+			task.log("系统自动将任务分派给" + sessionUser.toHTML());
 		}
 		task.set("finish_time", new Date());
 		task.set("status", Task.STATUS_FINISHED);
 		task.keep("id", "assign_user_id", "finish_time", "status");
 		task.update();
+		// 完成日志
+		task.log(sessionUser.toHTML() + "将任务设置为完成");
+
 		setAttr("ok", true);
 		renderJson();
 
@@ -322,6 +336,8 @@ public class TaskController extends Controller {
 		task.set("status", Task.STATUS_REWORKED);
 		task.keep("id", "status", "finish_time");
 		task.update();
+		// 记录日志
+		task.log(sessionUser.toHTML() + "将任务返工");
 
 		setAttr("ok", true);
 		renderJson();
@@ -352,6 +368,10 @@ public class TaskController extends Controller {
 		task.set("status", Task.STATUS_CLOSED);
 		task.keep("id", "status");
 		task.update();
+
+		// 记录日志
+		task.log(sessionUser.toHTML() + "将任务关闭");
+
 		setAttr("ok", true);
 		renderJson();
 	}
@@ -376,11 +396,21 @@ public class TaskController extends Controller {
 			renderJson();
 			return;
 		}
-		// 先删除任务关联标签，再删除任务
+		// 先删除任务关联标签和日志 ，再删除任务
 		Db.update("delete from task_tag where task_id=?", task.getStr("id"));
+		Db.update("delete from task_log where task_id=?", task.getStr("id"));
 		task.delete();
 		setAttr("ok", true);
 		renderJson();
 	}
 
+	/**
+	 * 显示日志
+	 */
+	public void showLogList() {
+		Task task = Task.dao.findById(getPara());
+		setAttr("task", task);
+		setAttr("logList", task.getTaskLogList());
+		render("showLogList.ftl");
+	}
 }

@@ -44,6 +44,9 @@
 				$("#view-task-modal").bind("hidden.bs.modal",function(){
 					$(this).removeData("bs.modal").find(".modal-content").empty();
 				});
+				$("#view-task-log-modal").bind("hidden.bs.modal",function(){
+					$(this).removeData("bs.modal").find(".modal-content").empty();
+				});
 				//对下拉的多选与单选禁止点击事件传播，从而阻止点击后下拉菜单关闭
 				$(".dropdown-menu .checkbox").click(function(e){
 					e.stopPropagation();
@@ -173,11 +176,16 @@
 							<#--编辑按钮，必须角色有权限且任务不是完成或关闭状态-->
 							<#if 'ADMIN' == role! || 'TESTER' == role! >
 							<#if 'FINISHED' != task.status && 'CLOSED' != task.status >
-							<a data-toggle="modal" href="${ctx}/task/showUpdateTask/${task.id}" data-target="#updata-task-modal">
+							<a data-toggle="modal" href="${ctx}/task/showUpdateTask/${task.id}" data-target="#updata-task-modal" title="编辑任务">
 								<span class="icon-edit"></span>
 							</a>
 							</#if>
 							</#if>
+							<#--查看日志按钮-->
+							&nbsp;&nbsp;
+							<a data-toggle="modal" href="${ctx}/task/showLogList/${task.id}" data-target="#view-task-log-modal" title="查看日志">
+								<span class="icon-list-alt"></span>
+							</a>
 						</p>		
 					</div>
 				</#list>
@@ -203,6 +211,12 @@
 		</div>
 		<#--查看任务模态框-->
 		<div class="modal fade" role="dialog" id="view-task-modal">
+			<div class="modal-dialog  modal-lg">
+				<div class="modal-content"></div>
+			</div>
+		</div>
+		<#--查看任务日志模态框-->
+		<div class="modal fade" role="dialog" id="view-task-log-modal">
 			<div class="modal-dialog  modal-lg">
 				<div class="modal-content"></div>
 			</div>

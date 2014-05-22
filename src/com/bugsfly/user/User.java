@@ -82,8 +82,21 @@ public class User extends Model<User> {
 		}
 		sql.append(" order by p.create_time desc ");
 
-		return Project.dao.paginate(pn, 10, "select p.*,pu.role", sql.toString(),
-				params.toArray());
+		return Project.dao.paginate(pn, 10, "select p.*,pu.role",
+				sql.toString(), params.toArray());
+	}
+
+	public String toHTML() {
+		String title = null;
+		if (getStr("en_name") != null) {
+			title = "英文名：" + getStr("en_name");
+		}
+		String html = "<span style='color:#a94442' ";
+		if (title != null) {
+			html += "title='" + title + "' ";
+		}
+		html += ">" + getStr("zh_name") + "</span>";
+		return html;
 	}
 
 }

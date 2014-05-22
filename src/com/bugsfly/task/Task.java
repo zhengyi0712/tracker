@@ -1,7 +1,9 @@
 package com.bugsfly.task;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.bugsfly.project.Project;
 import com.bugsfly.user.User;
@@ -46,6 +48,20 @@ public class Task extends Model<Task> {
 
 	public User getUpdateUser() {
 		return User.dao.findById(this.getStr("update_user_id"));
+	}
+
+	public List<TaskLog> getTaskLogList() {
+		String sql = "select * from task_log where task_id=? order by create_time asc";
+		return TaskLog.dao.find(sql, getStr("id"));
+	}
+
+	public void log(String content) {
+		TaskLog taskLog = new TaskLog();
+		taskLog.set("id", UUID.randomUUID().toString());
+		taskLog.set("content", content);
+		taskLog.set("create_time", new Date());
+		taskLog.set("task_id", getStr("id"));
+		taskLog.save();
 	}
 
 	/**

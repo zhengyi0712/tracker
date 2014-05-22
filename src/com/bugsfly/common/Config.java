@@ -10,6 +10,7 @@ import com.bugsfly.project.ProjectController;
 import com.bugsfly.task.Tag;
 import com.bugsfly.task.Task;
 import com.bugsfly.task.TaskController;
+import com.bugsfly.task.TaskLog;
 import com.bugsfly.um.UMController;
 import com.bugsfly.user.User;
 import com.bugsfly.user.UserController;
@@ -79,11 +80,12 @@ public class Config extends JFinalConfig {
 		ActiveRecordPlugin aPlugin = new ActiveRecordPlugin(c3p0Plugin);
 		aPlugin.setDialect(new MysqlDialect());
 		plugins.add(aPlugin);
-		
+
 		aPlugin.addMapping("task", Task.class);
 		aPlugin.addMapping("user", User.class);
 		aPlugin.addMapping("project", Project.class);
 		aPlugin.addMapping("tag", Tag.class);
+		aPlugin.addMapping("task_log", TaskLog.class);
 	}
 
 	@Override
