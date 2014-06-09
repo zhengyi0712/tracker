@@ -21,6 +21,7 @@ public class User extends Model<User> {
 		sql += " from project p ";
 		sql += " left join project_user pu on pu.project_id=p.id ";
 		sql += " where pu.user_id=? ";
+		sql += " order by p.name asc ";
 		return Project.dao.find(sql, getId());
 	}
 
