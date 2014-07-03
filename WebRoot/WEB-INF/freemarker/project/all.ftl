@@ -7,7 +7,7 @@ td.intro{
 	cursor:default;
 }
 </style>
-<form class="form-inline" role="form" action="${ctx}/project/allProjects" name="projectListForm">
+<form class="form-inline" role="form" action="${ctx}/project/all" name="projectListForm">
 	<div class="form-group">
 		<label for="search-project-name" class="sr-only">用户名称搜索</label>
 		<input id="search-project-name" type="text" class="form-control" name="name" value="${name!}" placeholder="输入项目名称" maxlength="30"/>	
@@ -27,7 +27,7 @@ td.intro{
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         		<h4 class="modal-title">添加新的项目</h4>
 			</div>
-			<form class="form-horizontal" role="form" style="margin-bottom:0;" action="${ctx}/project/saveProject" method="post" name="addProjectForm">
+			<form class="form-horizontal" role="form" style="margin-bottom:0;" action="${ctx}/project/save" method="post" name="addProjectForm">
 			<div class="modal-body">
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="ipt-project-name">名称：</label>
@@ -112,7 +112,7 @@ td.intro{
 	$(document.addProjectForm).validate({
 		rules:{
 			"project.name":{
-				remote:"${ctx}/project/checkNameExist"
+				remote:"${ctx}/project/checkName"
 			},
 			"project.intro":{
 				maxlength:200

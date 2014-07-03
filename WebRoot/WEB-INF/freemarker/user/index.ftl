@@ -21,8 +21,8 @@
 						<a class="list-group-item" href="${ctx}/project/myProjects">我的项目</a>		
 						<#--管理员菜单-->
 						<#if session.user.sysAdmin>
-							<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/project/allProjects">所有项目</a>
-							<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/user/allUsers">所有用户</a>
+							<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/project/all">所有项目</a>
+							<a class="list-group-item" data-dismiss="tooltip-menu" href="${ctx}/user/all">所有用户</a>
 						</#if>
 					</div>
 				</div>

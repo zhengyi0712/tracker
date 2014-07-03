@@ -1,15 +1,9 @@
 <div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <#if project?? >
     <h4 class="modal-title">为项目<span class="text-danger">${project.name}</span>添加用户</h4>
-  	<#else>  
-    <h4 class="modal-title">添加新的用户</h4>
-    </#if>
 </div>
-<form class="form-horizontal" role="form" action="${ctx}/user/saveUser" style="margin-bottom:0;" name="userSaveForm" method="post">
-<#if project?? >
-	<input type="hidden" name="project.id" value="${project.id}">
-</#if>
+<form class="form-horizontal" role="form" action="${ctx}/project/saveUser" style="margin-bottom:0;" name="userSaveForm" method="post">
+	<input type="hidden" name="project.id" value="${project.id}"/>
 <div class="modal-body">
 	<div class="form-group">
 		<label class="control-label col-md-2" for="zhName">中文名：</label>
@@ -35,7 +29,6 @@
 			<input type="mobile" class="form-control" name="user.mobile" required id="mobile"/>
 		</div>
 	</div>
-	<#if project??>
 	<div class="form-group">
 		<label class="control-label col-md-2">角色：</label>
 		<div class="col-md-10">
@@ -50,7 +43,6 @@
 			</label>
 		</div>
 	</div>	
-	</#if>
 </div>
 <div class="modal-footer">
 	<span class="text-muted">帐号初始密码是手机号后六位</span>
@@ -64,10 +56,10 @@ $(document.userSaveForm).validate({
 			"user.zh_name":{zhName:true},
 			"user.en_name":{enName:true},
 			"user.mobile":{
-				remote:"${ctx}/user/checkMobileExist"
+				remote:"${ctx}/user/checkMobile"
 				},
 			"user.email":{
-				remote:"${ctx}/user/checkEmailExist"
+				remote:"${ctx}/user/checkEmail"
 				}
 		},
 		messages:{

@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.bugsfly.project.Project;
 import com.bugsfly.user.User;
 import com.jfinal.kit.StringKit;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Page;
 
@@ -139,5 +140,45 @@ public class Task extends Model<Task> {
 
 		return paginate(pn, 20, "select s.*", sqlExceptSelect.toString(),
 				params.toArray());
+	}
+
+	/**
+	 * 保存标签
+	 * 
+	 * @param tagId
+	 * @return
+	 */
+	public boolean saveTag(String tagId) {
+		return Db.update("insert into task_tag(tag_id,task_id)values(?,?)",
+				tagId, getStr("id")) == 1;
+	}
+
+	/**
+	 * 删除标签
+	 * 
+	 * @param tagId
+	 * @return
+	 */
+	public boolean deleteTag(String tagId) {
+		return Db.update("delete from task_tag where tag_id=? an task_id=?",
+				tagId, getStr("id")) == 1;
+	}
+
+	/**
+	 * 删除所有标签
+	 * 
+	 * @return
+	 */
+	public int deleteAllTags() {
+		return Db.update("delete from task_tag where task_id=?", getStr("id"));
+	}
+
+	/**
+	 * 删除所有日志
+	 * 
+	 * @return
+	 */
+	public int deleteAllLogs() {
+		return Db.update("delete from task_log where task_id=?", getStr("id"));
 	}
 }

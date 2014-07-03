@@ -1,6 +1,5 @@
 package com.bugsfly.user;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -8,13 +7,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import com.bugsfly.common.RegExp;
 import com.bugsfly.common.Webkeys;
-import com.bugsfly.project.Project;
 import com.bugsfly.util.PageKit;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
 
 public class UserController extends Controller {
@@ -44,11 +40,9 @@ public class UserController extends Controller {
 	/**
 	 * 检查邮箱是否存在
 	 */
-	public void checkEmailExist() {
+	public void checkEmail() {
 		String email = getPara("user.email");
-		boolean isExist = Db.findFirst("select 1 from user where email=?",
-				email) != null;
-		if (isExist) {
+		if (User.dao.findByEmail(email) != null) {
 			renderJson(false);
 		} else {
 			renderJson(true);
@@ -58,11 +52,9 @@ public class UserController extends Controller {
 	/**
 	 * 检查手机号是否存在
 	 */
-	public void checkMobileExist() {
+	public void checkMobile() {
 		String mobile = getPara("user.mobile");
-		boolean isExist = Db.findFirst("select 1 from user where mobile=?",
-				mobile) != null;
-		if (isExist) {
+		if (User.dao.findByMobile(mobile) != null) {
 			renderJson(false);
 		} else {
 			renderJson(true);
@@ -73,38 +65,21 @@ public class UserController extends Controller {
 	 * 所有用户
 	 */
 	@Before(SysAdminInterceptor.class)
-	public void allUsers() {
+	public void all() {
 		Page<User> page = User.dao.paginateQuery(PageKit.getPn(this), 10,
 				getPara("criteria"), null);
 		setAttr("list", page.getList());
 		setAttr("pageLink", PageKit.generateHTML(getRequest(), page));
 		keepPara("criteria");
-		render("allUsers.ftl");
+		render("all.ftl");
 	}
 
 	/**
 	 * 保存用户
 	 */
-	@Before(UserValidator.class)
-	public void saveUser() {
-		User sessionUser = getSessionAttr(Webkeys.SESSION_USER);
-		final Project project = Project.dao.findById(getPara("project.id"));
-		// 如果是添加用户到项目，需要是项目管理员。否则必须是系统管理员
-		if (project == null) {
-			if (!sessionUser.isSysAdmin()) {
-				setAttr("msg", "抱歉，您无权限进行些操作");
-				renderJson();
-				return;
-			}
-		} else if (!Project.ROLE_ADMIN.equals(project.getRoleOfUser(sessionUser
-				.getId())) && !sessionUser.isSysAdmin()) {
-			setAttr("msg", "抱歉，您无权限进行些操作");
-			renderJson();
-			return;
-
-		}
-
-		final User user = getModel(User.class);
+	@Before({ SysAdminJSONInterceptor.class, UserValidator.class })
+	public void save() {
+		User user = getModel(User.class);
 		user.set("id", UUID.randomUUID().toString());
 		user.set("create_time", new Date());
 		String mobile = user.getStr("mobile");
@@ -114,31 +89,8 @@ public class UserController extends Controller {
 		user.set("salt", salt);
 		user.set("md5", md5);
 
-		final String role = getPara("project.role");
-		boolean ok = Db.tx(new IAtom() {
-
-			@Override
-			public boolean run() throws SQLException {
-				if (!user.save()) {
-					return false;
-				}
-				if (project != null) {
-					String sql = "insert into project_user(project_id,user_id,role) ";
-					sql += " values(?,?,?) ";
-					if (Db.update(sql, project.getId(), user.getId(), role) != 1) {
-						return false;
-					}
-				}
-
-				return true;
-			}
-		});
-
-		if (ok) {
-			setAttr("ok", true);
-		} else {
-			setAttr("msg", "保存失败");
-		}
+		user.save();
+		setAttr("ok", true);
 		renderJson();
 	}
 
@@ -164,9 +116,8 @@ public class UserController extends Controller {
 	/**
 	 * 添加用户
 	 */
-	public void addUser() {
-		setAttr("project", Project.dao.findById(getPara()));
-		render("addUser.ftl");
+	public void add() {
+		render("add.ftl");
 	}
 
 	/**

@@ -1,7 +1,7 @@
 <p>
 	查看项目<strong class="text-danger">${project.name}</strong>成员
 	<#if projectAdmin?? >
-	<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#add-user-modal" data-remote="${ctx}/user/addUser/${project.id}">
+	<button class="btn btn-primary btn-xs" type="button" data-toggle="modal" data-target="#add-user-modal" data-remote="${ctx}/project/addUser/${project.id}">
 		<span class="glyphicon glyphicon-plus-sign"></span>&nbsp;创建新的用户
 	</button>
 	<button class="btn btn-warning btn-xs" type="button" data-toggle="modal" data-target="#add-existing-user-modal">
@@ -28,7 +28,7 @@
 				<form class="form-inline" role="form" name="userSearchForm" method="post" action="${ctx}/user/searchUserJSON">
 					<input type="hidden" name="projectId" value="${project.id}"/>
 					<div class="form-group">
-						<input type="text" class="form-control" name="key" placeholder="名字/手机号/邮箱" />
+						<input type="text" class="form-control" name="criteria" placeholder="名字/手机号/邮箱" />
 					</div>
 					<button type="submit" class="btn btn-primary">
 						<span class="glyphicon glyphicon-search"></span>&nbsp;搜索

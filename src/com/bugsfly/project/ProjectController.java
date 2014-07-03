@@ -1,43 +1,39 @@
 package com.bugsfly.project;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import com.bugsfly.common.Webkeys;
-import com.bugsfly.task.Task;
 import com.bugsfly.user.SysAdminInterceptor;
 import com.bugsfly.user.SysAdminJSONInterceptor;
 import com.bugsfly.user.User;
+import com.bugsfly.user.UserValidator;
 import com.bugsfly.util.PageKit;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
-import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.tx.Tx;
 
 public class ProjectController extends Controller {
 
 	@Before(SysAdminInterceptor.class)
-	public void allProjects() {
-		Page<Project> page = Project.dao.paginate(
-				PageKit.getPn(this), getPara("name"));
+	public void all() {
+		Page<Project> page = Project.dao.paginate(PageKit.getPn(this),
+				getPara("name"));
 		setAttr("list", page.getList());
-		setAttr("pageLink",
-				PageKit.generateHTML(getRequest(), page));
+		setAttr("pageLink", PageKit.generateHTML(getRequest(), page));
 		keepPara();
-		render("allProjects.ftl");
+		render("all.ftl");
 	}
 
 	public void myProjects() {
 		User user = getSessionAttr(Webkeys.SESSION_USER);
-		Page<Project> page = user.paginateProject(
-				PageKit.getPn(this), getPara("name"));
+		Page<Project> page = user.paginateProject(PageKit.getPn(this),
+				getPara("name"));
 		setAttr("list", page.getList());
-		setAttr("pageLink",
-				PageKit.generateHTML(getRequest(), page));
+		setAttr("pageLink", PageKit.generateHTML(getRequest(), page));
 		keepPara();
 		render("myProjects.ftl");
 	}
@@ -46,7 +42,7 @@ public class ProjectController extends Controller {
 	 * 保存项目
 	 */
 	@Before(SysAdminJSONInterceptor.class)
-	public void saveProject() {
+	public void save() {
 		Project project = getModel(Project.class);
 		project.set("id", UUID.randomUUID().toString());
 		project.set("create_time", new Date());
@@ -94,9 +90,9 @@ public class ProjectController extends Controller {
 		renderJson();
 	}
 
-	public void checkNameExist() {
+	public void checkName() {
 		String name = getPara("project.name");
-		if (Db.findFirst("select 1 from project where name=?", name) != null) {
+		if (Project.dao.findByName(name) != null) {
 			renderJson(false);
 		} else {
 			renderJson(true);
@@ -104,7 +100,7 @@ public class ProjectController extends Controller {
 	}
 
 	/**
-	 * 显示项目的成员
+	 * 显示项目的成员，只有该项目的成员或者系统管理员才可以查看
 	 */
 	public void showUsers() {
 		Project project = Project.dao.findById(getPara());
@@ -125,11 +121,10 @@ public class ProjectController extends Controller {
 		}
 
 		setAttr("project", project);
-		Page<User> page = project.paginateUser(
-				PageKit.getPn(this), getPara("key"));
+		Page<User> page = project.paginateUser(PageKit.getPn(this),
+				getPara("key"));
 		setAttr("list", page.getList());
-		setAttr("pageLink",
-				PageKit.generateHTML(getRequest(), page));
+		setAttr("pageLink", PageKit.generateHTML(getRequest(), page));
 		render("showUsers.ftl");
 
 	}
@@ -137,10 +132,10 @@ public class ProjectController extends Controller {
 	/**
 	 * 添加现有的用户
 	 */
-	@Before(ProjectAdminJSONInterceptor.class)
+	@Before({ ProjectAdminJSONInterceptor.class, Tx.class })
 	public void addCurrentUsers() {
-		final Project project = Project.dao.findById(getPara("project.id"));
-		final String[] userIds = getParaValues("userId");
+		Project project = Project.dao.findById(getPara("project.id"));
+		String[] userIds = getParaValues("userId");
 
 		if (userIds == null || userIds.length == 0) {
 			setAttr("msg", "没有选择任何用户");
@@ -155,26 +150,15 @@ public class ProjectController extends Controller {
 			return;
 		}
 
-		boolean ok = Db.tx(new IAtom() {
-			@Override
-			public boolean run() throws SQLException {
-				for (String userId : userIds) {
-					Record project_user = new Record();
-					project_user.set("project_id", project.getId());
-					project_user.set("user_id", userId);
-					project_user.set("role", role);
-					if (!Db.save("project_user", project_user)) {
-						return false;
-					}
-				}
-				return true;
+		for (String userId : userIds) {
+			if (project.isMemberExist(userId)) {
+				continue;
 			}
-		});
-		if (ok) {
-			setAttr("ok", true);
-		} else {
-			setAttr("msg", "保存失败");
+			if (!project.saveMember(userId, role)) {
+				throw new RuntimeException("save member fail");
+			}
 		}
+		setAttr("ok", true);
 		renderJson();
 	}
 
@@ -199,15 +183,7 @@ public class ProjectController extends Controller {
 			return;
 		}
 
-		String sql = "select count(*) from task where project_id=? and assign_user_id=? and status !=? ";
-		if (Db.queryLong(sql, project.getId(), userId, Task.STATUS_FINISHED) > 0) {
-			setAttr("msg", "该成员有已分派且未完成的任务，不能踢除");
-			renderJson();
-			return;
-		}
-
-		sql = "delete from project_user where project_id=? and user_id=?";
-		if (Db.update(sql, project.getId(), userId) != 1) {
+		if (!project.deleteMember(userId)) {
 			setAttr("msg", "保存失败");
 			renderJson();
 			return;
@@ -236,8 +212,7 @@ public class ProjectController extends Controller {
 			renderJson();
 			return;
 		}
-		String sql = "update project_user set role=? where project_id=? and user_id=?";
-		if (Db.update(sql, role, project.getId(), userId) != 1) {
+		if (!project.setRole(userId, role)) {
 			setAttr("msg", "保存失败");
 			renderJson();
 			return;
@@ -247,4 +222,44 @@ public class ProjectController extends Controller {
 		renderJson();
 	}
 
+	/**
+	 * 添加用户
+	 */
+	public void addUser() {
+		Project project = Project.dao.findById(getPara());
+		setAttr("project", project);
+		render("addUser.ftl");
+	}
+
+	/**
+	 * 保存用户
+	 */
+	@Before({ ProjectAdminJSONInterceptor.class, UserValidator.class, Tx.class })
+	public void saveUser() {
+		Project project = Project.dao.findById(getPara("project.id"));
+		String role = getPara("project.role");
+		if (!Project.checkRole(role)) {
+			setAttr("msg", "未知的角色");
+			renderJson();
+			return;
+		}
+		User user = getModel(User.class);
+		String userId = UUID.randomUUID().toString();
+		user.set("id", userId);
+		user.set("create_time", new Date());
+		String mobile = user.getStr("mobile");
+		String pwd = mobile.substring(mobile.length() - 6);
+		String salt = UUID.randomUUID().toString();
+		String md5 = DigestUtils.md5Hex(pwd + salt);
+		user.set("salt", salt);
+		user.set("md5", md5);
+		if (!user.save()) {
+			throw new RuntimeException("save user fail");
+		}
+		if (!project.saveMember(userId, role)) {
+			throw new RuntimeException("save user to project fail");
+		}
+		setAttr("ok", true);
+		renderJson();
+	}
 }

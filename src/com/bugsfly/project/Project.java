@@ -122,15 +122,64 @@ public class Project extends Model<Project> {
 	}
 
 	/**
-	 * 保存用户
+	 * 保存成员
 	 * 
+	 * @param userId
+	 * @param role
 	 * @return
 	 */
-	public boolean saveUser(String userId, String role) {
+	public boolean saveMember(String userId, String role) {
 		Record pu = new Record();
-		pu.set("provate_id", getStr("id"));
+		pu.set("project_id", getStr("id"));
 		pu.set("user_id", userId);
 		pu.set("role", role);
-		return Db.update("project_user", pu);
+		return Db.save("project_user", pu);
+	}
+
+	/**
+	 * 删除成员
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public boolean deleteMember(String userId) {
+		return Db.update("delete from project_user "
+				+ "where project_id=? and user_id=?", getStr("id"), userId) == 1;
+	}
+
+	/**
+	 * 判断成员是否已经存在
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public boolean isMemberExist(String userId) {
+		String sql = "select count(*) from project_user ";
+		sql += " where project_id=? and user_id=? ";
+		return Db.queryLong(sql, getStr("id"), userId) > 0;
+
+	}
+
+	/**
+	 * 依据名称查找
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Project findByName(String name) {
+		return findFirst("select * from project where name=?", name);
+	}
+
+	/**
+	 * 设置角色
+	 * 
+	 * @param userId
+	 * @param role
+	 * @return
+	 */
+	public boolean setRole(String userId, String role) {
+		return Db.update("update project_user set role=? "
+				+ "where project_id=? and user_id=?", role, getStr("id"),
+				userId) == 1;
 	}
 }

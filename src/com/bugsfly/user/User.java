@@ -112,4 +112,23 @@ public class User extends Model<User> {
 		return html;
 	}
 
+	/**
+	 * 依据邮箱查找
+	 * 
+	 * @param email
+	 * @return
+	 */
+	public User findByEmail(String email) {
+		return findFirst("select * from user where email=?", email);
+	}
+
+	/**
+	 * 依据手机号查找
+	 * 
+	 * @param mobile
+	 * @return
+	 */
+	public User findByMobile(String mobile) {
+		return findFirst("select * from user where mobile=?", mobile);
+	}
 }

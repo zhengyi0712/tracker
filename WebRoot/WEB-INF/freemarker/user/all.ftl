@@ -1,12 +1,12 @@
-<form class="form-inline" role="form" action="${ctx}/user/allUsers" name="userListForm">
+<form class="form-inline" role="form" action="${ctx}/user/all" name="userListForm">
 	<div class="form-group">
 		<label for="user-search-key" class="sr-only">用户搜索关键字</label>
-		<input id="user-search-key" type="text" class="form-control" name="key" value="${key!}" placeholder="名字/邮箱/手机号" maxlength="30"/>
+		<input id="user-search-key" type="text" class="form-control" name="criteria" value="${criteria!}" placeholder="名字/邮箱/手机号" maxlength="30"/>
 	</div>
 	<button class="btn btn-default" type="submit">
 		<span class="glyphicon glyphicon-search"></span>&nbsp;搜索
 	</button>
-	<button class="btn btn-warning" type="button" data-toggle="modal" data-target="#add-user-modal" data-remote="${ctx}/user/addUser">
+	<button class="btn btn-warning" type="button" data-toggle="modal" data-target="#add-user-modal" data-remote="${ctx}/user/add">
 		<span class="glyphicon glyphicon-plus"></span>&nbsp;添加新的用户
 	</button>
 </form>

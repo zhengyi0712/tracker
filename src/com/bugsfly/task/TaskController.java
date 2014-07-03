@@ -10,7 +10,6 @@ import com.bugsfly.user.User;
 import com.bugsfly.util.PageKit;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.tx.Tx;
 
@@ -62,8 +61,7 @@ public class TaskController extends Controller {
 				project.getId(), title, tagIdArr, statusArr, assignUserIdArr);
 
 		setAttr("list", page.getList());
-		setAttr("pageLink",
-				PageKit.generateHTML(getRequest(), page));
+		setAttr("pageLink", PageKit.generateHTML(getRequest(), page));
 		setAttr("tags", Tag.dao.findAll());
 		String role = project.getRoleOfUser(user.getId());
 		setAttr("role", role);
@@ -137,9 +135,8 @@ public class TaskController extends Controller {
 		// 保存标签
 		String[] tagIds = getParaValues("tagId");
 		if (tagIds != null) {
-			String sql = "insert into task_tag(tag_id,task_id)values(?,?)";
 			for (String tagId : tagIds) {
-				if (Db.update(sql, tagId, taskId) != 1) {
+				if (!task.saveTag(tagId)) {
 					throw new IllegalStateException("保存标签失败");
 				}
 			}
@@ -191,19 +188,11 @@ public class TaskController extends Controller {
 		}
 		// 更新标签，为了逻辑简单，直接删除旧的，保存新的
 		String[] tagIds = getParaValues("tagId");
-		List<Tag> oldTags = oldTask.getTags();
+		oldTask.deleteAllTags();
 
-		if (oldTags != null && oldTags.size() > 0) {
-			if (Db.update("delete from task_tag where task_id=?",
-					oldTask.getStr("id")) < 1) {
-				throw new RuntimeException("删除旧的标签失败");
-			}
-		}
-
-		String saveTagSql = "insert into task_tag(tag_id,task_id)values(?,?)";
 		if (tagIds != null) {
 			for (String tagId : tagIds) {
-				if (Db.update(saveTagSql, tagId, oldTask.getStr("id")) != 1)
+				if (!oldTask.saveTag(tagId))
 					throw new RuntimeException("保存新的标签失败");
 			}
 
@@ -397,8 +386,8 @@ public class TaskController extends Controller {
 			return;
 		}
 		// 先删除任务关联标签和日志 ，再删除任务
-		Db.update("delete from task_tag where task_id=?", task.getStr("id"));
-		Db.update("delete from task_log where task_id=?", task.getStr("id"));
+		task.deleteAllTags();
+		task.deleteAllLogs();
 		task.delete();
 		setAttr("ok", true);
 		renderJson();
