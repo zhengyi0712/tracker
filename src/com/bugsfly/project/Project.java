@@ -8,6 +8,7 @@ import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.Record;
 
 public class Project extends Model<Project> {
 
@@ -47,7 +48,8 @@ public class Project extends Model<Project> {
 		sql += " from user u ";
 		sql += " left join project_user pu on pu.user_id=u.id ";
 		sql += " where pu.project_id=? and ( pu.role=? or pu.role=? ) ";
-		return User.dao.find(sql, this.getStr("id"),ROLE_ADMIN,ROLE_DEVELOPER);
+		return User.dao
+				.find(sql, this.getStr("id"), ROLE_ADMIN, ROLE_DEVELOPER);
 	}
 
 	public String getRoleOfUser(String userId) {
@@ -117,5 +119,18 @@ public class Project extends Model<Project> {
 		sql.append(" order by u.zh_name ");
 		return User.dao.paginate(pn, 10, "select u.*,pu.role", sql.toString(),
 				params.toArray());
+	}
+
+	/**
+	 * 保存用户
+	 * 
+	 * @return
+	 */
+	public boolean saveUser(String userId, String role) {
+		Record pu = new Record();
+		pu.set("provate_id", getStr("id"));
+		pu.set("user_id", userId);
+		pu.set("role", role);
+		return Db.update("project_user", pu);
 	}
 }

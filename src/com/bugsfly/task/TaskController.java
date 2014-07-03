@@ -7,7 +7,7 @@ import java.util.UUID;
 import com.bugsfly.common.Webkeys;
 import com.bugsfly.project.Project;
 import com.bugsfly.user.User;
-import com.bugsfly.util.PaginationUtil;
+import com.bugsfly.util.PageKit;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -58,12 +58,12 @@ public class TaskController extends Controller {
 		String[] statusArr = getParaValues("status");
 		String[] assignUserIdArr = getParaValues("assignUserId");
 
-		Page<Task> page = Task.dao.paginate(PaginationUtil.getPageNumber(this),
+		Page<Task> page = Task.dao.paginate(PageKit.getPn(this),
 				project.getId(), title, tagIdArr, statusArr, assignUserIdArr);
 
 		setAttr("list", page.getList());
 		setAttr("pageLink",
-				PaginationUtil.generatePaginateHTML(getRequest(), page));
+				PageKit.generateHTML(getRequest(), page));
 		setAttr("tags", Tag.dao.findAll());
 		String role = project.getRoleOfUser(user.getId());
 		setAttr("role", role);

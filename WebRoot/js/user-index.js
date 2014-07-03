@@ -15,6 +15,7 @@ $(function() {
 						|| href.indexOf("javascript:") != -1) {
 					return;
 				}
+				
 				// bootstrap定义的组件忽略
 				if ($(this).data("toggle") || $(this).attr("role")) {
 					return;

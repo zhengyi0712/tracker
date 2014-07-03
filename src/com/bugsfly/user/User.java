@@ -47,22 +47,34 @@ public class User extends Model<User> {
 		return this.getStr("id");
 	}
 
-	public Page<User> paginate(int pn, String searchKey) {
+	/**
+	 * 分页查询
+	 * 
+	 * @param pn
+	 * @param criteria
+	 * @return
+	 */
+	public Page<User> paginateQuery(int pn, int pz, String criteria,
+			Boolean disabled) {
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
 
 		sql.append(" from user u ");
 		sql.append(" where 1=1 ");
-		if (StringKit.notBlank(searchKey)) {
+		if (disabled != null) {
+			sql.append(" and disabled=?");
+			params.add(disabled);
+		}
+		if (StringKit.notBlank(criteria)) {
 			sql.append(" and (u.zh_name like ? or u.en_name like ? ");
 			sql.append(" or u.email like ? or u.mobile like ? ) ");
-			params.add("%" + searchKey + "%");
-			params.add("%" + searchKey + "%");
-			params.add("%" + searchKey + "%");
-			params.add("%" + searchKey + "%");
+			params.add("%" + criteria + "%");
+			params.add("%" + criteria + "%");
+			params.add("%" + criteria + "%");
+			params.add("%" + criteria + "%");
 		}
 		sql.append(" order by u.create_time desc ");
-		return paginate(pn, 10, "select u.*", sql.toString(), params.toArray());
+		return paginate(pn, pz, "select u.*", sql.toString(), params.toArray());
 	}
 
 	/**

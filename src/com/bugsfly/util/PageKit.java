@@ -13,7 +13,7 @@ import com.jfinal.plugin.activerecord.Page;
  * 分页工具
  * 
  */
-public class PaginationUtil {
+public class PageKit {
 	/**
 	 * 生成分页的html代码
 	 * 
@@ -21,7 +21,7 @@ public class PaginationUtil {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static String generatePaginateHTML(HttpServletRequest req, Page page) {
+	public static String generateHTML(HttpServletRequest req, Page page) {
 		String url = req.getRequestURI();
 		StringBuilder html = new StringBuilder();
 		int pn = page.getPageNumber();// 当前页码
@@ -101,7 +101,7 @@ public class PaginationUtil {
 		return html.toString();
 	}
 
-	public static int getPageNumber(Controller controller) {
+	public static int getPn(Controller controller) {
 		// 页码
 		int pn = 1;
 		if (RegExpUtil.checkPositiveInteger(controller.getPara("pn"))) {

@@ -9,7 +9,7 @@ import com.bugsfly.task.Task;
 import com.bugsfly.user.SysAdminInterceptor;
 import com.bugsfly.user.SysAdminJSONInterceptor;
 import com.bugsfly.user.User;
-import com.bugsfly.util.PaginationUtil;
+import com.bugsfly.util.PageKit;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Db;
@@ -23,10 +23,10 @@ public class ProjectController extends Controller {
 	@Before(SysAdminInterceptor.class)
 	public void allProjects() {
 		Page<Project> page = Project.dao.paginate(
-				PaginationUtil.getPageNumber(this), getPara("name"));
+				PageKit.getPn(this), getPara("name"));
 		setAttr("list", page.getList());
 		setAttr("pageLink",
-				PaginationUtil.generatePaginateHTML(getRequest(), page));
+				PageKit.generateHTML(getRequest(), page));
 		keepPara();
 		render("allProjects.ftl");
 	}
@@ -34,10 +34,10 @@ public class ProjectController extends Controller {
 	public void myProjects() {
 		User user = getSessionAttr(Webkeys.SESSION_USER);
 		Page<Project> page = user.paginateProject(
-				PaginationUtil.getPageNumber(this), getPara("name"));
+				PageKit.getPn(this), getPara("name"));
 		setAttr("list", page.getList());
 		setAttr("pageLink",
-				PaginationUtil.generatePaginateHTML(getRequest(), page));
+				PageKit.generateHTML(getRequest(), page));
 		keepPara();
 		render("myProjects.ftl");
 	}
@@ -126,10 +126,10 @@ public class ProjectController extends Controller {
 
 		setAttr("project", project);
 		Page<User> page = project.paginateUser(
-				PaginationUtil.getPageNumber(this), getPara("key"));
+				PageKit.getPn(this), getPara("key"));
 		setAttr("list", page.getList());
 		setAttr("pageLink",
-				PaginationUtil.generatePaginateHTML(getRequest(), page));
+				PageKit.generateHTML(getRequest(), page));
 		render("showUsers.ftl");
 
 	}

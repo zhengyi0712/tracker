@@ -22,7 +22,6 @@ public class LoginValidator extends Validator {
 	@Override
 	protected void handleError(Controller c) {
 		c.render("index.ftl");
-
 	}
 
 }

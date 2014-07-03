@@ -1,9 +1,7 @@
 package com.bugsfly.user;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -11,14 +9,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 import com.bugsfly.common.RegExp;
 import com.bugsfly.common.Webkeys;
 import com.bugsfly.project.Project;
-import com.bugsfly.util.PaginationUtil;
+import com.bugsfly.util.PageKit;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Page;
-import com.jfinal.plugin.activerecord.Record;
 
 public class UserController extends Controller {
 
@@ -30,7 +27,6 @@ public class UserController extends Controller {
 	 * 用户信息
 	 */
 	public void userinfo() {
-		System.out.println("调用用户信息");
 		render("userinfo.ftl");
 	}
 
@@ -39,35 +35,8 @@ public class UserController extends Controller {
 	 * 结果不会包含已经禁用的用户，如果有projectId传入，那么对应项目的用户也会过滤掉。
 	 */
 	public void searchUserJSON() {
-		String projectId = getPara("projectId");
-		StringBuilder sql = new StringBuilder();
-		List<String> params = new ArrayList<String>();
-
-		sql.append(" from user u ");
-
-		sql.append(" where u.disabled=0 ");
-
-		if (StringKit.notBlank(projectId)) {
-			sql.append(" and u.id not in ( ");
-			sql.append(" select user_id from project_user ");
-			sql.append(" where project_id=?) ");
-			params.add(projectId);
-
-		}
-
-		String key = getPara("key");
-		if (StringKit.notBlank(key)) {
-			sql.append(" and(zh_name like ?  ");
-			sql.append(" or en_name like ? or mobile like ? or email like ?) ");
-			sql.append(" order by login_time desc ");
-			params.add("%" + key + "%");
-			params.add("%" + key + "%");
-			params.add("%" + key + "%");
-			params.add("%" + key + "%");
-		}
-		Page<Record> page = Db.paginate(1, 10, "select distinct u.* ",
-				sql.toString(), params.toArray());
-		System.err.println("SQL:" + sql.toString());
+		Page<User> page = User.dao.paginateQuery(PageKit.getPn(this), 10,
+				getPara("criteria"), false);
 		setAttr("list", page.getList());
 		renderJson();
 	}
@@ -105,12 +74,11 @@ public class UserController extends Controller {
 	 */
 	@Before(SysAdminInterceptor.class)
 	public void allUsers() {
-		Page<User> page = User.dao.paginate(PaginationUtil.getPageNumber(this),
-				getPara("key"));
+		Page<User> page = User.dao.paginateQuery(PageKit.getPn(this), 10,
+				getPara("criteria"), null);
 		setAttr("list", page.getList());
-		setAttr("pageLink",
-				PaginationUtil.generatePaginateHTML(getRequest(), page));
-		keepPara("key");
+		setAttr("pageLink", PageKit.generateHTML(getRequest(), page));
+		keepPara("criteria");
 		render("allUsers.ftl");
 	}
 
@@ -128,13 +96,12 @@ public class UserController extends Controller {
 				renderJson();
 				return;
 			}
-		} else {
-			if (!Project.ROLE_ADMIN.equals(project.getRoleOfUser(sessionUser
-					.getId())) && !sessionUser.isSysAdmin()) {
-				setAttr("msg", "抱歉，您无权限进行些操作");
-				renderJson();
-				return;
-			}
+		} else if (!Project.ROLE_ADMIN.equals(project.getRoleOfUser(sessionUser
+				.getId())) && !sessionUser.isSysAdmin()) {
+			setAttr("msg", "抱歉，您无权限进行些操作");
+			renderJson();
+			return;
+
 		}
 
 		final User user = getModel(User.class);
@@ -253,13 +220,13 @@ public class UserController extends Controller {
 		String mobile = user.getStr("mobile");
 		String newPwd = mobile.substring(mobile.length() - 6);
 		String salt = user.getStr("salt");
-		
+
 		String md5 = DigestUtils.md5Hex(newPwd + salt);
 		user.set("md5", md5);
-		
-		user.keep("id","md5");
+
+		user.keep("id", "md5");
 		user.update();
-		
+
 		setAttr("ok", true);
 		renderJson();
 	}
